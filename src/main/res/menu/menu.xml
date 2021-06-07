@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/item_home"
+        android:enabled="true"
+        app:showAsAction="always"
+        android:icon="@drawable/menu_home"
+        android:title="@string/menu_home" />
+    <item
+        android:id="@+id/item_shcedule"
+        android:enabled="true"
+        app:showAsAction="always"
+        android:icon="@drawable/menu_schedule"
+        android:title="@string/menu_schedule"/>
+    <item
+        android:id="@+id/item_chatting"
+        android:enabled="true"
+        app:showAsAction="always"
+        android:icon="@drawable/menu_chat"
+        android:title="@string/menu_chat"/>
+    <item
+        android:id="@+id/item_alerm"
+        android:enabled="true"
+        app:showAsAction="always"
+        android:icon="@drawable/menu_alarm"
+        android:title="@string/menu_alarm"/>
+    <item
+        android:id="@+id/item_more"
+        android:enabled="true"
+        app:showAsAction="always"
+        android:icon="@drawable/menu_more"
+        android:title="@string/menu_more"/>
+</menu>

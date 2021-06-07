@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/layout_find_branch_office"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:src="@drawable/common_close_small_custom"
+        android:background="@android:color/transparent"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/light_blue"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- 최초화면, 검색결과 있을 때-->
+        <LinearLayout
+            android:id="@+id/layout_initial_and_found"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <!-- 검색창-->
+            <LinearLayout
+                android:id="@+id/layout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/linear_border_line">
+
+                <EditText
+                    android:id="@+id/editText_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:layout_weight="1"
+                    android:inputType="text"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="25sp"
+                    android:hint="지점검색"
+                    android:padding="10dp"/>
+
+                <ImageButton
+                    android:id="@+id/btn_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:padding="15dp"
+                    android:src="@drawable/common_x_icon_24" />
+            </LinearLayout>
+
+            <!-- 검색 결과-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                </androidx.recyclerview.widget.RecyclerView>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 검색 결과 없을 때-->
+        <LinearLayout
+            android:id="@+id/layout_not_found"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="검색결과가 없습니다."
+                android:textAlignment="center"
+                android:textSize="30sp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/write_directly"
+                android:textAlignment="center"
+                android:textSize="20sp"/>
+
+            <LinearLayout
+                android:id="@+id/layout1_directly"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/linear_border_line">
+
+                <EditText
+                    android:id="@+id/editText_search_directly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:layout_weight="1"
+                    android:inputType="text"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="25sp"
+                    android:hint="지점 입력"
+                    android:padding="10dp"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="확인"
+                    android:backgroundTint="@color/orange"
+                    android:textColor="@color/black">
+                </Button>
+            </LinearLayout>
+            <Button
+                android:id="@+id/btn_back_to_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="뒤로"
+                android:backgroundTint="@color/blue"
+                android:textColor="@color/black">
+            </Button>
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

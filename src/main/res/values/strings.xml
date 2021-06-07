@@ -1,0 +1,232 @@
+<resources>
+    <string name="app_name">PT Manager</string>
+
+    <string name="email">이메일</string>
+    <string name="id">아이디</string>
+    <string name="password">비밀번호</string>
+    <string name="new_password">새로운 비밀번호</string>
+    <string name="password_confirm">비밀번호 확인</string>
+    <string name="password_not_coincide">비밀번호가 일치하지 않습니다.</string>
+    <string name="new_password_confirm">새로운 비밀번호 확인</string>
+    <string name="log_in">로그인</string>
+    <string name="kakao_log_in">카카오 로그인</string>
+    <string name="google_log_in">구글 로그인</string>
+    <string name="register">회원가입</string>
+    <string name="register_not_underline1">회원가입(1/3)</string>
+    <string name="register_not_underline2">회원가입(2/3)</string>
+    <string name="register_not_underline3">회원가입(3/3)</string>
+    <string name="find_id_pw"><u>아이디/비밀번호찾기</u></string>
+    <string name="double_check">중복확인</string>
+    <string name="necessary_info"> *필수정보입니다.</string>
+    <string name="certification">인증번호 받기</string>
+    <string name="certification_num">인증번호</string>
+    <string name="confirm">확인</string>
+    <string name="write">작성</string>
+    <string name="register_complete1">다음(1/3)</string>
+    <string name="register_complete2">다음(2/3)</string>
+    <string name="register_complete3">가입완료</string>
+    <string name="profile_setting_complete">설정완료</string>
+    <string name="inv_code">초대코드</string>
+    <string name="opponent_inv_code">상대방 초대코드</string>
+    <string name="opponent_id">상대방 아이디</string>
+    <string name="opponent_id_enter">연결할 상대방 아이디를 입력하세요</string>
+    <string name="first_day">처음 사귄날</string>
+    <string name="all_terms">전체약관에 동의</string>
+    <string name="using_terms"><u>이용약관(필수)</u></string>
+    <string name="private_info"><u>개인정보 처리방침(필수)</u></string>
+    <string name="branch_office">지점명</string>
+    <string name="find_branch_office">찾기</string>
+    <string name="birth_day">생년월일</string>
+    <string name="trainer">트레이너</string>
+    <string name="individual">일반회원</string>
+    <string name="profile_setting">프로필 설정</string>
+    <string name="profile_guide">* 프로필 사진을 설정하지 않으면 기본이미지가 선택됩니다.</string>
+
+    <string name="find_id">아이디 찾기</string>
+    <string name="find_id_compl">로그인하러 가기</string>
+    <string name="name">이름</string>
+    <string name="name_gender_age">이름(성별, 나이)</string>
+    <string name="remain_cnt">잔여횟수/전체횟수</string>
+    <string name="phone_num">전화번호</string>
+    <string name="find_pw">비밀번호 초기화</string>
+    <string name="find_pw1">비밀번호 초기화(1/3)</string>
+    <string name="find_pw2">비밀번호 초기화(2/3)</string>
+    <string name="find_pw3">비밀번호 초기화(3/3)</string>
+    <string name="find_pw_compl">설정완료</string>
+    <string name="email_id">이메일(아이디)</string>
+    <string name="nick_name">닉네임</string>
+    <string name="date">날짜</string>
+
+    <string name="certification_send">인증번호를 발송했습니다.</string>
+    <string name="certification_compl">인증 성공했습니다.</string>
+    <string name="enter_name">* 이름을 입력하세요.</string>
+    <string name="enter_id">* 아이디를 입력하세요.</string>
+    <string name="enter_pw">* 비밀번호를 입력하세요.</string>
+    <string name="enter_birthday">* 생년월일을 입력하세요.</string>
+
+    <string name="next">다음</string>
+    <string name="post">게시하기</string>
+    <string name="modify">수정하기</string>
+    <string name="back">뒤로가기</string>
+    <string name="back_to_search">뒤로</string>
+    <string name="comment">댓글달기</string>
+    <string name="comment_view">댓글</string>
+
+    <string name="my_page"> 내정보</string>
+    <string name="replace"> 교체</string>
+    <string name="replace_complete"> 변경완료</string>
+
+    <string name="added_function"> 부가기능</string>
+    <string name="recommend_restaurant"> 맛집추천</string>
+    <string name="find_restaurant"> 맛집찾기</string>
+    <string name="calendar"> 캘린더</string>
+    <string name="weather"> 날씨</string>
+    <string name="percentOfRain">강수확률</string>
+    <string name="chatting"> 채팅</string>
+    <string name="chatting_writing"> 채팅작성</string>
+    <string name="transmit"> 전송</string>
+    <string name="image_video_selection"> 이미지/동영상 선택</string>
+    <string name="image_selection"> 이미지선택</string>
+
+    <string name="date_place_weather"> 날짜/장소/날씨</string>
+    <string name="add_anniversary"> 기념일 추가</string>
+    <string name="add_schedule"> 일정 추가</string>
+    <string name="pre_anniversary"> 지난 기념일</string>
+    <string name="next_anniversary"> 남은 기념일</string>
+
+    <string name="day">요일</string>
+    <string name="lowest_highest_temp">최저기온/최고기온</string>
+    <string name="precipitation">강수량</string>
+    <string name="title_activity_calendar">CalendarActivity</string>
+
+    <string name="title_activity_ex">DateSet</string>
+    <string name="pw_validation">비밀번호는 10-16자사이 영문/숫자/특수문자를 모두 포함하셔야 합니다..</string>
+
+    <string name="channel_name_chatting">chatting_channel</string>
+    <string name="channel_description_chatting">chatting_channel</string>
+
+    <string name="menu_home">홈</string>
+    <string name="menu_schedule">일정</string>
+    <string name="menu_chat">채팅</string>
+    <string name="menu_alarm">알림</string>
+    <string name="menu_more">더보기</string>
+
+    <string name="write_directly"><u>직접입력</u></string>
+    <string name="schedule_of_today">오늘의 일정</string>
+    <string name="all">전체</string>
+    <string name="is_lecturing">수강중</string>
+    <string name="not_be_lectured">수강안함</string>
+    <string name="member_add">회원추가</string>
+    <string name="dateWithYMDAndDayOfWeek">YYYY년 MM월 DD일(요일)</string>
+    <string name="id_or_phone_num">아이디로 검색</string>
+    <string name="search">검색</string>
+    <string name="search_not_found">검색된 결과가 없습니다.</string>
+
+    <!-- 레슨 등록-->
+    <string name="register_lesson">레슨 등록</string>
+    <string name="lesson_detail">레슨 내역</string>
+    <string name="lecture_type_with_star">* 강의종류</string>
+    <string name="lecture_type2">강의종류</string>
+    <string name="member_with_star">* 회원</string>
+    <string name="member"> 회원</string>
+    <string name="start_date_with_star">* 시작일자</string>
+    <string name="start_date">시작일자</string>
+    <string name="process_time">* 진행시간</string>
+    <string name="process_time_without_star">진행시간</string>
+    <string name="start_time">시작시간</string>
+    <string name="end_time">종료시간</string>
+    <string name="repeat">반복</string>
+    <string name="repeat_schedule">반복일정</string>
+    <string name="memo">메모</string>
+    <string name="memo_input">메모입력</string>
+
+    <!-- 내 강의 -->
+    <string name="my_lecture">내 강의</string>
+    <string name="lecture_name">강의명</string>
+    <string name="lecture_time">수업시간: --분</string>
+    <string name="be_lectured_member_cnt">진행중: -/-명(or 팀)</string>
+
+    <!-- 수강 가능한 회원-->
+    <string name="possible_member_list">수강 가능한 회원</string>
+
+    <!-- 출석체크-->
+    <string name="attendance">출석체크</string>
+
+    <string-array name="photoOrImageWithoutRemove">
+        <item>직접촬영</item>
+        <item>갤러리에서 가져오기</item>
+    </string-array>
+
+    <string-array name="photoOrImageOrRemove">
+        <item>직접촬영</item>
+        <item>갤러리에서 가져오기</item>
+    </string-array>
+
+    <string-array name="postFunc">
+        <item>게시물 수정</item>
+        <item>게시물 삭제</item>
+    </string-array>
+
+    <string-array name="commentFunc">
+        <item>댓글 수정</item>
+        <item>댓글 삭제</item>
+    </string-array>
+
+    <string-array name="addCalendarFunc">
+        <item>일정 추가</item>
+        <item>기념일 추가</item>
+    </string-array>
+
+    <string-array name="schRepeat">
+        <item>안함</item>
+        <item>매일</item>
+        <item>매주</item>
+        <item>매달</item>
+        <item>매년</item>
+        <item>평일</item>
+        <item>주말</item>
+    </string-array>
+
+    <string-array name="schAlarm">
+        <item>없음</item>
+        <item>일정 시작 시간</item>
+        <item>10분전</item>
+        <item>1시간전</item>
+        <item>1일전</item>
+        <item>3일전</item>
+        <item>1주일전</item>
+    </string-array>
+
+    <string-array name="anniversaryAlarm">
+        <item>없음</item>
+        <item>당일[오전 09:00]</item>
+        <item>1일전[오전 09:00]</item>
+        <item>3일전[오전 09:00]</item>
+        <item>1주일전[오전 09:00]</item>
+        <item>10일전[오전 09:00]</item>
+        <item>2주일전[오전 09:00]</item>
+    </string-array>
+
+    <string-array name="weather">
+        <item>날씨</item>
+        <item>맑음</item>
+        <item>구름조금</item>
+        <item>흐림</item>
+        <item>비내림</item>
+        <item>눈내림</item>
+        <item>천둥번개침</item>
+        <item>안개낌</item>
+        <item>소나기내림</item>
+        <item>미세먼지많음</item>
+    </string-array>
+
+    <string name="title_activity_post_modify">PostModifyActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_member_add">MemberAddActivity</string>
+</resources>
