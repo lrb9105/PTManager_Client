@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDtoWithUserId;
@@ -41,6 +42,7 @@ public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         public FriendAddViewHolder(View itemView) {
             super(itemView);
+            friendProfile = itemView.findViewById(R.id.user_profile);
             friendLayout = itemView.findViewById(R.id.layout_friend);
             name_gender_age = itemView.findViewById(R.id.name_gender_age);
             remain_cnt_exp_date = itemView.findViewById(R.id.remain_cnt_exp_date);
@@ -107,11 +109,15 @@ public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             age--;
         }
 
+        if(friendInfo.getProfileId() != null){
+            Glide.with(context).load("http://15.165.144.216" + friendInfo.getProfileId()).into(((FriendAddViewHolder)holder).friendProfile);
+        }
+
         ((FriendAddViewHolder)holder).name_gender_age.setText(friendInfo.getUserName() + "(" + gender + "," + age + ")");
 
         // 수강중이고 잔여횟수가 0이상이면
         if(friendInfo.getLectureName() != null && !friendInfo.getLectureName().equals("") && remainCnt > 0){
-            ((FriendAddViewHolder)holder).remain_cnt_exp_date.setText(friendInfo.getLectureName() + "(" + remainCnt + "/" + friendInfo.getTotalCnt() + "회)");
+            ((FriendAddViewHolder)holder).remain_cnt_exp_date.setText(friendInfo.getLectureName() + "(" + friendInfo.getUsedCnt() + "/" + friendInfo.getTotalCnt() + "회)");
             ((FriendAddViewHolder)holder).remain_cnt_exp_date.setVisibility(View.VISIBLE);
         } else{
             ((FriendAddViewHolder)holder).remain_cnt_exp_date.setVisibility(View.GONE);

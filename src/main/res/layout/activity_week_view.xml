@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--<jutt.com.zcalenderviewextended.week.WeekCalendar
+        android:id="@+id/week_cal_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="55sp"
+        app:weekBackgroundColor="@color/colorGrey"
+        app:weekTextSize="10sp"
+        app:daysTextSize="12sp"
+        app:weekDaysTextColor="@color/colorGreytext"
+        app:weekTextColor="@color/colorGreyTextDark"
+        app:daysTextColor="@color/colorGreyTextDark"
+        app:todaysDateBgColor="@color/colorPrimaryDark"
+        app:daysBackgroundColor="@color/colorGrey"
+        app:numOfPages="150"
+        app:selectedBgColor="@color/colorLightRed" />
+
+    <jutt.com.zcalenderviewextended.day.WeekView
+        android:id="@+id/week_day_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/week_cal_topbar"
+        app:eventTextColorAlam="@color/colorWhite"
+        app:eventPaddingAlam="15sp"
+        app:textSizeAlam="12sp"
+        app:hourHeightAlam="60sp"
+        app:headerColumnPaddingAlam="8sp"
+        app:headerColumnTextColorAlam="@color/colorGreytext"
+        app:headerRowPaddingAlam="12sp"
+        app:columnGapAlam="8sp"
+        app:noOfVisibleDaysAlam="1"
+        app:todayHeaderTextColorAlam="@color/colorGreyTextDark"
+        app:headerRowBackgroundColorAlam="@color/colorGrey"
+        app:dayBackgroundColorAlam="@color/colorWhite"
+        app:todayBackgroundColorAlam="@color/colorWhite"
+        app:headerColumnBackgroundAlam="@color/colorGrey"/>-->
+
+</RelativeLayout>

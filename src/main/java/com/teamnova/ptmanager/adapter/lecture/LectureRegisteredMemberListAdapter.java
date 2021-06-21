@@ -1,8 +1,10 @@
 package com.teamnova.ptmanager.adapter.lecture;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
@@ -28,9 +31,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * 수강가능한 회원목록 보여주는 리사이클러뷰 아답터
  * */
 public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+/*    private SharedPreferences sp;
+    private SharedPreferences.Editor editor;*/
+
     // ViewHolder에 매칭시키기위한 회원목록 데이터
     private ArrayList<FriendInfoDto> memberList;
     private Context context;
+    private Activity activity;
+
+    // 강의 id
+    private String lectureId;
 
     // 강의정보를 담을 뷰홀더
     public class LectureInfoViewHolder extends RecyclerView.ViewHolder {
@@ -42,6 +52,7 @@ public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<Rec
 
         public LectureInfoViewHolder(View itemView) {
             super(itemView);
+            friendProfile = itemView.findViewById(R.id.user_profile);
             memberLayout = itemView.findViewById(R.id.layout_friend);
             name_gender_age = itemView.findViewById(R.id.name_gender_age);
             remain_cnt_exp_date = itemView.findViewById(R.id.remain_cnt_exp_date);
@@ -51,9 +62,15 @@ public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<Rec
 
 
     // Adapter를 생성할 때 받아오는 데이터와 컨텍스트
-    public LectureRegisteredMemberListAdapter(ArrayList<FriendInfoDto> memberList, Context context) {
+    public LectureRegisteredMemberListAdapter(ArrayList<FriendInfoDto> memberList, Context context, Activity activity) {
         this.memberList = memberList;
         this.context = context;
+        this.activity = activity;
+
+        Log.d("adapter생성시 회원수 확인: ", ""+ memberList.size());
+
+        // sp생성
+        //sp = context.getSharedPreferences("memberCheck",Context.MODE_PRIVATE);
     }
 
     // 새로운 뷰홀더를 생성한다.
@@ -78,8 +95,21 @@ public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<Rec
         ConstraintLayout memberLayout = ((LectureInfoViewHolder)holder).memberLayout;
 
         // 체크박스 보이게
-        ((LectureInfoViewHolder)holder).register_to_lesson.setVisibility(View.VISIBLE);
-
+        CheckBox check = ((LectureInfoViewHolder)holder).register_to_lesson;
+        check.setVisibility(View.VISIBLE);
+        // 체크라면 memberInfo에 값(1) 넣기 체크해제라면 값(0) 넣기
+        check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(check.isChecked()){ // 체크되었다면
+                    memberInfo.setCheck("1");
+                } else{ //체크해제되었다면
+                    memberInfo.setCheck("0");
+                }
+                // 리스트에 체크값이 수정된 memberInfo 수정
+                memberList.set(position, memberInfo);
+            }
+        });
         int remainCnt = memberInfo.getTotalCnt() - memberInfo.getUsedCnt();
 
         // 성별
@@ -110,6 +140,11 @@ public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<Rec
         // 생일 안 지난 경우 -1
         if ((birthMonth * 100 + birthDayOfMonth) > (currentMonth * 100 + birthDayOfMonth)){
             age--;
+        }
+
+        // 회원 프로필 이미지
+        if(memberInfo.getProfileId() != null){
+            Glide.with(context).load("http://15.165.144.216" + memberInfo.getProfileId()).into(((LectureInfoViewHolder)holder).friendProfile);
         }
 
         ((LectureInfoViewHolder)holder).name_gender_age.setText(memberInfo.getUserName() + "(" + gender + "," + age + ")");
@@ -150,6 +185,26 @@ public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<Rec
     public int getItemCount() {
         return memberList.size();
     }
+
+    public ArrayList<FriendInfoDto> getMemberList(){
+        return this.memberList;
+    }
+
+    /*// 추가 체크 시 저장
+    public void insertCheck(String key, int position, int size){
+        // key값과 위치값을 받아와서 key값 생성.
+        editor.putInt(key,position); // memberInfo의 위치 저장
+        editor.putInt("size",position); //size저장
+        editor.commit();
+    }
+
+    //데이터 삭제
+    public void removeDto(String key){
+        Log.d("debug_remove",key);
+
+        editor.remove(key);
+        editor.commit();
+    }*/
 
    /* // Return the size of your dataset (invoked by the layout manager)
     @Override

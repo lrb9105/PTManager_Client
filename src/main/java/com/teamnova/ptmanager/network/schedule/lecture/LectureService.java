@@ -1,11 +1,13 @@
 package com.teamnova.ptmanager.network.schedule.lecture;
 
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
+import com.teamnova.ptmanager.model.lecture.pass.PassInfoDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 
 import java.util.ArrayList;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -31,6 +33,10 @@ public interface LectureService {
     // 레슨을 수강하기로 한 회원정보 가져오기
     @GET("lecture/getLessonRegisteredMemberList.php")
     Call<ArrayList<FriendInfoDto>> getLessonRegisteredMemberList(@Query("lessonId") String lessonId);
+
+    // 수강권 정보 저장
+    @POST("lecture/pass/registerPassInfo.php")
+    Call<String> registerPassInto(@Body PassInfoDto passInfo);
 
     /*@GET("friend/getMemberInfo.php")
     Call<FriendInfoDto> getFriendInfo(@Query("friendId") String friendId);*/

@@ -144,7 +144,7 @@ public class TrainerHomeActivity extends AppCompatActivity {
                         // 친구목록 다 가져온 후 실행
                         transaction.replace(binding.trainerFrame.getId(), trainerHomeFragment,"frag1").commit();
 
-                        if(friendsList != null){
+                        if(friendsList.size() > 0){
 
                             Log.d("친구목록 가져오기 USER_ID: ", friendsList.get(0).getUserId() );
                         }
@@ -171,7 +171,7 @@ public class TrainerHomeActivity extends AppCompatActivity {
                     transaction2.replace(binding.trainerFrame.getId(), trainerHomeFragment,"frag1").commit();
                     break;
                 case R.id.item_shcedule:
-                    transaction2.replace(binding.trainerFrame.getId(), trainerScheduleFragment,"frag1").commit();
+                    transaction2.replace(binding.trainerFrame.getId(), trainerScheduleFragment,"frag2").commit();
                     break;
             }
             return false;

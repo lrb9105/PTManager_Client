@@ -10,6 +10,9 @@ import android.view.View;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityDailyScheduleBinding;
 import com.teamnova.ptmanager.databinding.ActivityLessonRegisterBinding;
+import com.teamnova.ptmanager.model.lesson.LessonInfo;
+import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
+import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerHomeFragment;
 import com.teamnova.ptmanager.ui.member.MemberAddActivity;
 import com.teamnova.ptmanager.ui.schedule.lesson.LessonRegisterActivity;
 import com.teamnova.ptmanager.util.GetDate;
@@ -33,8 +36,10 @@ public class DailyScheduleActivity extends AppCompatActivity implements View.OnC
 
     // 초기화
     public void initialize(){
+        // 인텐트
+        Intent dataIntent = getIntent();
         // 일자
-        String dateOfYYYYMMDD = getIntent().getStringExtra("date");
+        String dateOfYYYYMMDD = dataIntent.getStringExtra("date");
 
         // 일자(년월일 포함)
         String dateWithYMD = GetDate.getDateWithYMD(dateOfYYYYMMDD);
@@ -61,11 +66,25 @@ public class DailyScheduleActivity extends AppCompatActivity implements View.OnC
             case  R.id.btn_add_lesson: // 레슨 추가 버튼 클릭
                 // 레슨추가 액티비티로 이동
                 intent = new Intent(DailyScheduleActivity.this, LessonRegisterActivity.class);
+                intent.putExtra("returnPath", "DailyScheduleActivity");
+
                 startActivity(intent);
                 break;
 
             default:
                 break;
+        }
+    }
+
+    // 새로운 인텐트 발생 시
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        // 레슨정보가 있다면
+        LessonInfo lessonInfo = (LessonInfo)intent.getSerializableExtra("lessonInfo");
+        if(lessonInfo != null){
+            Log.d("레슨정보 등록 완료", lessonInfo.toString());
         }
     }
 }

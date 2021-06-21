@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -39,6 +40,9 @@ public class LectureListActivity extends AppCompatActivity {
     // Retrofit 통신의 결과를 전달하는 핸들러
     private Handler resultHandler;
 
+    // setResult를 사용하기 위해 해당 액티비티의 참조를 adapter로 보내 줌.
+    private Activity activity;
+
     // 리사이클러뷰
     private LectureListAdapter lectureListAdapter;
     private RecyclerView recyclerView_lecture_list;
@@ -59,6 +63,9 @@ public class LectureListActivity extends AppCompatActivity {
 
     // 초기화
     public void initialize(){
+        // 해당 액티비티의 참조
+        activity = this;
+
         // lectureiewModel 초기화
         lectureViewModel = new ViewModelProvider(this).get(LectureViewModel.class);
 
@@ -80,8 +87,15 @@ public class LectureListActivity extends AppCompatActivity {
                     layoutManager = new LinearLayoutManager(LectureListActivity.this);
                     recyclerView_lecture_list.setLayoutManager(layoutManager);
 
+                    /**
+                     * 결과값을 전달하기 위한 액티비티를 구분하기 위한 값 - setResult 시 필요!
+                     * 1) PassRegisterActivity
+                     * 2) LessonRegisterActivity
+                     * */
+                    String toActivityName = getIntent().getStringExtra("activityName");
+
                     // 데이터 가져와서 adapter에 넘겨 줌
-                    lectureListAdapter = new LectureListAdapter(lectureList, LectureListActivity.this);
+                    lectureListAdapter = new LectureListAdapter(lectureList, LectureListActivity.this, activity, toActivityName);
                     recyclerView_lecture_list.setAdapter(lectureListAdapter);
                 }
             }

@@ -13,6 +13,9 @@ import com.teamnova.ptmanager.test.TestDTO;
 
 import java.io.File;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
 /**
  *  클래스 역할
  *      1) 회원가입 시 사용되는 viewModel
@@ -52,7 +55,7 @@ public class RegisterViewModel extends ViewModel {
     }
 
     // 프로필사진 저장
-    public void transferImgToServer(Handler retrofitResultHandler, File profileImgFile){
-        registerRepository.transferImgToServer(retrofitResultHandler, profileImgFile);
+    public void transferImgToServer(Handler retrofitResultHandler, RequestBody loginId, MultipartBody.Part profileImgFile){
+        registerRepository.transferImgToServer(retrofitResultHandler, loginId, profileImgFile);
     }
 }

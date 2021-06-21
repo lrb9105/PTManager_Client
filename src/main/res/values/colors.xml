@@ -17,4 +17,35 @@
     <color name="light_blue">#B2C7D9</color>
     <color name="dark_grey">#262626</color>
     <color name="light_brown">#CF6E36</color>
+
+
+    <color name="colorPrimary">#428b95</color>
+    <color name="colorPrimaryDark">#428b95</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorGreen">#428b95</color>
+
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colortransparent">#00000000</color>
+    <color name="colorFacebook">#002157</color>
+    <color name="colorGrey">#cccccc</color>
+    <color name="colorGreytext">#898989</color>
+    <color name="colorGreyTextDark">#FF757575</color>
+    <color name="colorGreydark">#3e3f3d</color>
+    <color name="colorRed">#f91735</color>
+    <color name="colorLightRed">#ee6477</color>
+    <color name="color_divider_line_color">#ECEFF1</color>
+
+    <!--Calender colors-->
+    <color name="normal_day">#ff999999</color>
+    <color name="selected_day_background">#E75F49</color>
+    <color name="selected_day_text">#fff2f2f2</color>
+
+    <color name="event_color_01">#59dbe0</color>
+    <color name="event_color_02">#f57f68</color>
+    <color name="event_color_03">#87d288</color>
+    <color name="event_color_04">#f8b552</color>
+    <color name="toolbar">#efefef</color>
+    <color name="toolbar_text">#8f000000</color>
+    <color name="accent">#2789e4</color>
 </resources>

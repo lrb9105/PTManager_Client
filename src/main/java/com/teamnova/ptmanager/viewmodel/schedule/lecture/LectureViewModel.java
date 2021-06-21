@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
+import com.teamnova.ptmanager.model.lecture.pass.PassInfoDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.repository.friend.FriendRepository;
 import com.teamnova.ptmanager.repository.schedule.lecture.LectureRepository;
@@ -39,6 +40,12 @@ public class LectureViewModel extends ViewModel {
     public void getLessonRegisteredMemberList(Handler handler, String lessonId){
         lectureRepository.getLessonRegisteredMemberList(handler, lessonId);
     }
+
+    // 수강권 정보 등록하기
+    public void registerPassInto(Handler handler, PassInfoDto passInfo){
+        lectureRepository.registerPassInto(handler, passInfo);
+    }
+
 
     /*// 친구목록에 추가
     public void addToFriend(Handler handler, String ownerId, String ownerType, String friendId, String friendType){

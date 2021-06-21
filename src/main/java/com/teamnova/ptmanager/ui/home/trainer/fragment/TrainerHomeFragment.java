@@ -13,11 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.adapter.friend.FriendAddAdapter;
 import com.teamnova.ptmanager.databinding.ActivityHomeBinding;
 import com.teamnova.ptmanager.databinding.ActivityMainBinding;
 import com.teamnova.ptmanager.databinding.FragmentTrainerHomeBinding;
+import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.member.MemberAddActivity;
@@ -129,18 +131,22 @@ public class TrainerHomeFragment extends Fragment implements View.OnClickListene
          * 1. 서버에서 가져온 친구목록 리사이클러뷰로 보여주기
          * */
 
-        if(TrainerHomeActivity.friendsList != null){
+        if(TrainerHomeActivity.friendsList.size() == 0){
             //Log.d("프래그먼트에서 친구목록 전달받음:", TrainerHomeActivity.friendsList.get(0).getLoginId());
-
-            // 리사이클러뷰 세팅
-            recyclerView_friends_list = binding.recyclerviewFriendsList;
-            layoutManager = new LinearLayoutManager(getActivity());
-            recyclerView_friends_list.setLayoutManager(layoutManager);
-
-            // 데이터 가져와서 adapter에 넘겨 줌
-            friendAddAdapter = new FriendAddAdapter(TrainerHomeActivity.friendsList, getActivity());
-            recyclerView_friends_list.setAdapter(friendAddAdapter);
+            TrainerHomeActivity.friendsList = new ArrayList<>();
+        } else{
+            Log.d("friendsList is null", "11");
         }
+
+        // 리사이클러뷰 세팅
+        recyclerView_friends_list = binding.recyclerviewFriendsList;
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView_friends_list.setLayoutManager(layoutManager);
+
+        // 데이터 가져와서 adapter에 넘겨 줌
+        friendAddAdapter = new FriendAddAdapter(TrainerHomeActivity.friendsList, getActivity());
+
+        recyclerView_friends_list.setAdapter(friendAddAdapter);
 
         setOnclickListener();
 
@@ -150,6 +156,10 @@ public class TrainerHomeFragment extends Fragment implements View.OnClickListene
 
     // 로그인 시 트레이너 정보 화면에 연결
     public void setTrainerInfo(UserInfoDto loginUserInfoDto){
+        if(loginUserInfoDto.getProfileId() != null){
+            Glide.with(getActivity()).load("http://15.165.144.216" + loginUserInfoDto.getProfileId()).into(binding.userProfile);
+        }
+
         binding.trainerName.setText(loginUserInfoDto.getUserName());
         binding.branchOffice.setText(loginUserInfoDto.getBranchOffice());
     }

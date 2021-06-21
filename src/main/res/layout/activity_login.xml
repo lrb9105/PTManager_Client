@@ -66,6 +66,7 @@
         android:text="@string/kakao_log_in"
         android:textColor="#CC000000"
         android:textSize="20sp"
+        android:visibility="gone"
         android:layout_gravity="center" />
 
 

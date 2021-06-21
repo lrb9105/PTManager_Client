@@ -67,4 +67,45 @@ public class GetDate {
         }
         return dayOfWeek;
     }
+
+    /**
+     * 오전, 오후 시간 구하기
+     * */
+    public static String getAmPmTime(int hour, int minute){
+        String time = null;
+        String minStr = null;
+        if(minute < 10){
+            minStr = "0"+minute;
+        } else{
+            minStr = ""+minute;
+        }
+
+        if(hour == 0){
+            time = "오전 " + 12 + ":" + minStr;
+        } else if(hour < 12){
+            time = "오전 " + hour + ":" + minStr;
+        } else if(hour == 12){
+            time = "오후 " + hour + ":" + minStr;
+        } else{
+            time = "오후 " + (hour - 12) + ":" + minStr;
+        }
+        return time;
+    }
+
+    // 현재시간 구하기
+    public static String getCurrentTime(boolean isLaterTime) throws Exception {
+        SimpleDateFormat format2 = new SimpleDateFormat( "hh:mm");
+        Date today = new Date();
+        String time = format2.format(today);
+
+        if(isLaterTime){
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(today);
+            cal.add(Calendar.HOUR, 1);
+
+            time = format2.format(cal.getTime());
+        }
+
+        return time;
+    }
 }

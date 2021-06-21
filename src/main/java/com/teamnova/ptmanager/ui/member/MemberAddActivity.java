@@ -15,6 +15,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityHomeBinding;
 import com.teamnova.ptmanager.databinding.ActivityMemberAddBinding;
@@ -24,6 +25,7 @@ import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerHomeFragment;
 import com.teamnova.ptmanager.ui.login.LoginActivity;
 import com.teamnova.ptmanager.ui.register.RegisterActivity;
+import com.teamnova.ptmanager.ui.schedule.lecture.pass.PassRegisterActivity;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
 import com.teamnova.ptmanager.viewmodel.login.LoginViewModel;
 
@@ -69,6 +71,10 @@ public class MemberAddActivity extends AppCompatActivity {
                  * */
                 // 회원정보를 보여주는 레이아웃의 상태 Visible 로 변경
                 binding.layoutMemberAdd.setVisibility(View.VISIBLE);
+                // 프로필이미지 넣기
+                if(friendInfo.getProfileId() != null){
+                    Glide.with(this).load("http://15.165.144.216" + friendInfo.getProfileId()).into(binding.userProfile);
+                }
                 // 조회해온 회원의 이름 넣어주기
                 binding.memberName.setText(friendInfo.getUserName());
             } else { // 입력한 회원정보가 존재하지 않는다면
@@ -120,7 +126,7 @@ public class MemberAddActivity extends AppCompatActivity {
                 // 다이얼로그빌더
                 AlertDialog.Builder builder = new AlertDialog.Builder(MemberAddActivity.this);
 
-                builder.setMessage("선택한 회원을 목록에 추가하시겠습니까?");
+                builder.setMessage("선택한 회원을 회원목록에 추가하시겠습니까?");
 
                 // 취소버튼 클릭
                 builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -159,13 +165,48 @@ public class MemberAddActivity extends AppCompatActivity {
                 if(msg.what == 0){
                     Log.d("검색한 회원 친구목록에 추가한 결과", (String)msg.obj);
 
-                    Intent intent = new Intent(MemberAddActivity.this, TrainerHomeActivity.class);
-                    // 이동할 액티비티가 이미 작업에서 실행중이라면 기존 인스턴스를 가져오고 위의 모든 액티비티를 삭제
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    intent.putExtra("id","memberAddActivity");
-                    intent.putExtra("memberInfo",memberInfo);
+                    /**
+                     *   친구 추가 완료 후 수강권 등록 가능
+                     * 1. 확인: 수강권등록 화면으로 이동
+                     * 2. 취소: 메인화면으로 바로 이동
+                     * */
+                    // 다이얼로그빌더
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MemberAddActivity.this);
 
-                    startActivity(intent);
+                    builder.setMessage("해당 회원의 수강권을 등록하시겠습니까?");
+
+                    // 취소버튼 클릭 - Home 화면으로 이동
+                    builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(MemberAddActivity.this, TrainerHomeActivity.class);
+                            // 이동할 액티비티가 이미 작업에서 실행중이라면 기존 인스턴스를 가져오고 위의 모든 액티비티를 삭제
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            intent.putExtra("id","memberAddActivity");
+                            intent.putExtra("memberInfo",memberInfo);
+
+                            startActivity(intent);
+                        }
+                    });
+
+                    // 확인버튼 클릭 - 수강권등록 화면으로 이동
+                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener(){
+                        @Override
+                        public void onClick(DialogInterface dialog, int id)
+                        {
+                            Intent intent = new Intent(MemberAddActivity.this, PassRegisterActivity.class);
+                            // 이동할 액티비티가 이미 작업에서 실행중이라면 기존 인스턴스를 가져오고 위의 모든 액티비티를 삭제
+                            intent.putExtra("memberInfo",memberInfo);
+
+                            startActivity(intent);
+
+                            // 친구추가 액티비티는 종료
+                            finish();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
                 }
             }
         };

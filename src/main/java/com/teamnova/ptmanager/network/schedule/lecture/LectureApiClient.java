@@ -3,10 +3,12 @@ package com.teamnova.ptmanager.network.schedule.lecture;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
+import com.teamnova.ptmanager.model.lecture.pass.PassInfoDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.network.RetrofitInstance;
 import com.teamnova.ptmanager.network.friend.FriendService;
@@ -41,7 +43,7 @@ public class LectureApiClient {
                 if (response.isSuccessful()){
                     ArrayList<LectureInfoDto> lectureList = response.body();
 
-                    if(lectureList != null){
+                    if(lectureList.size() > 0){
                         Log.d("강의목록 가져오기 결과 USER_ID:", lectureList.get(0).getLectureName());
                     }
 
@@ -78,12 +80,16 @@ public class LectureApiClient {
                     // 강의를 수강할 수 있는 회원정보 목록
                     ArrayList<FriendInfoDto> registeredMemberList = response.body();
 
-                    if(registeredMemberList != null){
+                    if(registeredMemberList.size() > 0){
                         Log.d("수강가능한 회원목록 가져오기 결과 USER_ID:", registeredMemberList.get(0).getUserId());
+                        Message msg = handler.obtainMessage(1, registeredMemberList);
+                        handler.sendMessage(msg);
+                    } else{
+                        Message msg = handler.obtainMessage(1, null);
+                        handler.sendMessage(msg);
                     }
 
-                    Message msg = handler.obtainMessage(1, registeredMemberList);
-                    handler.sendMessage(msg);
+
                 } else{
                     Log.d("수강가능한 회원목록 결과1:", "실패1111");
                 }
@@ -93,7 +99,7 @@ public class LectureApiClient {
             public void onFailure(Call<ArrayList<FriendInfoDto>> call, Throwable t) {
                 Log.d("수강가능한 회원목록 결과2:", t.getMessage());
 
-                Message msg = handler.obtainMessage(0, null);
+                Message msg = handler.obtainMessage(1, null);
                 handler.sendMessage(msg);
             }
         });
@@ -130,7 +136,44 @@ public class LectureApiClient {
             public void onFailure(Call<ArrayList<FriendInfoDto>> call, Throwable t) {
                 Log.d("레슨가능한 회원목록 결과2:", t.getMessage());
 
-                Message msg = handler.obtainMessage(0, null);
+                Message msg = handler.obtainMessage(2, null);
+                handler.sendMessage(msg);
+            }
+        });
+    }
+
+    
+    // 수강권 정보 저장하기
+    public void registerPassInto(Handler handler, PassInfoDto passInfo){
+        // 웹서비스 구현체 생성
+        LectureService service = retrofit.create(LectureService.class);
+
+        // http request 객체 생성
+        Call<String> call = service.registerPassInto(passInfo);
+
+        // 수강권 정보 등록하기
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()){
+                    // 레슨을 수강할 수 있는 회원정보 목록
+                    String result = response.body();
+                    Log.d("수강권 정보 등록1:", "성공!");
+
+                    Message msg = handler.obtainMessage(3, result);
+                    handler.sendMessage(msg);
+                } else{
+                    Log.d("수강권 정보 등록1:", response.message());
+                    Log.d("수강권 정보 등록1:", response.errorBody().toString());
+                    Log.d("수강권 정보 등록1:", response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.d("수강권 정보 등록2:", t.getMessage());
+
+                Message msg = handler.obtainMessage(3, null);
                 handler.sendMessage(msg);
             }
         });

@@ -12,6 +12,8 @@ public class UserInfoDto  implements Serializable {
     private int userType;
     @SerializedName("loginId")
     private String loginId;
+    @SerializedName("profileId")
+    private String profileId;
     @SerializedName("pw")
     private String pw;
     @SerializedName("userName")
@@ -27,6 +29,18 @@ public class UserInfoDto  implements Serializable {
 
     public UserInfoDto(int userType, String loginId, String pw, String userName, String phoneNum, String branchOffice, String birth, int gender) {
         this.userType = userType;
+        this.loginId = loginId;
+        this.pw = pw;
+        this.userName = userName;
+        this.phoneNum = phoneNum;
+        this.branchOffice = branchOffice;
+        this.birth = birth;
+        this.gender = gender;
+    }
+
+    public UserInfoDto(int userType, String profileId, String loginId, String pw, String userName, String phoneNum, String branchOffice, String birth, int gender) {
+        this.userType = userType;
+        this.profileId = profileId;
         this.loginId = loginId;
         this.pw = pw;
         this.userName = userName;
@@ -98,6 +112,14 @@ public class UserInfoDto  implements Serializable {
 
     public void setGender(int gender) {
         this.gender = gender;
+    }
+
+    public String getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
     @Override

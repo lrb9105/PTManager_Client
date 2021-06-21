@@ -71,42 +71,29 @@ public class FriendApiClient {
         // http request 객체 생성
         Call<ArrayList<FriendInfoDto>> call = service.getFriendsList(ownerId);
 
-        // 친구목록 가져오기 동기적으로 실행
-        /*try
-        {
-            Response<ArrayList<FriendInfoDto>> response = call.execute();
-
-            ArrayList<FriendInfoDto> friendsList = response.body();
-
-            if(friendsList != null){
-                Message msg = handler.obtainMessage(0, friendsList);
-                handler.sendMessage(msg);
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }*/
-
         call.enqueue(new Callback<ArrayList<FriendInfoDto>>() {
             @Override
             public void onResponse(Call<ArrayList<FriendInfoDto>> call, Response<ArrayList<FriendInfoDto>> response) {
                 if (response.isSuccessful()){
                     ArrayList<FriendInfoDto> friendsList = response.body();
-                    if(friendsList != null){
+
+                    Log.d("친구목록", friendsList.toString());
+
+                    if(friendsList.size() > 0){
                         Log.d("회원목록 가져오기 결과 USER_ID:", friendsList.get(0).getUserId());
                     }
 
                     Message msg = handler.obtainMessage(0, friendsList);
                     handler.sendMessage(msg);
                 } else{
-                    Log.d("회원목록 가져오기 결과:", "실패");
+                    Log.d("회원목록 가져오기 결과1:", "실패");
                 }
             }
 
             @Override
             public void onFailure(Call<ArrayList<FriendInfoDto>> call, Throwable t) {
-                Log.d("회원목록 가져오기 결과:", "실패");
+                Log.d("회원목록 가져오기 결과2:", "실패");
+                Log.d("회원목록 가져오기 결과2:", t.getMessage());
 
                 Message msg = handler.obtainMessage(0, null);
                 handler.sendMessage(msg);

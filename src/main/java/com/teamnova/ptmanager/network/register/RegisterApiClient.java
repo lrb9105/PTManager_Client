@@ -65,34 +65,25 @@ public class RegisterApiClient {
     }
 
     // 프로필사진 저장
-    public void transferImgToServer(Handler retrofitResultHandler, File profileImgFile){
+    public void transferImgToServer(Handler retrofitResultHandler,  RequestBody loginId, MultipartBody.Part profileImgFile){
         // 웹서비스 구현체 생성
         RegisterService service = retrofit.create(RegisterService.class);
 
-        // requestBody 생성 및 파일 연결
-        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), profileImgFile);
-
-        // formData 생성
-        MultipartBody.Part profileFile = MultipartBody.Part.createFormData("profileFile", profileImgFile.getName(), requestFile);
-
         // 서버로 전송
-        Call<String> call = service.transferImgToServer(profileFile);
-
-        Log.d("2222","2222");
+        Call<String> call = service.transferImgToServer(loginId, profileImgFile);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                Log.d("3333","3333");
                 if (response.isSuccessful()){
                     String result = response.body();
-
+                    
                     Log.d("프로필 이미지파일 전송결과:", result);
 
                     Message msg = retrofitResultHandler.obtainMessage(0, result);
                     retrofitResultHandler.sendMessage(msg);
                 } else{
-                    Log.d("프로필 이미지파일 전송결과:", "실패");
+                    Log.d("프로필 이미지파일 전송결과 실패:", "실패");
 
                     Message msg = retrofitResultHandler.obtainMessage(0, null);
                     retrofitResultHandler.sendMessage(msg);

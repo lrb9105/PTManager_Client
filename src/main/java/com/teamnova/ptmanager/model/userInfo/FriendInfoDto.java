@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+/**
+ * 회원정보를 저장하는 클래스
+ * */
 public class FriendInfoDto implements Serializable {
     @SerializedName("userId")
     private String userId;
@@ -29,6 +32,7 @@ public class FriendInfoDto implements Serializable {
     private int usedCnt;
     @SerializedName("lectureName")
     private String lectureName;
+    private String check;
 
     public FriendInfoDto(String userId, String profileId, int userType, String loginId, String userName, String phoneNum, String branchOffice, String birth, int gender, int totalCnt, int usedCnt, String lectureName) {
         this.userId = userId;
@@ -139,5 +143,13 @@ public class FriendInfoDto implements Serializable {
 
     public void setLectureName(String lectureName) {
         this.lectureName = lectureName;
+    }
+
+    public String getCheck() {
+        return check;
+    }
+
+    public void setCheck(String check) {
+        this.check = check;
     }
 }

@@ -1,8 +1,10 @@
 package com.teamnova.ptmanager.adapter.lecture;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
+import com.teamnova.ptmanager.ui.schedule.lecture.pass.PassRegisterActivity;
+import com.teamnova.ptmanager.ui.schedule.lesson.LessonRegisterActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,6 +34,10 @@ public class LectureListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     // ViewHolder에 매칭시키기위한 친구목록 데이터
     private ArrayList<LectureInfoDto> lectureList;
     private Context context;
+    // setResult를 adapter에서 사용하기 위해 부모 act의 참조를 받아옴
+    private Activity activity;
+    // 결과값을 요청 액티비티에 전달하기 위해 activity의 name값을 받아옴
+    private String toActivityName;
 
     // 강의정보를 담을 뷰홀더
     public class LectureInfoViewHolder extends RecyclerView.ViewHolder {
@@ -49,9 +57,11 @@ public class LectureListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 
     // Adapter를 생성할 때 받아오는 데이터와 컨텍스트
-    public LectureListAdapter(ArrayList<LectureInfoDto> lectureList, Context context) {
+    public LectureListAdapter(ArrayList<LectureInfoDto> lectureList, Context context, Activity activity, String toActivityName) {
         this.lectureList = lectureList;
         this.context = context;
+        this.activity = activity;
+        this.toActivityName = toActivityName;
     }
 
     // 새로운 뷰홀더를 생성한다.
@@ -88,6 +98,7 @@ public class LectureListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ((LectureInfoViewHolder)holder).lecturedMemberCnt.setText("진행중: " + lectureInfo.getCurrentLecturedCnt() + "/" + lectureInfo.getTotalParticipationCnt() + "명");
 
 
+        // 강의정보 클릭 시 강의정보를 요청한 화면으로 선택 된 강의정보를 보낸다.
         lectureIntoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,6 +111,20 @@ public class LectureListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     @Override
                     public void onClick(DialogInterface dialog, int id)
                     {
+                        Intent intent = null;
+
+                        // 수강권 등록
+                        if(toActivityName.equals("PassRegisterActivity")){
+                            intent = new Intent(activity, PassRegisterActivity.class);
+                        } else if(toActivityName.equals("LessonRegisterActivity")){ // 강의 등록
+                            intent = new Intent(activity, LessonRegisterActivity.class);
+                        }
+
+                        // 강의정보를 보내 줌
+                        intent.putExtra("lectureInfo", lectureInfo);
+                        activity.setResult(Activity.RESULT_OK, intent);
+                        activity.finish();
+
                         Log.d("강의 선택 완료", "11");
                     }
                 });

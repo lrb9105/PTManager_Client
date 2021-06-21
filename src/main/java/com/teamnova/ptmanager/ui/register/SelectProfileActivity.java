@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
@@ -31,12 +30,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.teamnova.ptmanager.R;
-import com.teamnova.ptmanager.databinding.ActivityRegisterBinding;
 import com.teamnova.ptmanager.databinding.ActivitySelectProfileBinding;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
-import com.teamnova.ptmanager.viewmodel.login.LoginViewModel;
+import com.teamnova.ptmanager.ui.login.LoginActivity;
 import com.teamnova.ptmanager.viewmodel.register.RegisterViewModel;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,7 +44,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class SelectProfile extends AppCompatActivity implements View.OnClickListener{
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
+public class SelectProfileActivity extends AppCompatActivity implements View.OnClickListener{
     // 다른 액티비티에 보낼 reqeuestCode
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_ALBUM_PICK = 2;
@@ -70,6 +73,9 @@ public class SelectProfile extends AppCompatActivity implements View.OnClickList
 
     // retrofit통신의 결과를 전달하는 핸들러
     private Handler retrofitResultHandler;
+
+    // 서버에 보낼 프로필 사진정보를 잠고있는 MultiPartBody.Part
+    private MultipartBody.Part uploadFile;
 
 
     @Override
@@ -98,7 +104,11 @@ public class SelectProfile extends AppCompatActivity implements View.OnClickList
         binding.btnProfileSettingCompl.setOnClickListener(this);
 
         // 인텐트에서 유저정보 가져오기
-        userInfoDto = (UserInfoDto) getIntent().getSerializableExtra("userInfo");
+        Intent intent = getIntent();
+
+        if(intent != null){
+            userInfoDto = (UserInfoDto) intent.getSerializableExtra("userInfo");
+        }
 
         // Retrofit 통신 핸들러
         retrofitResultHandler = new Handler(Looper.myLooper()){
@@ -106,7 +116,32 @@ public class SelectProfile extends AppCompatActivity implements View.OnClickList
             public void handleMessage(@NonNull Message msg) {
                 // 이미지 전송결과
                 if(msg.what == 0){
-                    Toast.makeText(SelectProfile.this, (String)msg.obj,Toast.LENGTH_SHORT);
+                    String result = (String)msg.obj;
+
+                    // 프로필 사진 등록 성공 시 다이얼로그 출력
+                    if(result.contains("FILE INPUT SUCCESS")){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(SelectProfileActivity.this);
+
+                        builder.setMessage("프로필 이미지를 등록했습니다.");
+
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int id)
+                            {
+                                Intent intent;
+                                // intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                intent = new Intent(SelectProfileActivity.this, LoginActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+                                intent.putExtra("userInfo", userInfoDto);
+
+                                startActivity(intent);
+                            }
+                        });
+
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                    }
                 }
             }
         };
@@ -143,11 +178,18 @@ public class SelectProfile extends AppCompatActivity implements View.OnClickList
                 alertDialog.show();
                 return;
             case R.id.btn_profile_setting_compl: // 사진 설정 완료
-                Toast.makeText(this, "프로필 설정",Toast.LENGTH_SHORT);
+                //Toast.makeText(this, "프로필 설정",Toast.LENGTH_SHORT);
+
+                // 사용자의 USER_ID
+                // 이건 테스트용 진짜는 getIntent()로 가져오기!
+                String loginId = userInfoDto.getLoginId();
+                RequestBody userIdReq = RequestBody.create(MediaType.parse("text/plain"),loginId);
 
                 // 프로필 이미지를 가져왔다면
                 if(profileImgFile != null){
-                    registerViewModel.transferImgToServer(retrofitResultHandler, profileImgFile);
+                    registerViewModel.transferImgToServer(retrofitResultHandler, userIdReq, uploadFile);
+                } else{
+                    Toast.makeText(this,"프로필 사진을 촬영하거나 선택해주세요.",Toast.LENGTH_SHORT);
                 }
                 break;
             default:
@@ -155,13 +197,19 @@ public class SelectProfile extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     // 직접촬영
     private void dispatchTakePictureIntent() {
         // 특정 권한에 대한 허용을 했는지 여부
-        int permissionCheck = ContextCompat.checkSelfPermission(SelectProfile.this, Manifest.permission.CAMERA);
+        int permissionCheck = ContextCompat.checkSelfPermission(SelectProfileActivity.this, Manifest.permission.CAMERA);
 
         if(permissionCheck == PackageManager.PERMISSION_DENIED){ //카메라 권한 없음
-            ActivityCompat.requestPermissions(SelectProfile.this,new String[]{Manifest.permission.CAMERA},0);
+            ActivityCompat.requestPermissions(SelectProfileActivity.this,new String[]{Manifest.permission.CAMERA},0);
         }else{ //카메라 권한 있음
             // 카메라 앱 액티비티를 여는 인텐트 생성
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -192,17 +240,35 @@ public class SelectProfile extends AppCompatActivity implements View.OnClickList
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // 직접 촬영
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             if (resultCode == RESULT_OK) {
                 profileImgFile = new File(mCurrentPhotoPath);
+
                 Bitmap bitmap;
-                if (Build.VERSION.SDK_INT >= 29) {
+
+                if (Build.VERSION.SDK_INT > 27) {
                     ImageDecoder.Source source = ImageDecoder.createSource(getContentResolver(), Uri.fromFile(profileImgFile));
                     try {
                         bitmap = ImageDecoder.decodeBitmap(source);
+
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        // 사진을 압축
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), byteArrayOutputStream.toByteArray());
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+                        uploadFile = MultipartBody.Part.createFormData("profileImg", "JPEG_" + timeStamp + "_.jpg" ,requestBody);
+
                         if (bitmap != null) {
                             binding.userProfile.setImageBitmap(bitmap);
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(profileImgFile));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -218,6 +284,17 @@ public class SelectProfile extends AppCompatActivity implements View.OnClickList
                     // 선택한 이미지에서 비트맵 생성
                     InputStream in = getContentResolver().openInputStream(data.getData());
                     img = BitmapFactory.decodeStream(in);
+
+                    // bitmap to file
+
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    // 사진을 압축
+                    img.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream);
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), byteArrayOutputStream.toByteArray());
+
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+                    uploadFile = MultipartBody.Part.createFormData("profileImg", "JPEG_" + timeStamp + "_.jpg" ,requestBody);
 
                     // 이미지 표시
                     binding.userProfile.setImageBitmap(img);

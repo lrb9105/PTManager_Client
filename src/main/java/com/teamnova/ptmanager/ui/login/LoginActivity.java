@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityLoginBinding;
 import com.teamnova.ptmanager.ui.home.member.MemberHomeActivity;
+import com.teamnova.ptmanager.ui.home.member.MemberHomeWithMenuActivity;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.register.RegisterActivity;
 import com.teamnova.ptmanager.ui.login.findid.FindIdActivity;
@@ -130,8 +131,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 // 트레이너 계정으로 로그인
                 if(loginResult.split(" ")[1].contains("0")){
                     intent = new Intent(this, TrainerHomeActivity.class);
-                } else{
-                    intent = new Intent(this, MemberHomeActivity.class);
+                } else{ // 회원계정으로 로그인
+                    intent = new Intent(this, MemberHomeWithMenuActivity.class);
                 }
 
                 // 로그인 아이디 홈화면으로 보내 줌

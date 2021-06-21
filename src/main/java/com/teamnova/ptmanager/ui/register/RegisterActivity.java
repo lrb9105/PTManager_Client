@@ -414,11 +414,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.btn_certification: //인증번호 받기 버튼 클릭
                 // 테스트모드: 문자발송 안함
-                validationCheckingViewModel.setValidPhoneNum(true);
+                //validationCheckingViewModel.setValidPhoneNum(true);
                 /**
                  * 서버에 문자발송 요청
                  * */
-                //smsViewModel.smsSendReq(resultHandler, null, null, phoneNum.getText().toString());
+                smsViewModel.smsSendReq(resultHandler, null, null, phoneNum.getText().toString());
                 break;
             case R.id.btn_confirm: // 인증번호 확인
                 if(minute != 0 && sec != 0){
@@ -677,7 +677,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         registerViewModel.getRegisterResult().observe(this, registerResult ->{
             // 저장 완료 시
             if(registerResult.contains("success")){
-                Toast.makeText(this, "성공: " + registerResult, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "성공: " + registerResult, Toast.LENGTH_SHORT).show();
 
                 // 다이얼로그빌더
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -689,11 +689,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     public void onClick(DialogInterface dialog, int id)
                     {
                         Intent intent;
-                        intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        // intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        intent = new Intent(RegisterActivity.this, SelectProfileActivity.class);
 
                         intent.putExtra("userInfo", userInfoDto);
 
                         startActivity(intent);
+
+                        finish();
                     }
                 });
 

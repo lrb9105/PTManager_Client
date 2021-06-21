@@ -11,6 +11,9 @@ import com.teamnova.ptmanager.test.TestDTO;
 
 import java.io.File;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
 public class RegisterRepository {
     // 서버와 통신하는 객체
     private RegisterApiClient registerApiClient;
@@ -26,7 +29,7 @@ public class RegisterRepository {
     }
 
     // 프로필사진 저장
-    public void transferImgToServer(Handler retrofitResultHandler, File profileImgFile){
-        registerApiClient.transferImgToServer(retrofitResultHandler, profileImgFile);
+    public void transferImgToServer(Handler retrofitResultHandler, RequestBody loginId, MultipartBody.Part profileImgFile){
+        registerApiClient.transferImgToServer(retrofitResultHandler, loginId, profileImgFile);
     }
 }

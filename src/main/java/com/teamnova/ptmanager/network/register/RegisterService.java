@@ -3,6 +3,7 @@ package com.teamnova.ptmanager.network.register;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
 
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Multipart;
@@ -19,5 +20,5 @@ public interface RegisterService {
 
     @Multipart
     @POST("register/saveProfileImg.php")
-    Call<String> transferImgToServer(@Part MultipartBody.Part profileImgFile);
+    Call<String> transferImgToServer(@Part("loginId") RequestBody loginId, @Part MultipartBody.Part profileImgFile);
 }
