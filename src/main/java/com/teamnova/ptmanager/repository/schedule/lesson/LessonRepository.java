@@ -2,10 +2,16 @@ package com.teamnova.ptmanager.repository.schedule.lesson;
 
 import android.os.Handler;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.teamnova.ptmanager.model.lecture.pass.PassInfoDto;
+import com.teamnova.ptmanager.model.lesson.AttendanceInfo;
 import com.teamnova.ptmanager.model.lesson.LessonInfo;
+import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
 import com.teamnova.ptmanager.network.schedule.lecture.LectureApiClient;
 import com.teamnova.ptmanager.network.schedule.lesson.LessonApiClient;
+
+import java.util.ArrayList;
 
 public class LessonRepository {
     // 서버와 통신을 담당하는 객체
@@ -19,6 +25,26 @@ public class LessonRepository {
     // 레슨 정보 등록하기
     public void registerLessonInfo(Handler handler, LessonInfo lessonInfo){
         lessonApiClient.registerLessonInfo(handler, lessonInfo);
+    }
+
+    // 레슨목록 가져오기
+    public void getLessonList(Handler handler, String ownerId, String yearMonth){
+        lessonApiClient.getLessonList(handler, ownerId, yearMonth);
+    }
+
+    // 레슨정보 가져오기
+    public void getLessonSchInfo(Handler handler,String lessonSchId){
+        lessonApiClient.getLessonSchInfo(handler, lessonSchId);
+    }
+
+    // 회원의 레슨목록 가져오기
+    public void getLessonListByMember(MutableLiveData<ArrayList<LessonSchInfo>> lessonSchList, String memberId){
+        lessonApiClient.getLessonListByMember(lessonSchList, memberId);
+    }
+
+    // 출석정보 저장
+    public void checkAttendance(Handler resultHandler, ArrayList<AttendanceInfo> attendanceInfoList){
+        lessonApiClient.checkAttendance(resultHandler, attendanceInfoList);
     }
 
     /*// 강의목록 가져오기

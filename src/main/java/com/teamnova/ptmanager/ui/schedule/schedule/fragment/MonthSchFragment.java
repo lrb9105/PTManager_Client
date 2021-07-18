@@ -17,11 +17,14 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.test.WeekViewActivity7;
+import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerHomeFragment;
+import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerScheduleFragment;
 import com.teamnova.ptmanager.ui.schedule.schedule.decorator.DotDecorator;
 import com.teamnova.ptmanager.ui.schedule.schedule.decorator.SaturdayDecorator;
 import com.teamnova.ptmanager.ui.schedule.schedule.decorator.SundayDecorator;
 import com.teamnova.ptmanager.ui.schedule.schedule.decorator.TodayDecorator;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -94,6 +97,7 @@ public class MonthSchFragment extends Fragment {
 
         // 날짜를 key값으로 해당일의 일정 갯수를 저장하는 hashmap
         dateListMap = new HashMap<>();
+        calendar.addDecorator(new DotDecorator(Color.RED,dateSet));
 
         calendar = view.findViewById(R.id.month_sch);
 
@@ -102,11 +106,17 @@ public class MonthSchFragment extends Fragment {
         calendar.addDecorator(new SundayDecorator());
         calendar.addDecorator(new SaturdayDecorator());
 
-        // 날짜 변경(날짜 클릭 시) 실행되는 콜백 메소드
+        /**
+         * 날짜 변경(날짜 클릭 시) 실행되는 콜백 메소드
+         * 1. 날짜 클릭 시 해당하는 주의 주간일정으로 변경
+         * */
         calendar.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-                Toast.makeText(getActivity(), "" + date.getYear(), Toast.LENGTH_SHORT).show();
+                // 상위프래그먼트의 setChildFragment(fragment, tag)실행
+                // => 프래그먼트를 변경할 수 있는 제어권은 액티비티가 가지고 있기 때문에 액티비티의 인스턴스를 가져와서 프래그먼트를 변경하는 메소드를 실행한다.
+                ((TrainerScheduleFragment)getParentFragment()).selectWeekSch(date.getCalendar());
+                // weekView.goToDate()
             }
         });
 

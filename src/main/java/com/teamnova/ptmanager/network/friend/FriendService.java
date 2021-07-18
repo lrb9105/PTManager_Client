@@ -26,4 +26,8 @@ public interface FriendService {
 
     @GET("friend/getMemberInfo.php")
     Call<FriendInfoDto> getFriendInfo(@Query("friendId") String friendId);
+
+    @PUT("friend/completeConnect.php")
+    Call<String> completeConnect(@Body String memberId);
+
 }

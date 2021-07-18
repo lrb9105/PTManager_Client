@@ -88,4 +88,13 @@ dependencies {
 
     // material 달력
     implementation 'com.prolificinteractive:material-calendarview:1.4.3'
+
+    // okhttp
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+
+    // dayview
+    implementation 'com.github.khacpv:Calendar-Day-View:master-SNAPSHOT'
+
+    // ViewPager2
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
 }

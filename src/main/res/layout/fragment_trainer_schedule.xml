@@ -14,12 +14,19 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_reservation_approvement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="예약 승인/거절"
+            android:spinnerMode="dropdown"/>
 
         <Spinner
             android:id="@+id/select_sch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:spinnerMode="dropdown"/>
+
 
 
         <View

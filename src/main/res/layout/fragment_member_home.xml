@@ -10,7 +10,7 @@
     tools:context=".ui.home.trainer.fragment.TrainerHomeFragment">
 
     <LinearLayout
-        android:id="@+id/layout_trainer_profile"
+        android:id="@+id/layout_user_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -18,8 +18,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_profile"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="center"
             android:src="@drawable/profile_boy">
         </de.hdodenhof.circleimageview.CircleImageView>
@@ -28,116 +28,142 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp">
 
             <TextView
+                android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/trainer_name"
-                android:textSize="30sp" />
+                android:text="@string/name"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/black" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/remain_cnt_exp_date"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/branch_office"
-                android:textSize="20sp" />
+                android:layout_weight="1"
+                android:textSize="12dp"
+                app:layout_constraintTop_toBottomOf="@+id/view1"
+                app:layout_constraintEnd_toEndOf="parent"/>
         </LinearLayout>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="3dp"
+        android:layout_marginTop="5dp"
         android:background="@color/light_blue"></View>
 
+
     <LinearLayout
-        android:id="@+id/layout_schedule_of_today"
+        android:id="@+id/layout_trainer_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:padding="2dp"
-        android:orientation="horizontal">
+        android:visibility="gone"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/schedule_of_today"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/schedule_of_today"
-            android:textSize="30dp"
+            android:text="담당 트레이너"
+            android:textSize="20dp"
             android:layout_gravity="center_vertical"/>
 
-        <ImageButton
-            android:id="@+id/btn_schedule_of_today"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/layout_trainer_profile"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:background="@null"
-            app:srcCompat="@drawable/ic_baseline_keyboard_arrow_right_48" />
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/trainer_profile"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@drawable/profile_boy">
+            </de.hdodenhof.circleimageview.CircleImageView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/trainer_name"
+                    android:text="김종국"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/branch_office"
+                    android:text="피티짐 남성역점"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginTop="5dp"
         android:background="@color/light_blue"></View>
 
-    <LinearLayout
-        android:id="@+id/layout_member"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/member"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:text="@string/member"
-            android:textSize="30dp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"/>
-
-        <ImageButton
-            android:id="@+id/btn_add_member"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="left"
-            android:background="@null"
-            app:srcCompat="@drawable/btn_add_member_custom" />
-    </LinearLayout>
-
-    <com.google.android.material.tabs.TabLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="전체"/>
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="수강중"/>
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="수강안함"/>
-    </com.google.android.material.tabs.TabLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerview_friends_list"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                android:id="@+id/month_sch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:mcv_selectionColor="#00F" />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Frag1"/>
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Frag2"/>
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Frag3"/>
+            </com.google.android.material.tabs.TabLayout>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
 
 </LinearLayout>

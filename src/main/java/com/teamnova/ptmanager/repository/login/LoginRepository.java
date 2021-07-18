@@ -4,6 +4,7 @@ import android.os.Handler;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
 import com.teamnova.ptmanager.test.TestDTO;
 import com.teamnova.ptmanager.network.login.LoginApiClient;

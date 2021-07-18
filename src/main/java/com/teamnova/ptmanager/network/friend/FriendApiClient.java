@@ -129,4 +129,30 @@ public class FriendApiClient {
             }
         });
     }
+
+    // 트레이너-회원 연결 완료
+    public void completeConnect(String memberId){
+        // 웹서비스 구현체 생성
+        FriendService service = retrofit.create(FriendService.class);
+
+        // http request 객체 생성
+        Call<String> call = service.completeConnect(memberId);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()){
+                    Log.d("연결완료 onResponse:", "성공!" + response.body());
+                } else{
+                    Log.d("연결완료 onResponse:", "실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.d("연결완료 onFailure:", "실패");
+                Log.d("연결완료 onFailure:", t.getMessage());
+            }
+        });
+    }
 }

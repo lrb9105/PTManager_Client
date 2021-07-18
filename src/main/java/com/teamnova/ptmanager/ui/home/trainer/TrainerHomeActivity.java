@@ -22,10 +22,13 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.teamnova.mylibrary.WeekDayView;
+import com.teamnova.mylibrary.WeekViewEvent;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityFindPw2Binding;
 import com.teamnova.ptmanager.databinding.ActivityHomeBinding;
 import com.teamnova.ptmanager.databinding.ActivityMainBinding;
+import com.teamnova.ptmanager.model.lesson.LessonInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDtoWithUserId;
@@ -33,10 +36,12 @@ import com.teamnova.ptmanager.test.TestActivity;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerHomeFragment;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerScheduleFragment;
 import com.teamnova.ptmanager.ui.register.RegisterActivity;
+import com.teamnova.ptmanager.ui.schedule.schedule.fragment.WeekSchFragment;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
 import com.teamnova.ptmanager.viewmodel.login.LoginViewModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class TrainerHomeActivity extends AppCompatActivity {
     // 사용자 정보를 담을 dto
@@ -174,7 +179,7 @@ public class TrainerHomeActivity extends AppCompatActivity {
                     transaction2.replace(binding.trainerFrame.getId(), trainerScheduleFragment,"frag2").commit();
                     break;
             }
-            return false;
+            return true;
         });
     }
 
@@ -182,13 +187,50 @@ public class TrainerHomeActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
-        //Log.d("새로운인텐트발생",intent.getStringExtra("id"));
+        // 추가한 회원정보
         FriendInfoDto friendInfo = (FriendInfoDto)intent.getSerializableExtra("memberInfo");
+        // 추가한 레슨정보
+        LessonInfo lessonInfo = (LessonInfo)intent.getSerializableExtra("lessonInfo");
 
-        TrainerHomeFragment fragment = (TrainerHomeFragment) getSupportFragmentManager().findFragmentByTag("frag1");
-        //fragment.getFriendAddAdapter().addFriend();
+        FragmentTransaction transaction3 = fragmentManager.beginTransaction();
 
-        fragment.getFriendAddAdapter().addFriend(friendInfo);
+        // 회원 추가 시
+        if(friendInfo != null){
+            // 홈프래그먼트 가져오기
+            TrainerHomeFragment homeFragment = (TrainerHomeFragment) getSupportFragmentManager().findFragmentByTag("frag1");
+            //fragment.getFriendAddAdapter().addFriend();
+
+            homeFragment.getFriendAddAdapter().addFriend(friendInfo);
+
+            // transaction3.replace(binding.trainerFrame.getId(), trainerHomeFragment,"frag1").commit();
+        } else if(lessonInfo != null
+                || intent.getStringExtra("id").equals("ReservationApprovementActivity")
+                || intent.getStringExtra("id").equals("LessonDetailActivity")) { // 레슨추가 시 || 예약 승인/거절완료 시 || 출석체크 완료 시
+            // 스케줄 프래그먼트 가져오기
+            TrainerScheduleFragment schFragment = (TrainerScheduleFragment) getSupportFragmentManager().findFragmentByTag("frag2");
+            WeekSchFragment weekSchFragment = WeekSchFragment.newInstance();
+            schFragment.setChildFragment(weekSchFragment, "week_frag");
+
+            Log.d("WeekSchFrag호출", "111");
+
+            /*WeekDayView mWeekView = weekSchFragment.getmWeekView();
+
+            Calendar startTime = Calendar.getInstance();
+
+            startTime.set(Calendar.HOUR_OF_DAY, 3);
+            startTime.set(Calendar.MINUTE, 0);
+            startTime.set(Calendar.MONTH, 5);
+            startTime.set(Calendar.YEAR, 2021);
+            Calendar endTime = (Calendar) startTime.clone();
+            endTime.add(Calendar.HOUR, 1);
+            endTime.set(Calendar.MONTH, 5);
+            WeekViewEvent event = new WeekViewEvent(1, "This is a Event!!", startTime, endTime);
+            event.setColor(getResources().getColor(R.color.event_color_01));
+
+            mWeekView.cacheEvent(event);*/
+
+            // transaction3.replace(binding.trainerFrame.getId(), trainerScheduleFragment,"frag2").commit();
+
+        }
     }
 }

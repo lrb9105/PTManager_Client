@@ -32,4 +32,9 @@ public class FriendRepository {
     public void getFriendInfo(MutableLiveData<FriendInfoDto> friendInfo, String friendId){
         friendApiClient.getFriendInfo(friendInfo, friendId);
     }
+
+    // 트레이너-회원 연결 완료
+    public void completeConnect(String memberId){
+        friendApiClient.completeConnect(memberId);
+    }
 }

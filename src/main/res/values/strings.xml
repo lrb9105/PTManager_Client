@@ -75,6 +75,12 @@
     <string name="my_page"> 내정보</string>
     <string name="replace"> 교체</string>
     <string name="replace_complete"> 변경완료</string>
+    <string name="lesson_reserve"> 레슨예약</string>
+    <string name="lecture_pass_with_star">* 수강권</string>
+    <string name="lecture_pass"> 수강권</string>
+
+    <string name="reservation_approvement"> 예약 승인/거절</string>
+    <string name="approve_all"> 전체승인</string>
 
     <string name="added_function"> 부가기능</string>
     <string name="recommend_restaurant"> 맛집추천</string>
@@ -110,6 +116,8 @@
     <string name="menu_chat">채팅</string>
     <string name="menu_alarm">알림</string>
     <string name="menu_more">더보기</string>
+    <string name="menu_history">기록</string>
+    <string name="menu_change">변화관리</string>
 
     <string name="write_directly"><u>직접입력</u></string>
     <string name="schedule_of_today">오늘의 일정</string>

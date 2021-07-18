@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/check_attendance_custom"
                 android:background="@android:color/transparent"/>
-            <ImageButton
+            <!--<ImageButton
                 android:id="@+id/modify_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -58,7 +58,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:src="@drawable/delete_custom"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent"/>-->
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_lesson_reserve"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right">
+
+            <TextView
+                android:id="@+id/lesson_reserve_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="예약취소"
+                android:textSize="25dp"
+                android:textColor="@color/blue"
+                />
         </LinearLayout>
     </LinearLayout>
 
@@ -69,6 +86,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/lesson_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/lesson_detail"
@@ -97,7 +115,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/schedule_of_today"
+                    android:id="@+id/lecture_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -183,10 +201,10 @@
             android:id="@+id/layout_process_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/process_time_with_star"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/process_time_without_star"
@@ -198,16 +216,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/start_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/start_time"
                     android:textSize="20dp"
-                    
                     android:layout_gravity="center_vertical"/>
 
                 <TextView
@@ -215,9 +231,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/end_time"
                     android:textSize="20dp"
-                    
+                    android:layout_marginLeft="12dp"
                     android:layout_gravity="center_vertical"/>
             </LinearLayout>
         </LinearLayout>
@@ -234,7 +249,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/repeat"
-                
+
                 android:textColor="@color/black"
                 android:textSize="20dp"/>
 
@@ -251,9 +266,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/repeat_schedule"
+                    android:hint="없음"
                     android:textSize="20dp"
-                    
+
                     android:layout_gravity="center_vertical"/>
             </LinearLayout>
         </LinearLayout>
@@ -286,7 +301,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/memo_input"
+                    android:hint="없음"
                     android:inputType="textMultiLine"
                     android:textSize="20dp"
                     

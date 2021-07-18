@@ -33,4 +33,8 @@ public interface LoginService {
 
     @GET("login/getLoginUserInfo.php")
     Call<UserInfoDto> getUserInfo(@Query("id") String id);
+
+    @GET("login/getMemberInfo.php")
+    Call<UserInfoDto> getMemberInfoFromServer(@Query("id") String id);
+
 }

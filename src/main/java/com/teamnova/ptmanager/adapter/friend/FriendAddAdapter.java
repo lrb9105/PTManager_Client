@@ -109,6 +109,8 @@ public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             age--;
         }
 
+        ((FriendAddViewHolder)holder).friendProfile.setImageDrawable(context.getDrawable(R.drawable.profile_boy));
+
         if(friendInfo.getProfileId() != null){
             Glide.with(context).load("http://15.165.144.216" + friendInfo.getProfileId()).into(((FriendAddViewHolder)holder).friendProfile);
         }
@@ -131,7 +133,7 @@ public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 // 다이얼로그 출력
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-                builder.setMessage("비밀번호 초기화가 완료되었습니다.");
+                builder.setMessage(friendInfo.getUserName());
 
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener(){
                     @Override
@@ -154,7 +156,7 @@ public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     // 친구추가
     public void addFriend(FriendInfoDto friendInfoDto){
-        friendsList.add(friendInfoDto);
+        friendsList.add(0,friendInfoDto);
         notifyItemInserted(getItemCount());
     }
 

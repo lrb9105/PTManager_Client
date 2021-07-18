@@ -14,10 +14,14 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
@@ -30,6 +34,7 @@ import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityLessonRegisterBinding;
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
 import com.teamnova.ptmanager.model.lesson.LessonInfo;
+import com.teamnova.ptmanager.model.schedule.RepeatSchInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.test.TestActivity;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
@@ -71,8 +76,14 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
     // 강의 정보
     private LectureInfoDto lectureInfo;
 
+    // 반복 정보
+    private RepeatSchInfo repeatSchInfo;
+
     // 다른 액티비티로 이동 후 다시 돌아와서 결과값을 받기 위한 객체
     private ActivityResultLauncher<Intent> startActivityResultToLRML;
+
+    // 반복일정 정보를 받아올 객체
+    private ActivityResultLauncher<Intent> startActivityResultToLRRA;
 
     // 회원 정보
     private ArrayList<FriendInfoDto> memberInfoList;
@@ -159,6 +170,31 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
                     }
                 });
 
+        // 반복일정
+        startActivityResultToLRRA = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+
+                            repeatSchInfo = (RepeatSchInfo) result.getData().getSerializableExtra("repeatSchInfo");
+
+                            Log.d("반복일정 화면에서 반복정보 보내 옴", repeatSchInfo.toString());
+
+                            // 1. 화면에 반복일자 보여주기
+                            binding.repeat.setText(repeatSchInfo.getRepeatDay());
+
+                            // 시작일자 등록
+                            repeatSchInfo.setRepeatSrtDate(startDate);
+
+                            // 2. 레슨정보 dto에 강의정보, 트레이너 정보 넣기
+                            lessonInfo.setRepeatInfo(repeatSchInfo);
+
+                            Log.d("repeatSchInfo", repeatSchInfo.getRepeatDay());
+                        }
+                    }
+                });
+
         super.onCreate(savedInstanceState);
         // 해당 액티비티에서 사용할 xml파일에대한 클래스가 자동으로 생성되고 inflate함수를 이용해서 인스턴스를 생성한다.
         binding = ActivityLessonRegisterBinding.inflate(getLayoutInflater());
@@ -209,7 +245,7 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
                     // 등록 성공여부
                     String result = (String)msg.obj;
 
-
+                    Log.d("레슨 등록 완료", result);
 
                     if(result.contains("success")){ // 성공
                         // 다이얼로그빌더
@@ -224,15 +260,15 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
                                 /**
                                  * returnPath에 따라 이동
                                  * 1. DailyScheduleActivity
-                                 * 2. TrainerSchFragment
+                                 * 2. TrainerHomeActivity
                                  * */
                                 Intent intent = null;
                                 String returnPath = getIntent().getStringExtra("returnPath");
 
                                 if(returnPath.equals("DailyScheduleActivity")){
                                     intent = new Intent(LessonRegisterActivity.this, DailyScheduleActivity.class);
-                                } else if(returnPath.equals("TrainerSchFragment")){
-
+                                } else if(returnPath.equals("TrainerHomeActivity")){
+                                    intent = new Intent(LessonRegisterActivity.this, TrainerHomeActivity.class);
                                 }
 
                                 // 이동할 액티비티가 이미 작업에서 실행중이라면 기존 인스턴스를 가져오고 위의 모든 액티비티를 삭제
@@ -255,10 +291,12 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
                 }
             }
         };
+
+        changeTextColor();
     }
 
     // 온클릭리스너 등록
-    public void setOnclickListener(){
+    private void setOnclickListener(){
         binding.layoutLectureTypeSelect.setOnClickListener(this);
         binding.layoutMemberSelect.setOnClickListener(this);
         binding.layoutStartDateSelect.setOnClickListener(this);
@@ -267,6 +305,26 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
         binding.startTime.setOnClickListener(this);
         binding.endTime.setOnClickListener(this);
         binding.addLesson.setOnClickListener(this);
+        binding.layoutRepeatSelect.setOnClickListener(this);
+    }
+
+    // *색상 빨간색으로 변경
+    private void changeTextColor(){
+        SpannableStringBuilder ssb = new SpannableStringBuilder(binding.lectureTypeWithStar.getText().toString());
+        ssb.setSpan(new ForegroundColorSpan(Color.parseColor("#FF0000")), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        binding.lectureTypeWithStar.setText(ssb);
+
+        SpannableStringBuilder ssb2 = new SpannableStringBuilder(binding.memberWithStar.getText().toString());
+        ssb2.setSpan(new ForegroundColorSpan(Color.parseColor("#FF0000")), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        binding.memberWithStar.setText(ssb2);
+
+        SpannableStringBuilder ssb3 = new SpannableStringBuilder(binding.lessonDateWithStar.getText().toString());
+        ssb3.setSpan(new ForegroundColorSpan(Color.parseColor("#FF0000")), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        binding.lessonDateWithStar.setText(ssb3);
+
+        SpannableStringBuilder ssb4 = new SpannableStringBuilder(binding.processTimeWithStar.getText().toString());
+        ssb4.setSpan(new ForegroundColorSpan(Color.parseColor("#FF0000")), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        binding.processTimeWithStar.setText(ssb4);
     }
 
 
@@ -311,7 +369,7 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
                  * */
                 DatePickerDialog dialog = new DatePickerDialog(this);
 
-                // 생년월일 설정 완료 시
+                // 시작일자 설정 완료 시
                 dialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -386,7 +444,9 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
             case  R.id.layout_repeat_select: // 반복
                 // 반복설정 액티비티로 이동
                 intent = new Intent(LessonRegisterActivity.this, RepeatRegisterActivity.class);
-                startActivity(intent);
+
+                startActivityResultToLRRA.launch(intent);
+
                 break;
             case  R.id.add_lesson: // 레슨 등록버튼 클릭
                 Log.d("레슨", "1111");
@@ -403,6 +463,7 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
                 lessonViewModel.registerLessonInfo(resultHandler, lessonInfo);
 
                 Log.d("레슨정보", lessonInfo.toString());
+                Log.d("수강권 정보", lessonInfo.getMemberList().get(0).getLecturePassId());
 
                 break;
             default:

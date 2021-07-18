@@ -70,7 +70,9 @@
         <activity android:name=".ui.schedule.schedule.RepeatRegisterActivity" />
         <activity android:name=".ui.schedule.lecture.pass.PassRegisterActivity" />
         <activity android:name=".ui.schedule.lesson.LessonAttendanceActivity" />
-        <activity android:name=".ui.schedule.lesson.LessonDetailActivity">
+        <activity android:name=".ui.schedule.lesson.LessonDetailActivity"/>
+        <activity android:name=".ui.schedule.reservation.ReservationApprovementActivity"/>
+        <activity android:name=".ui.schedule.lesson.LessonReserveActivity">
 
             <!--
             <intent-filter>
@@ -123,6 +125,7 @@
         <activity android:name=".ui.home.trainer.TrainerHomeActivity" />
         <activity android:name=".ui.home.member.MemberHomeActivity" />
         <activity android:name=".ui.member.MemberAddActivity" />
+        <activity android:name=".ui.home.member.DayViewActivity" />
     </application>
 
 </manifest>

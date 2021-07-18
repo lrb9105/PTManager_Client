@@ -1,27 +1,61 @@
 package com.teamnova.ptmanager.ui.home.member.fragment;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.adapter.friend.FriendAddAdapter;
+import com.teamnova.ptmanager.databinding.FragmentMemberHomeBinding;
 import com.teamnova.ptmanager.databinding.FragmentTrainerHomeBinding;
+import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
+import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
+import com.teamnova.ptmanager.ui.home.member.DayViewActivity;
+import com.teamnova.ptmanager.ui.home.member.Event;
+import com.teamnova.ptmanager.ui.home.member.ViewPagerAdapter;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
+import com.teamnova.ptmanager.ui.login.LoginActivity;
+import com.teamnova.ptmanager.ui.login.findpw.FindPw3Activity;
 import com.teamnova.ptmanager.ui.member.MemberAddActivity;
 import com.teamnova.ptmanager.ui.schedule.schedule.DailyScheduleActivity;
+import com.teamnova.ptmanager.ui.schedule.schedule.decorator.DotDecorator;
+import com.teamnova.ptmanager.ui.schedule.schedule.decorator.SaturdayDecorator;
+import com.teamnova.ptmanager.ui.schedule.schedule.decorator.SundayDecorator;
+import com.teamnova.ptmanager.ui.schedule.schedule.decorator.TodayDecorator;
 import com.teamnova.ptmanager.util.GetDate;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
 import com.teamnova.ptmanager.viewmodel.login.LoginViewModel;
+import com.teamnova.ptmanager.viewmodel.schedule.lesson.LessonViewModel;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,16 +63,29 @@ import com.teamnova.ptmanager.viewmodel.login.LoginViewModel;
  * create an instance of this fragment.
  */
 public class MemberHomeFragment extends Fragment implements View.OnClickListener {
-    FragmentTrainerHomeBinding binding;
+    FragmentMemberHomeBinding binding;
+    boolean isConnected = false;
 
     // 데이터를 공유할 viewModel
-    private LoginViewModel loginViewModel;
     private FriendViewModel friendViewModel;
 
-    // 리사이클러뷰
-    private FriendAddAdapter friendAddAdapter;
-    private RecyclerView recyclerView_friends_list;
-    private RecyclerView.LayoutManager layoutManager;
+    // 트레이너 정보를 가져오기 위한 viewModel
+    private LoginViewModel loginViewModel;
+    private LessonViewModel lessonViewModel;
+
+    // 회원 정보
+    private FriendInfoDto memberInfo;
+
+    private MaterialCalendarView calendarView;
+
+    // 점찍을 날짜를 저장한 hashSet
+    public HashSet<CalendarDay> dateSet;
+
+    // 예약 완료, 예약취소 시  시 데이터 동기화를 위한 객체
+    private ActivityResultLauncher<Intent> startActivityResult;
+
+    // 레슨리스트
+    private ArrayList<LessonSchInfo> lessonSchList;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -73,17 +120,107 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        startActivityResult = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // 레슨예약 완료 시 viewModel 데이터 업데이트
+                            LessonSchInfo lessonSchInfo = (LessonSchInfo)result.getData().getSerializableExtra("lessonSchInfo");
+
+                            // 예약완료 후 넘어온것인지 예약취소 후 넘어온 것인지 확인
+                            String reserveOrCancel = result.getData().getStringExtra("reserveOrCancel");
+
+                            if(reserveOrCancel.equals("reserve")){
+                                // 예약완료: 레스트의 첫번째에 데이터를 추가해서 리사이클러뷰에서 추가된 데이터가 가장 위에 오도록 배치
+                                lessonSchList.add(0,lessonSchInfo);
+                            } else if(reserveOrCancel.equals("cancel")){
+                                // 예약취소: 넘어온 레슨정보 기존 리스트에 있는 동일한 아이디를 가지는 정보와 교체
+                                String lessonSchId = lessonSchInfo.getLessonSchId();
+
+                                for(int i = 0; i < lessonSchList.size(); i++){
+                                    LessonSchInfo tempInfo = lessonSchList.get(i);
+                                    if(tempInfo.getLessonSchId().equals(lessonSchId)){
+                                        lessonSchList.set(i, tempInfo);
+
+                                        Log.d("예약취소 저장 잘 됐나?", lessonSchList.get(i).toString());
+
+                                        break;
+                                    }
+                                }
+                            }
+
+                            lessonViewModel.getLessonSchList().setValue(lessonSchList);
+                        }
+                    }
+                });
         super.onCreate(savedInstanceState);
 
         Log.d("홈 프래그먼트의 onCreate", "얍얍");
 
-        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+        // 부모 액티비티의 라이프사이클을 갖는 VIEWMODEL 생성
         friendViewModel = new ViewModelProvider(requireActivity()).get(FriendViewModel.class);
+        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+        lessonViewModel = new ViewModelProvider(requireActivity()).get(LessonViewModel.class);
 
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        // 로그인한 회원 정보 observe
+        friendViewModel.getFriendInfo().observe(requireActivity(), memberInfo -> {
+            this.memberInfo = memberInfo;
+
+            // 로그인한 회원 정보 변경 시 UI UPDATE
+            updateMemberUi(memberInfo);
+
+            // 나를 등록한 트레이너가 있고 연결이 완료되어있지 않다면 다이얼로그 출력
+            if(memberInfo.getTrainerId() != null){
+                if(memberInfo.getIsConnected().equals("N")){
+                    Log.d("트레이너Id: ", memberInfo.getTrainerId());
+                    Log.d("연결여부: ", memberInfo.getIsConnected());
+
+                    // 다이얼로그빌더
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+
+                    builder.setMessage("회원등록 요청이 있습니다. 수락하시겠습니까?");
+
+                    builder.setPositiveButton("수락", new DialogInterface.OnClickListener(){
+                        @Override
+                        public void onClick(DialogInterface dialog, int id)
+                        {
+                            // 연결완료 - FRIEND테이블의 FRIEND_ID
+                            friendViewModel.completeConnect(memberInfo.getUserId());
+                            memberInfo.setIsConnected("Y");
+
+                            // 회원등록 요청 수락 시 트레이너 정보 가져옴
+                            loginViewModel.getUserInfo(memberInfo.getTrainerId(),0);
+                        }
+                    }).setNegativeButton("거부",new DialogInterface.OnClickListener(){
+                        @Override
+                        public void onClick(DialogInterface dialog, int id)
+                        { }
+                    }
+                    );
+
+
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                } else if(memberInfo.getIsConnected().equals("Y")){ // 이미 연결되어 있다면
+                    loginViewModel.getUserInfo(memberInfo.getTrainerId(),0);
+                }
+            }
+        });
+
+        // 트레이너 정보의 변경 확인
+        loginViewModel.getUserInfo().observe(requireActivity(), loginUserInfo ->{
+            updateTrainerUi(loginUserInfo);
+        });
+
+        // 회원의 레슨일정 변경
+        lessonViewModel.getLessonSchList().observe(requireActivity(), lessonSchList ->{
+            Log.d("레슨리스트 사이즈: ", "" + lessonSchList.size());
+            this.lessonSchList = lessonSchList;
+            makePointToDateOfLessonRegistered(lessonSchList);
+
+        });
     }
 
     @Override
@@ -94,96 +231,139 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
         Log.d("홈 프래그먼트의 onCreateView", "얍얍");
 
         // binder객체 생성 및 레이아웃 사용
-        binding = FragmentTrainerHomeBinding.inflate(inflater, container, false);
+        binding = FragmentMemberHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        //TrainerHomeAct-에서 전달한 번들 저장
-        Bundle bundle = getArguments();
+        // 일정 탭레이아웃 세팅
+        String[] titleArr = new String[]{"전체일정","예약일정","지난일정"};
 
-        /*//번들 안의 사용자 정보 불러오기
-        if(bundle != null){
-            UserInfoDto loginUserInfo = (UserInfoDto)bundle.get("loginUserInfo");
+        TabLayout tabLayout = binding.tabLayout;
+        ViewPager2 viewPager2 = binding.viewPager;
 
-            if(bundle.get("id") != null){
-                Log.d("id: ",(String)bundle.get("id"));
-            }
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this);
 
-            Log.d("프래그먼트에서 사용자정보 전달받음:", loginUserInfo.getLoginId());
+        viewPager2.setAdapter(adapter);
 
-            // 트레이너 정보가 입력되어있지 않다면 입력!
-            if(binding.trainerName.getText().equals("") && binding.branchOffice.getText().equals("")){
-                setTrainerInfo(loginUserInfo);
-            }
-        }*/
-
-        if(binding.trainerName.getText().equals("") && binding.branchOffice.getText().equals("")){
-            setTrainerInfo(loginViewModel.getLoginUserInfo2());
-        }
-
-        /**
-         * 1. 서버에서 가져온 친구목록 리사이클러뷰로 보여주기
-         * */
-
-        if(TrainerHomeActivity.friendsList != null){
-            //Log.d("프래그먼트에서 친구목록 전달받음:", TrainerHomeActivity.friendsList.get(0).getLoginId());
-
-            // 리사이클러뷰 세팅
-            recyclerView_friends_list = binding.recyclerviewFriendsList;
-            layoutManager = new LinearLayoutManager(getActivity());
-            recyclerView_friends_list.setLayoutManager(layoutManager);
-
-            // 데이터 가져와서 adapter에 넘겨 줌
-            friendAddAdapter = new FriendAddAdapter(TrainerHomeActivity.friendsList, getActivity());
-            recyclerView_friends_list.setAdapter(friendAddAdapter);
-        }
+        new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> tab.setText(titleArr[position])).attach();
 
         setOnclickListener();
+        initialize();
 
-        //return inflater.inflate(R.layout.fragment_trainer_home, container, false);
         return view;
     }
 
-    // 로그인 시 트레이너 정보 화면에 연결
-    public void setTrainerInfo(UserInfoDto loginUserInfoDto){
-        binding.trainerName.setText(loginUserInfoDto.getUserName());
-        binding.branchOffice.setText(loginUserInfoDto.getBranchOffice());
+    public void initialize(){
+        // 달력
+        calendarView = binding.monthSch;
+
+        // 토, 일요일, 오늘 선택 되는 데코적용
+        calendarView.addDecorator(new TodayDecorator(getContext()));
+        calendarView.addDecorator(new SundayDecorator());
+        calendarView.addDecorator(new SaturdayDecorator());
     }
 
-
     public void setOnclickListener(){
-        binding.btnAddMember.setOnClickListener(this);
-        binding.layoutScheduleOfToday.setOnClickListener(this);
-        binding.btnScheduleOfToday.setOnClickListener(this);
+        binding.monthSch.setOnDateChangedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+                // 연결되어있는 트레이너가 있다면
+                if(memberInfo.getIsConnected() != null && memberInfo.getIsConnected().equals("Y")){
+                    Intent intent = new Intent(getActivity(), DayViewActivity.class);
+
+                    // trainerId
+                    intent.putExtra("trainerId", memberInfo.getTrainerId());
+                    // memberLoginId
+                    intent.putExtra("memberLoginId", memberInfo.getLoginId());
+                    // memberId
+                    intent.putExtra("memberId", memberInfo.getUserId());
+                    // memberInfo
+                    intent.putExtra("memberInfo", memberInfo);
+
+                    //date
+                    String date2 = ""+ date.getYear() + (date.getMonth() <10 ? "0"+(date.getMonth()+1) : (date.getMonth()+1)) + (date.getDay() <10 ? "0" + date.getDay() : date.getDay());
+
+                    intent.putExtra("todayDate", date.getYear()+"년 " + (date.getMonth()+1) + "월 " + date.getDay() + "일");
+                    intent.putExtra("todayDateForServer", date2);
+
+                    startActivityResult.launch(intent);
+
+                    //startActivity(intent);
+                }
+            }
+        });
+    }
+
+    // 로그인한 회원의 ui 업데이트
+    public void updateMemberUi(FriendInfoDto memberInfo){
+        // 회원 프로필사진
+        if(memberInfo.getProfileId() != null) {
+            Glide.with(this).load("http://15.165.144.216" + memberInfo.getProfileId()).into(binding.userProfile);
+        }
+        // 회원명
+        binding.userName.setText(memberInfo.getUserName());
+    }
+
+    // 수강권 정보 업데이트
+    public void updateLecturePassInfo(){
+        /** 수강권정보*/
+        // 남은 횟수
+        int remainCnt = memberInfo.getTotalCnt() - memberInfo.getUsedCnt();
+
+        // 수강중인 수업이 있다면
+        if(memberInfo.getLectureName() != null && !memberInfo.getLectureName().equals("") && remainCnt > 0){
+            binding.remainCntExpDate.setText(memberInfo.getLectureName() + "(" + memberInfo.getUsedCnt() + "/" + memberInfo.getTotalCnt() + "회)");
+            binding.remainCntExpDate.setVisibility(View.VISIBLE);
+        } else{ //없다면
+            binding.remainCntExpDate.setVisibility(View.GONE);
+        }
+    }
+
+    // 로그인한 회원에게 연결된 트레이너가 있다면 트레이너의 ui 업데이트
+    public void updateTrainerUi(UserInfoDto loginUserInfoDto){
+        binding.layoutTrainerInfo.setVisibility(View.VISIBLE);
+
+        if(loginUserInfoDto.getProfileId() != null){
+            Glide.with(this).load("http://15.165.144.216" + loginUserInfoDto.getProfileId()).into(binding.trainerProfile);
+        }
+
+        binding.trainerName.setText(loginUserInfoDto.getUserName());
+        binding.branchOffice.setText(loginUserInfoDto.getBranchOffice());
+
+        // 연결된 트레이너가 있다면 수강권 정보 업데이트
+        updateLecturePassInfo();
+
+        // 트레이너 정보가 세팅되었다면 일정가져오기
+        lessonViewModel.getLessonListByMember(this.memberInfo.getUserId());
+    }
+
+    // 회원의 일정이 등록된 날짜 밑에 점찍기
+    public void makePointToDateOfLessonRegistered(ArrayList<LessonSchInfo> lessonSchList){
+        dateSet = new HashSet<>();
+
+        for(LessonSchInfo lesson : lessonSchList){
+            String date = lesson.getLessonDate();
+            int year = Integer.parseInt(date.substring(0,4));
+            // month는 0부터 시작!
+            int month = Integer.parseInt(date.substring(4,6)) - 1;
+            int dayOfWeek = Integer.parseInt(date.substring(6,8));
+
+            CalendarDay c = CalendarDay.from(year, month, dayOfWeek);
+            dateSet.add(c);
+        }
+
+        calendarView.addDecorator(new DotDecorator(Color.RED,dateSet));
     }
 
     @Override
     public void onClick(View v) {
         Intent intent;
 
-        switch(v.getId()){
-            case  R.id.btn_add_member: // 회원 추가 버튼 클릭
-                // 회원추가 액티비티로 이동
-                intent = new Intent(getActivity(), MemberAddActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.btn_schedule_of_today:
-            case R.id.layout_schedule_of_today: //오늘의 일정
-                intent = new Intent(getActivity(), DailyScheduleActivity.class);
-                String todayDate = GetDate.getTodayDate();
-                intent.putExtra("date",todayDate);
+        /*switch(v.getId()){
+            case  R.id.btn_add_member:
 
-                startActivity(intent);
                 break;
             default:
                 break;
-        }
-    }
-
-    public FriendAddAdapter getFriendAddAdapter() {
-        return friendAddAdapter;
-    }
-
-    public void aa(){
-        Log.d("액티비티에서 프래그먼트 가져와서 사용", "11");
+        }*/
     }
 }

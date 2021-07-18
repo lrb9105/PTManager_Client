@@ -12,6 +12,8 @@ public class PassInfoDto implements Serializable {
     private String lecturePassId;
     @SerializedName("lectureId") // 강의 ID
     private String lectureId;
+    @SerializedName("lectureName") // 강의명
+    private String lectureName;
     @SerializedName("trainerId") // 트레이너 ID(USER_ID임 서버에서 변경해줘야 함)
     private String trainerId;
     @SerializedName("memberId") // 회원 ID(USER_ID임 서버에서 변경해줘야 함)
@@ -25,9 +27,10 @@ public class PassInfoDto implements Serializable {
     @SerializedName("memo") // 수업에 대한 메모
     private String memo;
 
-    public PassInfoDto(String lecturePassId, String lectureId, String trainerId, String memberId, String srtDate, int totalCnt, int usedCnt, String memo) {
+    public PassInfoDto(String lecturePassId, String lectureId, String lectureName, String trainerId, String memberId, String srtDate, int totalCnt, int usedCnt, String memo) {
         this.lecturePassId = lecturePassId;
         this.lectureId = lectureId;
+        this.lectureName = lectureName;
         this.trainerId = trainerId;
         this.memberId = memberId;
         this.srtDate = srtDate;
@@ -100,5 +103,13 @@ public class PassInfoDto implements Serializable {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getLectureName() {
+        return lectureName;
+    }
+
+    public void setLectureName(String lectureName) {
+        this.lectureName = lectureName;
     }
 }

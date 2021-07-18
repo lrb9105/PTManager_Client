@@ -2,8 +2,9 @@
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -73,6 +74,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/lecture_type_with_star"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/lecture_type_with_star"
@@ -113,6 +115,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/member_with_star"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/member_with_star"
@@ -153,6 +156,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/lesson_date_with_star"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/lesson_date_with_star"
@@ -193,6 +197,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/process_time_with_star"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/process_time"
@@ -234,7 +239,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:visibility="gone"
             android:orientation="vertical">
 
             <TextView
@@ -250,7 +254,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-
                 android:orientation="horizontal">
 
                 <TextView
@@ -262,6 +265,14 @@
                     android:textSize="20dp"
                     android:layout_marginLeft="12dp"
                     android:layout_gravity="center_vertical"/>
+
+                <ImageButton
+                    android:id="@+id/btn_repeat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:background="@null"
+                    app:srcCompat="@drawable/ic_baseline_keyboard_arrow_right_48" />
             </LinearLayout>
         </LinearLayout>
 

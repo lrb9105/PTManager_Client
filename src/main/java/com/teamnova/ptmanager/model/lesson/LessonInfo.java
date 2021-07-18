@@ -1,6 +1,7 @@
 package com.teamnova.ptmanager.model.lesson;
 
 import com.google.gson.annotations.SerializedName;
+import com.teamnova.ptmanager.model.schedule.RepeatSchInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 
 import java.io.Serializable;
@@ -33,6 +34,8 @@ public class LessonInfo implements Serializable {
     private String cancelReason;
     @SerializedName("memo")
     private String memo;
+    @SerializedName("repeatInfo")
+    private RepeatSchInfo repeatInfo;
 
     public LessonInfo(String lessonId, String trainerId, ArrayList<FriendInfoDto> memberList, String repeatSchId, String lectureId, String lessonDate, String lessonSrtTime, String lessonEndTime, String repeatYn, String confirmYn, String cancelYn, String cancelReason, String memo) {
         this.lessonId = lessonId;
@@ -156,18 +159,31 @@ public class LessonInfo implements Serializable {
         this.memo = memo;
     }
 
+    public RepeatSchInfo getRepeatInfo() {
+        return repeatInfo;
+    }
+
+    public void setRepeatInfo(RepeatSchInfo repeatInfo) {
+        this.repeatInfo = repeatInfo;
+    }
+
     @Override
     public String toString() {
         return "LessonInfo{" +
-                "trainerId='" + trainerId + '\'' +
+                "lessonId='" + lessonId + '\'' +
+                ", trainerId='" + trainerId + '\'' +
+                ", memberList=" + memberList.get(0) +
+                ", repeatSchId='" + repeatSchId + '\'' +
                 ", lectureId='" + lectureId + '\'' +
                 ", lessonDate='" + lessonDate + '\'' +
                 ", lessonSrtTime='" + lessonSrtTime + '\'' +
                 ", lessonEndTime='" + lessonEndTime + '\'' +
+                ", repeatYn='" + repeatYn + '\'' +
                 ", confirmYn='" + confirmYn + '\'' +
                 ", cancelYn='" + cancelYn + '\'' +
+                ", cancelReason='" + cancelReason + '\'' +
                 ", memo='" + memo + '\'' +
-                ", getMemberList().size()'" + getMemberList().size() +
+                ", repeatInfo=" + repeatInfo +
                 '}';
     }
 }

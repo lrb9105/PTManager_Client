@@ -1,16 +1,25 @@
 package com.teamnova.ptmanager.network.schedule.lesson;
 
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.TextView;
 
+import androidx.lifecycle.MutableLiveData;
+
+import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
 import com.teamnova.ptmanager.model.lecture.pass.PassInfoDto;
+import com.teamnova.ptmanager.model.lesson.AttendanceInfo;
 import com.teamnova.ptmanager.model.lesson.LessonInfo;
+import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.network.RetrofitInstance;
 import com.teamnova.ptmanager.network.schedule.lecture.LectureService;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -61,6 +70,144 @@ public class LessonApiClient {
             }
         });
     }
+
+    // 레슨정보 가져오기
+    public void getLessonSchInfo(Handler handler,String lessonSchId){
+        // 웹서비스 구현체 생성
+        LessonService service = retrofit.create(LessonService.class);
+
+        // http request 객체 생성
+        Call<LessonSchInfo> call = service.getLessonSchInfo(lessonSchId);
+
+        // 레슨 정보 가져오기
+        call.enqueue(new Callback<LessonSchInfo>() {
+            @Override
+            public void onResponse(Call<LessonSchInfo> call, Response<LessonSchInfo> response) {
+                if (response.isSuccessful()){
+                    // 레슨 정보 가져오기
+                    LessonSchInfo result = response.body();
+
+                    Message msg = handler.obtainMessage(0, result);
+                    handler.sendMessage(msg);
+                } else{
+                    Log.d("레슨 정보 가져오기 실패:", response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LessonSchInfo> call, Throwable t) {
+                Log.d("레슨 정보 가져오기 실패:", t.getMessage());
+
+                Message msg = handler.obtainMessage(3, null);
+                handler.sendMessage(msg);
+            }
+        });
+    }
+
+    // 출석정보 저장
+    public void checkAttendance(Handler handler, ArrayList<AttendanceInfo> attendanceInfoList){
+        // 웹서비스 구현체 생성
+        LessonService service = retrofit.create(LessonService.class);
+
+        // http request 객체 생성
+        Call<String> call = service.checkAttendance(attendanceInfoList);
+
+        // 레슨 정보 가져오기
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()){
+                    // 출석정보 저장
+                    String result = response.body();
+
+                    Message msg = handler.obtainMessage(3, result);
+                    handler.sendMessage(msg);
+                } else{
+                    Message msg = handler.obtainMessage(3, "false");
+                    handler.sendMessage(msg);
+                    Log.d("출석정보 저장 실패:", response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.d("출석정보 저장 실패:", t.getMessage());
+
+                Message msg = handler.obtainMessage(3, null);
+                handler.sendMessage(msg);
+            }
+        });
+    }
+
+    // 회원의 레슨목록 가져오기
+    public void getLessonListByMember(MutableLiveData<ArrayList<LessonSchInfo>> lessonSchList, String memberId){
+        // 웹서비스 구현체 생성
+        LessonService service = retrofit.create(LessonService.class);
+
+        // http request 객체 생성
+        Call<ArrayList<LessonSchInfo>> call = service.getLessonListByMember(memberId);
+
+        // 레슨목록 가져오기(비동기)
+        call.enqueue(new Callback<ArrayList<LessonSchInfo>>() {
+            @Override
+            public void onResponse(Call<ArrayList<LessonSchInfo>> call, Response<ArrayList<LessonSchInfo>> response) {
+                if (response.isSuccessful()){
+                    ArrayList<LessonSchInfo> lessonList = response.body();
+                    lessonSchList.postValue(lessonList);
+
+                    if(lessonList != null && lessonList.size() > 0){
+                        Log.d("회원 레슨목록 가져오기 결과 LESSON_SCH_ID:", lessonList.get(0).getLessonSchId());
+                    }
+
+                } else{
+                    Log.d("회원 레슨목록 가져오기 결과1:", "실패1111");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<LessonSchInfo>> call, Throwable t) {
+                Log.d("회원 레슨목록 가져오기 결과2:", t.getMessage());
+            }
+        });
+    }
+
+
+    // 레슨목록 가져오기
+    public void getLessonList(Handler handler, String trainerId, String yearMonth){
+        // 웹서비스 구현체 생성
+        LessonService service = retrofit.create(LessonService.class);
+
+        // http request 객체 생성
+        Call<ArrayList<LessonSchInfo>> call = service.getLessonList(trainerId,yearMonth);
+
+        // 레슨목록 가져오기(비동기)
+        /*call.enqueue(new Callback<ArrayList<LessonSchInfo>>() {
+            @Override
+            public void onResponse(Call<ArrayList<LessonSchInfo>> call, Response<ArrayList<LessonSchInfo>> response) {
+                if (response.isSuccessful()){
+                    ArrayList<LessonSchInfo> lessonList = response.body();
+
+                    if(lessonList != null){
+                        Log.d("레슨목록 가져오기 결과 LESSON_SCH_ID:", lessonList.get(0).getLessonSchId());
+                    }
+
+                    Message msg = handler.obtainMessage(0, lessonList);
+                    handler.sendMessage(msg);
+                } else{
+                    Log.d("레슨목록 가져오기 결과1:", "실패1111");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<LessonSchInfo>> call, Throwable t) {
+                Log.d("레슨목록 가져오기 결과2:", t.getMessage());
+
+                Message msg = handler.obtainMessage(0, null);
+                handler.sendMessage(msg);
+            }
+        });*/
+    }
+
 
     /*// 강의목록 가져오기
     public void getLectureList(Handler handler, String trainerId){

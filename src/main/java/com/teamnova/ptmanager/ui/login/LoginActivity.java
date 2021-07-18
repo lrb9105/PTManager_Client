@@ -125,14 +125,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             Log.d("11", loginResult.getClass().getName());
 
-            // 로그인 성공 시
+            // 로그인 성공 시("ok userType"을 보냄)
             if(loginResult.contains("ok")){
                 Intent intent;
                 // 트레이너 계정으로 로그인
                 if(loginResult.split(" ")[1].contains("0")){
                     intent = new Intent(this, TrainerHomeActivity.class);
                 } else{ // 회원계정으로 로그인
-                    intent = new Intent(this, MemberHomeWithMenuActivity.class);
+                    intent = new Intent(this, MemberHomeActivity.class);
                 }
 
                 // 로그인 아이디 홈화면으로 보내 줌

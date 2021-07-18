@@ -2,6 +2,7 @@ package com.teamnova.ptmanager.network.schedule.lecture;
 
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
 import com.teamnova.ptmanager.model.lecture.pass.PassInfoDto;
+import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 
 import java.util.ArrayList;
@@ -37,6 +38,10 @@ public interface LectureService {
     // 수강권 정보 저장
     @POST("lecture/pass/registerPassInfo.php")
     Call<String> registerPassInto(@Body PassInfoDto passInfo);
+
+    // 수강권정보 가져오기
+    @GET("lecture/pass/getLecturePassInfo.php")
+    Call<PassInfoDto> getLecturePassInfo(@Query("memberId") String memberId);
 
     /*@GET("friend/getMemberInfo.php")
     Call<FriendInfoDto> getFriendInfo(@Query("friendId") String friendId);*/

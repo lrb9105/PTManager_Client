@@ -1,16 +1,20 @@
 package com.teamnova.ptmanager.adapter.lecture;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 
@@ -32,11 +36,14 @@ public class LessonRegisteredMemberListAdapter extends RecyclerView.Adapter<Recy
         CircleImageView friendProfile;
         ConstraintLayout memberLayout;
         TextView name_gender_age;
+        RadioGroup radioGroup;
 
         public LessonInfoViewHolder(View itemView) {
             super(itemView);
+            friendProfile = itemView.findViewById(R.id.user_profile);
             memberLayout = itemView.findViewById(R.id.layout_friend);
             name_gender_age = itemView.findViewById(R.id.name_gender_age);
+            radioGroup = itemView.findViewById(R.id.attendance_or_not);
         }
     }
 
@@ -45,6 +52,11 @@ public class LessonRegisteredMemberListAdapter extends RecyclerView.Adapter<Recy
     public LessonRegisteredMemberListAdapter(ArrayList<FriendInfoDto> memberList, Context context) {
         this.memberList = memberList;
         this.context = context;
+
+        // 출석여부 "Y"로 초기화
+        for(int i = 0; i < this.memberList.size(); i++){
+            this.memberList.get(i).setCheck("Y");
+        }
     }
 
     // 새로운 뷰홀더를 생성한다.
@@ -64,6 +76,15 @@ public class LessonRegisteredMemberListAdapter extends RecyclerView.Adapter<Recy
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         FriendInfoDto memberInfo = memberList.get(position);
+
+        if(memberInfo.getProfileId() != null){
+            Log.d("있음","11");
+            Glide.with(context).load("http://15.165.144.216" + memberInfo.getProfileId()).into(((LessonInfoViewHolder)holder).friendProfile);
+        } else{
+            Log.d("없음","22");
+        }
+
+        Log.d("Adapter수강권: ", memberInfo.getLecturePassId());
 
         // 뷰홀더에 데이터 매칭
         ConstraintLayout memberLayout = ((LessonInfoViewHolder)holder).memberLayout;
@@ -100,33 +121,32 @@ public class LessonRegisteredMemberListAdapter extends RecyclerView.Adapter<Recy
 
         ((LessonInfoViewHolder)holder).name_gender_age.setText(memberInfo.getUserName() + "(" + gender + "," + age + ")");
 
-        /*memberLayout.setOnClickListener(new View.OnClickListener() {
+        // 클릭이벤트
+        RadioGroup radioGroup = ((LessonInfoViewHolder)holder).radioGroup;
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                Log.d("목록에서 아이템 클릭 시 해당하는 회원의 회원정보 액티비티로 이동 USER_ID 출력", friendInfo.getUserId());
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                RadioButton select = radioGroup.findViewById(id);
+                String selectStr = select.getText().toString();
 
-                // 다이얼로그 출력
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-                builder.setMessage("비밀번호 초기화가 완료되었습니다.");
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener(){
-                    @Override
-                    public void onClick(DialogInterface dialog, int id)
-                    {
-
-                    }
-                });
-
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                // 라디오버튼 선택 시 회원정보에 출석값 변경
+                if(selectStr.equals("출석")){
+                    memberInfo.setCheck("Y");
+                } else{
+                    memberInfo.setCheck("N");
+                }
             }
-        });*/
+        });
     }
 
     @Override
     public int getItemCount() {
         return memberList.size();
+    }
+
+    public ArrayList<FriendInfoDto> getMemberList(){
+        return this.memberList;
     }
 
    /* // Return the size of your dataset (invoked by the layout manager)

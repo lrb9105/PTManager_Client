@@ -82,6 +82,7 @@ public class LectureApiClient {
 
                     if(registeredMemberList.size() > 0){
                         Log.d("수강가능한 회원목록 가져오기 결과 USER_ID:", registeredMemberList.get(0).getUserId());
+                        Log.d("수강가능한 회원목록 가져오기 결과 getLecturePassId:", registeredMemberList.get(0).getLecturePassId());
                         Message msg = handler.obtainMessage(1, registeredMemberList);
                         handler.sendMessage(msg);
                     } else{

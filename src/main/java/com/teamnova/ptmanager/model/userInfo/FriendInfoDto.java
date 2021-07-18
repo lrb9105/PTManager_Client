@@ -32,6 +32,12 @@ public class FriendInfoDto implements Serializable {
     private int usedCnt;
     @SerializedName("lectureName")
     private String lectureName;
+    @SerializedName("lecturePassId")
+    private String lecturePassId;
+    @SerializedName("isConnected")
+    private String isConnected;
+    @SerializedName("trainerId")
+    private String trainerId;
     private String check;
 
     public FriendInfoDto(String userId, String profileId, int userType, String loginId, String userName, String phoneNum, String branchOffice, String birth, int gender, int totalCnt, int usedCnt, String lectureName) {
@@ -47,6 +53,24 @@ public class FriendInfoDto implements Serializable {
         this.totalCnt = totalCnt;
         this.usedCnt = usedCnt;
         this.lectureName = lectureName;
+    }
+
+    public FriendInfoDto(String userId, String profileId, int userType, String loginId, String userName, String phoneNum, String branchOffice, String birth, int gender, int totalCnt, int usedCnt, String lectureName, String lecturePassId, String isConnected, String trainerId) {
+        this.userId = userId;
+        this.profileId = profileId;
+        this.userType = userType;
+        this.loginId = loginId;
+        this.userName = userName;
+        this.phoneNum = phoneNum;
+        this.branchOffice = branchOffice;
+        this.birth = birth;
+        this.gender = gender;
+        this.totalCnt = totalCnt;
+        this.usedCnt = usedCnt;
+        this.lectureName = lectureName;
+        this.lecturePassId = lecturePassId;
+        this.isConnected = isConnected;
+        this.trainerId = trainerId;
     }
 
     public String getUserId() {
@@ -151,5 +175,37 @@ public class FriendInfoDto implements Serializable {
 
     public void setCheck(String check) {
         this.check = check;
+    }
+
+    public String getLecturePassId() {
+        return lecturePassId;
+    }
+
+    public void setLecturePassId(String lecturePassId) {
+        this.lecturePassId = lecturePassId;
+    }
+
+    public String getIsConnected() {
+        return isConnected;
+    }
+
+    public void setIsConnected(String isConnected) {
+        this.isConnected = isConnected;
+    }
+
+    public String getTrainerId() {
+        return trainerId;
+    }
+
+    public void setTrainerId(String trainerId) {
+        this.trainerId = trainerId;
+    }
+
+    @Override
+    public String toString() {
+        return "FriendInfoDto{" +
+                "userId='" + userId + '\'' +
+                ", profileId='" + profileId + '\'' +
+                '}';
     }
 }

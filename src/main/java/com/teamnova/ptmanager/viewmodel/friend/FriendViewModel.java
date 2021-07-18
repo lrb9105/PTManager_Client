@@ -44,6 +44,11 @@ public class FriendViewModel extends ViewModel {
         friendRepository.getFriendInfo(friendInfo, friendId);
     }
 
+    // 트레이너-회원 연결 완료
+    public void completeConnect(String memberId){
+        friendRepository.completeConnect(memberId);
+    }
+
     public MutableLiveData<FriendInfoDto> getFriendInfo() {
         return friendInfo;
     }

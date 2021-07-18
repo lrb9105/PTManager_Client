@@ -103,7 +103,7 @@ public class WeekViewActivity6 extends AppCompatActivity implements WeekDayView.
         // Populate the week view with some events.
         List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
 
-        Calendar startTime = Calendar.getInstance();
+        /*Calendar startTime = Calendar.getInstance();
         startTime.set(Calendar.HOUR_OF_DAY, 3);
         startTime.set(Calendar.MINUTE, 0);
         startTime.set(Calendar.MONTH, newMonth - 1);
@@ -111,7 +111,7 @@ public class WeekViewActivity6 extends AppCompatActivity implements WeekDayView.
         Calendar endTime = (Calendar) startTime.clone();
         endTime.add(Calendar.HOUR, 1);
         endTime.set(Calendar.MONTH, newMonth - 1);
-        WeekViewEvent event = new WeekViewEvent(1, "This is a Event!!", startTime, endTime);
+        WeekViewEvent event = new WeekViewEvent(1, "This is a Event!!", startTime, endTime,"123213");
         event.setColor(getResources().getColor(R.color.event_color_01));
         events.add(event);
 
@@ -211,7 +211,7 @@ public class WeekViewActivity6 extends AppCompatActivity implements WeekDayView.
         event.setColor(getResources().getColor(R.color.event_color_02));
         events.add(event);
 
-        events.addAll(mNewEvent);
+        events.addAll(mNewEvent);*/
         return events;
     }
 

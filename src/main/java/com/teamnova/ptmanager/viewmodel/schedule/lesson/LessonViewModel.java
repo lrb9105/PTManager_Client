@@ -2,22 +2,30 @@ package com.teamnova.ptmanager.viewmodel.schedule.lesson;
 
 import android.os.Handler;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
 import com.teamnova.ptmanager.model.lecture.pass.PassInfoDto;
+import com.teamnova.ptmanager.model.lesson.AttendanceInfo;
 import com.teamnova.ptmanager.model.lesson.LessonInfo;
+import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
 import com.teamnova.ptmanager.repository.schedule.lecture.LectureRepository;
 import com.teamnova.ptmanager.repository.schedule.lesson.LessonRepository;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class LessonViewModel extends ViewModel {
     // 강의관련 데이터처리를 담당할 저장소 객체
     private LessonRepository lessonRepository;
 
+    // 레슨일정 리스트
+    private MutableLiveData<ArrayList<LessonSchInfo>> lessonSchList;
+
     // 초기화
     public LessonViewModel() {
+        lessonSchList = new MutableLiveData<>();
         lessonRepository = new LessonRepository();
     }
 
@@ -26,6 +34,30 @@ public class LessonViewModel extends ViewModel {
         lessonRepository.registerLessonInfo(handler, lessonInfo);
     }
 
+    // 레슨목록 가져오기
+    public void getLessonList(Handler handler, String ownerId, String yearMonth){
+        lessonRepository.getLessonList(handler, ownerId, yearMonth);
+    }
+
+    // 회원의 레슨목록 가져오기
+    public void getLessonListByMember(String memberId){
+        lessonRepository.getLessonListByMember(lessonSchList, memberId);
+    }
+
+    // 레슨정보 가져오기
+    public void getLessonSchInfo(Handler handler,String lessonSchId){
+        lessonRepository.getLessonSchInfo(handler, lessonSchId);
+    }
+
+    // 출석정보 저장
+    public void checkAttendance(Handler resultHandler, ArrayList<AttendanceInfo> attendanceInfoList){
+        lessonRepository.checkAttendance(resultHandler, attendanceInfoList);
+    }
+
+    // 레슨리스트 반환
+    public MutableLiveData<ArrayList<LessonSchInfo>> getLessonSchList() {
+        return lessonSchList;
+    }
 
     /*// 강의목록 가져오기
     public void getLectureList(Handler handler, String trainerId){
