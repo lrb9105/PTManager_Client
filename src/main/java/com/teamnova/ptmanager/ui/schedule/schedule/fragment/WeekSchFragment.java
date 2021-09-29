@@ -233,6 +233,8 @@ public class WeekSchFragment extends Fragment implements WeekDayView.MonthChange
     public List<WeekViewEvent> onMonthChange(int newYear, int newMonth) {
         //List<WeekViewEvent> events;
 
+        newMonth = newMonth-1;
+
         Log.d("onMonthChange호출 시점","111");
         Log.d("onMonthChange호출 시점","" + (events == null));
 
@@ -252,6 +254,9 @@ public class WeekSchFragment extends Fragment implements WeekDayView.MonthChange
 
             // http request 객체 생성
             Call<ArrayList<LessonSchInfo>> call = service.getLessonList(loginId,yearMonth);
+
+            System.out.println(loginId);
+            System.out.println(yearMonth);
 
             // 서버에서 데이터를 가져오는 동기 함수의 쓰레드
             SyncRetrofitThread t = new SyncRetrofitThread(yearMonth , call);
@@ -338,68 +343,77 @@ public class WeekSchFragment extends Fragment implements WeekDayView.MonthChange
                 ArrayList<LessonSchInfo> lessonList = (ArrayList<LessonSchInfo>)response.body();
                 int i = 0;
 
-                for(LessonSchInfo lesson : lessonList) {
-                    Calendar startTime = Calendar.getInstance();
-                    startTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lesson.getLessonSrtTime().split(":")[0]));
-                    startTime.set(Calendar.MINUTE, Integer.parseInt(lesson.getLessonSrtTime().split(":")[1]));
-                    startTime.set(Calendar.MONTH, Integer.parseInt(lesson.getLessonDate().substring(4, 6)) - 1);
-                    startTime.set(Calendar.YEAR, Integer.parseInt(lesson.getLessonDate().substring(0, 4)));
-                    startTime.set(Calendar.DAY_OF_MONTH, Integer.parseInt(lesson.getLessonDate().substring(6, 8)));
+                // 데이터가 존재한다면!
+                if(!lessonList.get(0).isNoData()){
+                    for(LessonSchInfo lesson : lessonList) {
+                        Calendar startTime = Calendar.getInstance();
+                        startTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lesson.getLessonSrtTime().split(":")[0]));
+                        startTime.set(Calendar.MINUTE, Integer.parseInt(lesson.getLessonSrtTime().split(":")[1]));
+                        startTime.set(Calendar.MONTH, Integer.parseInt(lesson.getLessonDate().substring(4, 6)) - 1);
+                        startTime.set(Calendar.YEAR, Integer.parseInt(lesson.getLessonDate().substring(0, 4)));
+                        startTime.set(Calendar.DAY_OF_MONTH, Integer.parseInt(lesson.getLessonDate().substring(6, 8)));
 
-                    Calendar endTime = (Calendar) startTime.clone();
-                    endTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lesson.getLessonEndTime().split(":")[0]));
-                    endTime.set(Calendar.MINUTE, Integer.parseInt(lesson.getLessonEndTime().split(":")[1]));
+                        Calendar endTime = (Calendar) startTime.clone();
+                        endTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lesson.getLessonEndTime().split(":")[0]));
+                        endTime.set(Calendar.MINUTE, Integer.parseInt(lesson.getLessonEndTime().split(":")[1]));
 
-                    Log.d("레슨정보" + idOfLesson, lesson.getLessonSchId() + ":" + lesson.getUserName() + "-" + startTime.getTime() + "-" + endTime.getTime());
+                        Log.d("레슨정보" + idOfLesson, lesson.getLessonSchId() + ":" + lesson.getUserName() + "-" + startTime.getTime() + "-" + endTime.getTime());
 
-                    // 레슨상태정보(예약대기, 예약, 출석, 결석)
-                    String attendanceYn = lesson.getAttendanceYn();
-                    String attendanceYnName = "";
-                    String confirmYnName = "";
-                    String attendanceYnOrConfirmYn = "";
+                        // 레슨상태정보(예약대기, 예약, 출석, 결석)
+                        String attendanceYn = lesson.getAttendanceYn();
+                        String attendanceYnName = "";
+                        String confirmYnName = "";
+                        String attendanceYnOrConfirmYn = "";
 
-                    if(attendanceYn == null){
-                        if("Y".equals(lesson.getConfirmYn())){
-                            confirmYnName = "(예약)";
-                        } else if(lesson.getReservationConfirmYn().equals("M")){
-                            confirmYnName = "(예약대기)";
+                        if((attendanceYn == null || attendanceYn.isEmpty()) && lesson.getCancelYn().equals("N")){
+                            Log.d("레슨상태 확인: ", lesson.getCancelYn() + " : " + lesson.getConfirmYn());
+
+                            if("Y".equals(lesson.getConfirmYn())){
+                                confirmYnName = "(예약)";
+                            } else if(lesson.getReservationConfirmYn().equals("M")){
+                                confirmYnName = "(예약대기)";
+                            }
+                            attendanceYnOrConfirmYn = confirmYnName;
+                        } else if(!lesson.getCancelYn().equals("N")){
+                            if(lesson.getCancelYn().equals("M")){
+                                attendanceYnOrConfirmYn = "(취소대기)";
+                            } else if(lesson.getCancelYn().equals("Y")){
+                                attendanceYnOrConfirmYn = "(예약취소)";
+                            }
+                        } else if(lesson.getReservationConfirmYn() != null && lesson.getReservationConfirmYn().equals("N")){
+                            attendanceYnOrConfirmYn = "(예약취소)";
+                        } else{
+                            attendanceYnName = lesson.getAttendanceYnName();
+                            attendanceYnOrConfirmYn = "(" + attendanceYnName + ")";
                         }
-                        attendanceYnOrConfirmYn = confirmYnName;
-                    } else if(lesson.getCancelYn() != null){
-                        if(lesson.getCancelYn().equals("M")){
-                            attendanceYnOrConfirmYn = "(취소대기)";
+
+
+                        WeekViewEvent event = new WeekViewEvent(idOfLesson, lesson.getUserName() + attendanceYnOrConfirmYn + "\n\n" + lesson.getMemo(), startTime, endTime, lesson.getLessonSchId());
+
+                        Log.d("동일한 일정이 몇번 호출되는가 확인하고 싶음:", lesson.getUserName() + "-" + idOfLesson);
+
+                        // 색 변경
+                        Log.d("시작시간 어떻게 나오나?", event.getStartTime().toString());
+
+                        int colorNum = i%2;
+
+                        switch (colorNum) {
+                            case 0:
+                                event.setColor(getResources().getColor(R.color.event_color_01));
+                                break;
+                            case 1:
+                                event.setColor(getResources().getColor(R.color.event_color_02));
+                                break;
                         }
-                    } else{
-                        attendanceYnName = "(" + lesson.getAttendanceYnName() + ")";
-                        attendanceYnOrConfirmYn = attendanceYnName;
+
+                        events.add(event);
+
+                        idOfLesson++;
+                        i++;
                     }
 
-
-                    WeekViewEvent event = new WeekViewEvent(idOfLesson, lesson.getUserName() + attendanceYnOrConfirmYn + "\n\n" + lesson.getMemo(), startTime, endTime, lesson.getLessonSchId());
-
-                    Log.d("동일한 일정이 몇번 호출되는가 확인하고 싶음:", lesson.getUserName() + "-" + idOfLesson);
-
-                    // 색 변경
-                    Log.d("시작시간 어떻게 나오나?", event.getStartTime().toString());
-
-                    int colorNum = i%2;
-
-                    switch (colorNum) {
-                        case 0:
-                            event.setColor(getResources().getColor(R.color.event_color_01));
-                            break;
-                        case 1:
-                            event.setColor(getResources().getColor(R.color.event_color_02));
-                            break;
-                    }
-
-                    events.add(event);
-
-                    idOfLesson++;
-                    i++;
+                    usedEventsMap.put(yearMonth, events);
                 }
-
-                usedEventsMap.put(yearMonth, events);
             } catch (IOException e) {
                 e.printStackTrace();
             }

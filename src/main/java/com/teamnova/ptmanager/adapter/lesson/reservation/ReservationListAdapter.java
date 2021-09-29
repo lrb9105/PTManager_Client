@@ -39,6 +39,7 @@ public class ReservationListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         ConstraintLayout memberLayout;
         TextView name_reserve_type;
         TextView reserve_date;
+        TextView cancel_req_reason;
         CheckBox reserve_approve_check;
 
         public ReservationInfoViewHolder(View itemView) {
@@ -47,6 +48,7 @@ public class ReservationListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             memberLayout = itemView.findViewById(R.id.layout_friend);
             name_reserve_type = itemView.findViewById(R.id.name_reserve_type);
             reserve_date = itemView.findViewById(R.id.reserve_date);
+            cancel_req_reason = itemView.findViewById(R.id.cancel_req_reason);
             reserve_approve_check = itemView.findViewById(R.id.reserve_approve_check);
         }
     }
@@ -56,8 +58,6 @@ public class ReservationListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public ReservationListAdapter(ArrayList<ReservationInfo> reservationList, Context context) {
         this.reservationList = reservationList;
         this.context = context;
-
-        Log.d("어댑터에서 데이터: ", reservationList.get(0).toString());
     }
 
     // Adapter를 생성할 때 받아오는 데이터와 컨텍스트
@@ -72,6 +72,7 @@ public class ReservationListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         View itemReservation = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_reserved_member, parent, false);
 
         ReservationListAdapter.ReservationInfoViewHolder vh = new ReservationListAdapter.ReservationInfoViewHolder(itemReservation);
+        Log.d("여기 들어오나? ", " 12");
 
         return vh;
     }
@@ -82,6 +83,7 @@ public class ReservationListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         ReservationInfo reservationInfo = reservationList.get(position);
+        Log.d("여기 들어오나? ", " 11111");
 
 
         // 체크박스 보이게
@@ -95,6 +97,7 @@ public class ReservationListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 check.setChecked(true);
             }
         }
+
 
         // 체크라면 memberInfo에 값(1) 넣기 체크해제라면 값(0) 넣기
         check.setOnClickListener(new View.OnClickListener() {
@@ -145,12 +148,17 @@ public class ReservationListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         lessonDate += srtTime + "~" + endTime;
 
         ((ReservationInfoViewHolder)holder).reserve_date.setText(lessonDate);
+        
+        // 예약취소 요청 사유
+        if(reservationInfo.getCancelReason() != null && !reservationInfo.getCancelReason().equals("")){// 취소요청사유가 있다면
+            ((ReservationInfoViewHolder)holder).cancel_req_reason.setText(reservationInfo.getCancelReason());
+        }
 
     }
 
     @Override
     public int getItemCount() {
-        Log.d("리사이클러뷰 사이즈: ", "" + reservationList.size());
+        Log.d("리사이클러뷰 사이즈12434123: ", "" + reservationList.size());
         return reservationList.size();
     }
 

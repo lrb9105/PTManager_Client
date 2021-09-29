@@ -102,6 +102,7 @@ public class SelectProfileActivity extends AppCompatActivity implements View.OnC
         // 리스너 등록
         binding.userProfile.setOnClickListener(this);
         binding.btnProfileSettingCompl.setOnClickListener(this);
+        binding.btnBack.setOnClickListener(this);
 
         // 인텐트에서 유저정보 가져오기
         Intent intent = getIntent();
@@ -191,6 +192,9 @@ public class SelectProfileActivity extends AppCompatActivity implements View.OnC
                 } else{
                     Toast.makeText(this,"프로필 사진을 촬영하거나 선택해주세요.",Toast.LENGTH_SHORT);
                 }
+                break;
+            case R.id.btn_back: // 뒤로가기
+                onBackPressed();
                 break;
             default:
                 break;

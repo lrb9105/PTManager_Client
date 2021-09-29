@@ -22,6 +22,7 @@ import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDtoWithUserId;
 import com.teamnova.ptmanager.ui.login.LoginActivity;
 import com.teamnova.ptmanager.ui.login.findpw.FindPw3Activity;
+import com.teamnova.ptmanager.ui.member.memberinfo.MemberInfoActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -128,23 +129,11 @@ public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         friendLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("목록에서 아이템 클릭 시 해당하는 회원의 회원정보 액티비티로 이동 USER_ID 출력", friendInfo.getUserId());
+                Intent intent = new Intent(context, MemberInfoActivity.class);
 
-                // 다이얼로그 출력
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                intent.putExtra("memberInfo",friendInfo);
 
-                builder.setMessage(friendInfo.getUserName());
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener(){
-                    @Override
-                    public void onClick(DialogInterface dialog, int id)
-                    {
-
-                    }
-                });
-
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                context.startActivity(intent);
             }
         });
     }
@@ -160,11 +149,11 @@ public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         notifyItemInserted(getItemCount());
     }
 
-
    /* // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return anniversaryList.size();
+
     }
 
     // 친구정보를 리싸이클러뷰에 추가하기위한 메소드 => 해당 메소드 호출 시 자동갱신한다.

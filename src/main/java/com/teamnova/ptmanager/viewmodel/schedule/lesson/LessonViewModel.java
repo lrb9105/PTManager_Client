@@ -58,6 +58,11 @@ public class LessonViewModel extends ViewModel {
     public MutableLiveData<ArrayList<LessonSchInfo>> getLessonSchList() {
         return lessonSchList;
     }
+    
+    // 예약정보 가져오기
+    public void getReservedMemberList(Handler resultHandler, String trainerLoginId){
+        lessonRepository.getReservedMemberList(resultHandler, trainerLoginId);
+    }
 
     /*// 강의목록 가져오기
     public void getLectureList(Handler handler, String trainerId){

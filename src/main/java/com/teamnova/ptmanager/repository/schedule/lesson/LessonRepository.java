@@ -47,6 +47,11 @@ public class LessonRepository {
         lessonApiClient.checkAttendance(resultHandler, attendanceInfoList);
     }
 
+    // 예약정보 가져오기
+    public void getReservedMemberList(Handler resultHandler, String trainerLoginId){
+        lessonApiClient.getReservedMemberList(resultHandler, trainerLoginId);
+    }
+
     /*// 강의목록 가져오기
     public void getLectureList(Handler handler, String ownerId){
         lessonApiClient.getLectureList(handler, ownerId);

@@ -16,7 +16,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.teamnova.ptmanager.R;
+import com.teamnova.ptmanager.adapter.lecture.LectureRegisteredMemberListAdapter;
 import com.teamnova.ptmanager.model.lesson.LessonInfo;
+import com.teamnova.ptmanager.ui.schedule.lecture.LectureRegisterdMemberListActivity;
 import com.teamnova.ptmanager.ui.schedule.lesson.LessonRegisterActivity;
 import com.teamnova.ptmanager.ui.schedule.reservation.ReservationApprovementActivity;
 import com.teamnova.ptmanager.ui.schedule.schedule.DailyScheduleActivity;
@@ -173,6 +175,11 @@ public class TrainerScheduleFragment extends Fragment implements View.OnClickLis
                 // 레슨추가 액티비티로 이동
                 intent = new Intent(getActivity(), ReservationApprovementActivity.class);
                 startActivity(intent);
+
+                // 테스트
+                /*intent = new Intent(getActivity(), LectureRegisterdMemberListActivity.class);
+                intent.putExtra("lectureId", "1");
+                startActivity(intent);*/
                 break;
             default:
                 break;

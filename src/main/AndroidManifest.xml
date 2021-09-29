@@ -15,15 +15,42 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PTManager"
         android:usesCleartextTraffic="true">
-        <activity android:name=".test.WeekViewActivity7">
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:theme="@style/SplashAppTheme"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.record.fitness.FitnessEnterActivity" />
+        <activity android:name=".ui.record.fitness.FitnessKindListActivity" >
             <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
-        <activity android:name=".test.WeekViewActivity6">
-        </activity>
+        <activity android:name=".ui.record.fitness.FitnessModifyActivity" />
+        <activity android:name=".ui.record.fitness.FitnessRegisterActivity" />
+        <activity android:name=".ui.record.meal.MealSeeAllActivity" />
+        <activity android:name=".ui.record.meal.MealModifyActivity" />
+        <activity android:name=".ui.changehistory.inbody.InBodyModifyActivity" />
+        <activity android:name=".ui.changehistory.eyebody.EyeBodyCompareEnLargeActivity" />
+        <activity android:name=".ui.changehistory.eyebody.EyeBodyEnLargeActivity" />
+        <activity android:name=".ui.changehistory.inbody.InBodyRegisterGpathPeriodActivity" />
+        <activity android:name=".ui.changehistory.inbody.InBodyViewGraphActivity"/>
+        <activity android:name=".ui.changehistory.inbody.InBodyRegisterActivity" />
+        <activity android:name=".ui.changehistory.eyebody.EyeBodySaveActivity" />
+        <activity android:name=".ui.changehistory.eyebody.ExampleActivity" />
+        <activity android:name=".ui.changehistory.eyebody.EyeBodySelectActivity" />
+        <activity android:name=".ui.changehistory.eyebody.EyeBodyChangeHistoryActivity" />
+        <activity android:name=".ui.changehistory.eyebody.EyeBodyCompareHistoryActivity" />
+        <activity android:name=".ui.member.memberinfo.MemberInfoActivity" />
+        <activity android:name=".test.WeekViewActivity7" />
+        <activity android:name=".test.WeekViewActivity6" />
 
         <meta-data
             android:name="com.google.android.actions"
@@ -34,58 +61,23 @@
             android:label="@string/title_activity_member_home_with_menu"
             android:theme="@style/Theme.PTManager.NoActionBar" />
         <activity android:name=".test.WeekViewActivity4" />
-        <activity android:name=".test.WeekViewActivity5">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
-        <activity android:name=".test.WeekViewActivity3">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
+        <activity android:name=".test.WeekViewActivity5" />
+        <activity android:name=".test.WeekViewActivity3" />
         <activity android:name=".test.WeekViewActivity2" />
         <activity android:name=".test.MainActivity2" />
-        <activity android:name=".test.WeekViewActivity">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
+        <activity android:name=".test.WeekViewActivity" />
         <activity android:name=".ui.schedule.schedule.DailyScheduleActivity" />
         <activity android:name=".ui.schedule.schedule.RepeatRegisterActivity" />
         <activity android:name=".ui.schedule.lecture.pass.PassRegisterActivity" />
         <activity android:name=".ui.schedule.lesson.LessonAttendanceActivity" />
-        <activity android:name=".ui.schedule.lesson.LessonDetailActivity"/>
-        <activity android:name=".ui.schedule.reservation.ReservationApprovementActivity"/>
-        <activity android:name=".ui.schedule.lesson.LessonReserveActivity">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
+        <activity android:name=".ui.schedule.lesson.LessonDetailActivity" />
+        <activity android:name=".ui.schedule.reservation.ReservationApprovementActivity" />
+        <activity android:name=".ui.schedule.lesson.LessonReserveActivity" />
         <activity android:name=".ui.schedule.lecture.LectureRegisterdMemberListActivity" />
         <activity android:name=".ui.schedule.lecture.LectureRegisterActivity" />
         <activity android:name=".ui.schedule.lecture.LectureListActivity" />
         <activity android:name=".ui.schedule.lesson.LessonRegisterActivity" />
+        <activity android:name=".ui.record.meal.MealDetailActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -97,22 +89,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".ui.register.SelectProfileActivity">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
+        <activity android:name=".ui.register.SelectProfileActivity" />
         <activity android:name=".ui.login.LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".ui.login.findid.FindIdActivity" />
         <activity android:name=".ui.register.PrivateInfoActivity" />
@@ -126,6 +104,7 @@
         <activity android:name=".ui.home.member.MemberHomeActivity" />
         <activity android:name=".ui.member.MemberAddActivity" />
         <activity android:name=".ui.home.member.DayViewActivity" />
+        <activity android:name=".ui.record.meal.MealRegisterActivity" />
     </application>
 
 </manifest>

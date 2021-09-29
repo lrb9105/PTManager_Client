@@ -22,6 +22,7 @@ import com.teamnova.ptmanager.adapter.lecture.LectureRegisteredMemberListAdapter
 import com.teamnova.ptmanager.adapter.lecture.LessonRegisteredMemberListAdapter;
 import com.teamnova.ptmanager.databinding.ActivityLessonAttendanceBinding;
 import com.teamnova.ptmanager.model.lesson.AttendanceInfo;
+import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.ui.login.LoginActivity;
 import com.teamnova.ptmanager.ui.login.findpw.FindPw3Activity;
@@ -42,6 +43,9 @@ public class LessonAttendanceActivity extends AppCompatActivity implements View.
 
     // LectureViewModel
     private LectureViewModel lectureViewModel;
+
+    // 레슨정보
+    private LessonSchInfo lessonSchInfo;
 
     // LessonViewModel
     private LessonViewModel lessonViewModel;
@@ -70,8 +74,9 @@ public class LessonAttendanceActivity extends AppCompatActivity implements View.
 
     }
 
-    public void setOnClickListener(){
+    public void setOnClickListener() {
         binding.selectMember.setOnClickListener(this);
+        binding.btnBack.setOnClickListener(this);
     }
 
     // 초기화
@@ -85,8 +90,28 @@ public class LessonAttendanceActivity extends AppCompatActivity implements View.
 
         if(intent != null){
             // 강의 id
-            lessonId = intent.getStringExtra("lessonId");
+            lessonSchInfo = (LessonSchInfo) intent.getSerializableExtra("lessonInfo");
+            lessonId = lessonSchInfo.getLessonSchId();
         }
+
+        // 레슨일정(yyyy.mm.dd(요일)\nhh:mm~hh:mm)
+        String lessonDate = "";
+        lessonDate += GetDate.getDateWithYMD(lessonSchInfo.getLessonDate());
+        lessonDate += "(" + GetDate.getDayOfWeek(lessonSchInfo.getLessonDate()) + ")\n";
+        String srtTime = lessonSchInfo.getLessonSrtTime();
+        String endTime = lessonSchInfo.getLessonEndTime();
+
+        if(srtTime.endsWith(":0")){
+            srtTime = srtTime.replace(":0",":00");
+        }
+
+        if(endTime.endsWith(":0")){
+            endTime = endTime.replace(":0",":00");
+        }
+
+        lessonDate += srtTime + "~" + endTime;
+
+        binding.attendanceDate.setText(lessonDate);
 
         // Retrofit 통신 핸들러
         resultHandler = new Handler(Looper.myLooper()){
@@ -164,6 +189,9 @@ public class LessonAttendanceActivity extends AppCompatActivity implements View.
 
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
+                break;
+            case R.id.btn_back: // 뒤로가기
+                onBackPressed();
                 break;
             default:
                 break;

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/expandable_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="아침"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/contents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textSize="16sp"
+            android:text="ㅇ\ndㅇ\ndㅇ\ndㅇ\ndㅇ\ndㅇ\nd"
+            android:textColor="#666666" />
+
+        <TextView
+            android:id="@+id/hidden"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <!--<com.ms.square.android.expandabletextview.ExpandableTextView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/expand_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            expandableTextView:maxCollapsedLines="2"
+            expandableTextView:animDuration="200">
+
+            <TextView
+                android:id="@+id/contents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:textSize="16sp"
+                android:text="ㅇ\ndㅇ\ndㅇ\ndㅇ\ndㅇ\ndㅇ\nd"
+                android:textColor="#666666" />
+            <ImageButton
+                android:id="@+id/collapse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:layout_gravity="right|bottom"
+                android:background="@android:color/transparent"/>
+        </com.ms.square.android.expandabletextview.ExpandableTextView>-->
+    </LinearLayout>
+</LinearLayout>

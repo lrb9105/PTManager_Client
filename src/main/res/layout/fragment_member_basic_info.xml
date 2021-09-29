@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+        
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/member_profile"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:src="@drawable/profile_boy">
+        </de.hdodenhof.circleimageview.CircleImageView>
+        
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp">
+
+            <TableRow
+                android:id="@+id/row_name"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:text="이름:"
+                    android:layout_marginLeft="30dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/black"
+                    android:padding="5dp"/>
+
+                <TextView
+                    android:id="@+id/name_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:layout_weight="2"
+                    android:text="김회원"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/black"
+                    android:padding="5dp"/>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row_birthday"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/birthday"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:text="생년월일:"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="30dp"
+                    android:textColor="@color/black"
+                    android:padding="5dp"/>
+
+                <TextView
+                    android:id="@+id/birthday_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:text="김회원"
+                    android:layout_weight="2"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/black"
+                    android:padding="5dp"/>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row_gender"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/gender"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:text="성별:"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="30dp"
+                    android:textColor="@color/black"
+                    android:padding="5dp"/>
+
+                <TextView
+                    android:id="@+id/gender_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:text="김회원"
+                    android:layout_weight="2"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/black"
+                    android:padding="5dp"/>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row_phoneNum"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/phoneNum"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:text="휴대폰번호:"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="30dp"
+                    android:textColor="@color/black"
+                    android:padding="5dp"/>
+
+                <TextView
+                    android:id="@+id/phoneNum_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:text="김회원"
+                    android:layout_weight="2"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/black"
+                    android:padding="5dp"/>
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+
+</FrameLayout>

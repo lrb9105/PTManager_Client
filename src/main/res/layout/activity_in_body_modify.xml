@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_add_lesson_complete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_baseline_arrow_back_ios_32"
+            android:background="@android:color/transparent"/>
+
+        <TextView
+            android:id="@+id/todayDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="인바디 수정"
+            android:textSize="30sp"
+            android:layout_weight="3">
+
+        </TextView>
+
+        <!--        <ImageButton
+                    android:id="@+id/btn_reserve_lesson"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_baseline_add_40" />-->
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/light_blue"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp"/>
+
+    <!-- 인바디 입력 데이터 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <!-- 검사일시 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="25dp"
+            android:padding="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/inbody_check_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/black"
+                android:textSize="30sp"
+                android:text="검사날짜">
+            </TextView>
+
+            <TextView
+                android:id="@+id/inbody_check_date_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_weight="2"
+                android:textSize="22sp"
+                android:text="2021.07.26">
+            </TextView>
+        </LinearLayout>
+
+
+        <!-- 체중 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/inbody_weight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:text="체중(kg)">
+            </TextView>
+
+            <EditText
+                android:id="@+id/inbody_weight_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_weight="2"
+                android:textSize="20sp"
+                android:inputType="numberDecimal"
+                android:hint="몸무게 입력">
+            </EditText>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/light_blue"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"/>
+
+        <!-- 신장 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/inbody_height"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:text="신장(cm)">
+            </TextView>
+
+            <EditText
+                android:id="@+id/inbody_height_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_weight="2"
+                android:textSize="20sp"
+                android:inputType="numberDecimal"
+                android:hint="키 입력">
+            </EditText>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/light_blue"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"/>
+
+        <!-- 체지방량 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/inbody_body_fat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:text="체지방량(kg)">
+            </TextView>
+
+            <EditText
+                android:id="@+id/inbody_body_fat_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_weight="2"
+                android:textSize="20sp"
+                android:inputType="numberDecimal"
+                android:hint="체지방량 입력">
+            </EditText>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/light_blue"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"/>
+
+        <!-- 근육량 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/inbody_muscle_mass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:text="근육량(kg)">
+            </TextView>
+
+            <EditText
+                android:id="@+id/inbody_muscle_mass_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_weight="2"
+                android:textSize="20sp"
+                android:inputType="numberDecimal"
+                android:hint="근육량 입력">
+            </EditText>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/light_blue"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"/>
+
+        <!-- 내장지방레벨 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/inbbody_fat_level"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:text="내장지방 레벨">
+            </TextView>
+
+            <EditText
+                android:id="@+id/inbbody_fat_level_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_weight="2"
+                android:inputType="number"
+                android:textSize="20sp"
+                android:hint="내장지방 레벨 입력">
+            </EditText>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_inbody_modify"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="완료"
+            android:textSize="30sp"/>
+    </LinearLayout>
+</LinearLayout>

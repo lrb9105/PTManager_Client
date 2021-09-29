@@ -179,6 +179,14 @@
     <string name="title_activity_asynchronous">Asynchronous Events</string>
     <string name="async_error">Could not download events from the internet</string>
 
+    <!-- 눈바디 -->
+    <string name="eyebody_compare">눈바디 비교</string>
+    <string name="eyebody_change">눈바디 변화</string>
+    <string name="eyebody_more">더보기</string>
+    <string name="eyebody_compare_history">눈바디 비교 기록</string>
+    <string name="eyebody_change_history">눈바디 변화 기록</string>
+    <string name="eyebody_change_select">눈바디 선택</string>
+
     <string-array name="photoOrImageWithoutRemove">
         <item>직접촬영</item>
         <item>갤러리에서 가져오기</item>
@@ -187,6 +195,12 @@
     <string-array name="photoOrImageOrRemove">
         <item>직접촬영</item>
         <item>갤러리에서 가져오기</item>
+    </string-array>
+
+    <string-array name="photoOrImageOrRemove2">
+        <item>직접촬영</item>
+        <item>갤러리에서 가져오기</item>
+        <item>이미지 삭제</item>
     </string-array>
 
     <string-array name="postFunc">

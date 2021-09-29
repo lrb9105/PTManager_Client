@@ -198,6 +198,10 @@ public class TrainerHomeFragment extends Fragment implements View.OnClickListene
         return friendAddAdapter;
     }
 
+    public void scrollToTop(){
+        recyclerView_friends_list.scrollToPosition(0);
+    }
+
     public void aa(){
         Log.d("액티비티에서 프래그먼트 가져와서 사용", "11");
     }

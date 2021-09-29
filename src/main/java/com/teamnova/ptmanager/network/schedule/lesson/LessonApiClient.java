@@ -14,6 +14,7 @@ import com.teamnova.ptmanager.model.lecture.pass.PassInfoDto;
 import com.teamnova.ptmanager.model.lesson.AttendanceInfo;
 import com.teamnova.ptmanager.model.lesson.LessonInfo;
 import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
+import com.teamnova.ptmanager.model.reservation.ReservationInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.network.RetrofitInstance;
 import com.teamnova.ptmanager.network.schedule.lecture.LectureService;
@@ -167,6 +168,34 @@ public class LessonApiClient {
             @Override
             public void onFailure(Call<ArrayList<LessonSchInfo>> call, Throwable t) {
                 Log.d("회원 레슨목록 가져오기 결과2:", t.getMessage());
+            }
+        });
+    }
+
+    // 예약정보 가져오기
+    public void getReservedMemberList(Handler resultHandler, String trainerLoginId){
+        // 웹서비스 구현체 생성
+        LessonService service = retrofit.create(LessonService.class);
+
+        // http request 객체 생성
+        Call<ArrayList<ReservationInfo>> call = service.getReservedMemberList(trainerLoginId);
+
+        // 예약목록 가져오기(비동기)
+        call.enqueue(new Callback<ArrayList<ReservationInfo>>() {
+            @Override
+            public void onResponse(Call<ArrayList<ReservationInfo>> call, Response<ArrayList<ReservationInfo>> response) {
+                if (response.isSuccessful()){
+                    // 예약정보 저장
+                    ArrayList<ReservationInfo> reservationList = response.body();
+
+                    Message msg = resultHandler.obtainMessage(10, reservationList);
+                    resultHandler.sendMessage(msg);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<ReservationInfo>> call, Throwable t) {
+                Log.d("예약목록 가져오기:", t.getMessage());
             }
         });
     }

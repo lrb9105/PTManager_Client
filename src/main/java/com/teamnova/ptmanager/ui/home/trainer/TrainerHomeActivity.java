@@ -35,6 +35,7 @@ import com.teamnova.ptmanager.model.userInfo.UserInfoDtoWithUserId;
 import com.teamnova.ptmanager.test.TestActivity;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerHomeFragment;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerScheduleFragment;
+import com.teamnova.ptmanager.ui.moreinfo.MoreInfoFragment;
 import com.teamnova.ptmanager.ui.register.RegisterActivity;
 import com.teamnova.ptmanager.ui.schedule.schedule.fragment.WeekSchFragment;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
@@ -63,6 +64,9 @@ public class TrainerHomeActivity extends AppCompatActivity {
     // 교체할 프래그먼트 생성
     private TrainerHomeFragment trainerHomeFragment;
     private TrainerScheduleFragment trainerScheduleFragment;
+
+    // 더보기 프래그먼트
+    private MoreInfoFragment moreInfoFragment;
 
     // 로그인 시 로그인 act로부터 loginId 받아옴
     private String loginId;
@@ -178,6 +182,13 @@ public class TrainerHomeActivity extends AppCompatActivity {
                 case R.id.item_shcedule:
                     transaction2.replace(binding.trainerFrame.getId(), trainerScheduleFragment,"frag2").commit();
                     break;
+                case R.id.item_more: // 더보기
+                    if(moreInfoFragment == null) {
+                        moreInfoFragment = new MoreInfoFragment();
+                    }
+
+                    transaction2.replace(binding.trainerFrame.getId(), moreInfoFragment,"frag2").commit();
+                    break;
             }
             return true;
         });
@@ -201,11 +212,14 @@ public class TrainerHomeActivity extends AppCompatActivity {
             //fragment.getFriendAddAdapter().addFriend();
 
             homeFragment.getFriendAddAdapter().addFriend(friendInfo);
+            homeFragment.scrollToTop();
 
             // transaction3.replace(binding.trainerFrame.getId(), trainerHomeFragment,"frag1").commit();
-        } else if(lessonInfo != null
+        } else if(// 레슨추가 시 || 예약 승인/거절완료 시 || 출석체크 완료 시 || 레슨예약 승인/거절 시
+                lessonInfo != null
                 || intent.getStringExtra("id").equals("ReservationApprovementActivity")
-                || intent.getStringExtra("id").equals("LessonDetailActivity")) { // 레슨추가 시 || 예약 승인/거절완료 시 || 출석체크 완료 시
+                || intent.getStringExtra("id").equals("LessonDetailActivity")
+                || intent.getStringExtra("id").equals("ReservationAppropvementActivity")) {
             // 스케줄 프래그먼트 가져오기
             TrainerScheduleFragment schFragment = (TrainerScheduleFragment) getSupportFragmentManager().findFragmentByTag("frag2");
             WeekSchFragment weekSchFragment = WeekSchFragment.newInstance();

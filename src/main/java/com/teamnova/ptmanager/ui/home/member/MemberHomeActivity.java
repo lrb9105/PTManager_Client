@@ -1,33 +1,21 @@
 package com.teamnova.ptmanager.ui.home.member;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.teamnova.ptmanager.R;
-import com.teamnova.ptmanager.databinding.ActivityHomeBinding;
 import com.teamnova.ptmanager.databinding.ActivityMemberHomeBinding;
-import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
+import com.teamnova.ptmanager.ui.changehistory.ChangeHistoryFragment;
 import com.teamnova.ptmanager.ui.home.member.fragment.MemberHomeFragment;
-import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerHomeFragment;
-import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerScheduleFragment;
+import com.teamnova.ptmanager.ui.moreinfo.MoreInfoFragment;
+import com.teamnova.ptmanager.ui.record.RecordFragment;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
-import com.teamnova.ptmanager.viewmodel.login.LoginViewModel;
-import com.teamnova.ptmanager.viewmodel.schedule.lesson.LessonViewModel;
-
-import java.util.ArrayList;
 
 public class MemberHomeActivity extends AppCompatActivity {
     ActivityMemberHomeBinding binding;
@@ -37,6 +25,15 @@ public class MemberHomeActivity extends AppCompatActivity {
 
     // 홈프래그먼트
     private MemberHomeFragment memberHomeFragment;
+
+    // 변화기록 프래그먼트
+    private ChangeHistoryFragment changeHistoryFragment;
+
+    // 기록 프래그먼트
+    private RecordFragment recordFragment;
+
+    // 더보기 프래그먼트
+    private MoreInfoFragment moreInfoFragment;
 
     // 뷰모델
     private FriendViewModel friendViewModel;
@@ -92,7 +89,56 @@ public class MemberHomeActivity extends AppCompatActivity {
 
             switch(item.getItemId()) {
                 case R.id.item_home:
-                    transaction2.replace(binding.trainerFrame.getId(), memberHomeFragment,"frag1").commit();
+                    Log.d("여기서 문제?", "111");
+
+                    if(memberHomeFragment == null) {
+                        memberHomeFragment = new MemberHomeFragment();
+                    }
+
+                    if(recordFragment != null) fragmentManager.beginTransaction().hide(recordFragment).commit();
+                    if(changeHistoryFragment != null) fragmentManager.beginTransaction().hide(changeHistoryFragment).commit();
+                    if(memberHomeFragment != null) transaction2.show(memberHomeFragment).commit();
+                    if(moreInfoFragment != null) fragmentManager.beginTransaction().hide(moreInfoFragment).commit();
+
+                    break;
+                case R.id.item_history: // 변화관리
+                    if(changeHistoryFragment == null) {
+                        changeHistoryFragment = new ChangeHistoryFragment();
+                        transaction2.add(binding.trainerFrame.getId(), changeHistoryFragment,"frag2");
+                    }
+
+                    if(memberHomeFragment != null) transaction2.hide(memberHomeFragment).commit();
+                    if(recordFragment != null) fragmentManager.beginTransaction().hide(recordFragment).commit();
+                    if(changeHistoryFragment != null) fragmentManager.beginTransaction().show(changeHistoryFragment).commit();
+                    if(moreInfoFragment != null) fragmentManager.beginTransaction().hide(moreInfoFragment).commit();
+
+                    //transaction2.replace(binding.trainerFrame.getId(), changeHistoryFragment,"frag2").commit();
+                    break;
+                case R.id.item_cahnge: // 기록
+                    if(recordFragment == null) {
+                        recordFragment = new RecordFragment();
+                        transaction2.add(binding.trainerFrame.getId(), recordFragment,"frag3");
+                    }
+
+                    if(memberHomeFragment != null) transaction2.hide(memberHomeFragment).commit();
+                    if(changeHistoryFragment != null) fragmentManager.beginTransaction().hide(changeHistoryFragment).commit();
+                    if(recordFragment != null) fragmentManager.beginTransaction().show(recordFragment).commit();
+                    if(moreInfoFragment != null) fragmentManager.beginTransaction().hide(moreInfoFragment).commit();
+
+                    //transaction2.replace(binding.trainerFrame.getId(), changeHistoryFragment,"frag2").commit();
+                    break;
+                case R.id.item_more: // 더보기
+                    if(moreInfoFragment == null) {
+                        moreInfoFragment = new MoreInfoFragment();
+                        transaction2.add(binding.trainerFrame.getId(), moreInfoFragment,"frag4");
+                    }
+
+                    if(memberHomeFragment != null) transaction2.hide(memberHomeFragment).commit();
+                    if(changeHistoryFragment != null) fragmentManager.beginTransaction().hide(changeHistoryFragment).commit();
+                    if(recordFragment != null) fragmentManager.beginTransaction().hide(recordFragment).commit();
+                    if(moreInfoFragment != null) fragmentManager.beginTransaction().show(moreInfoFragment).commit();
+
+                    //transaction2.replace(binding.trainerFrame.getId(), changeHistoryFragment,"frag2").commit();
                     break;
             }
             return true;

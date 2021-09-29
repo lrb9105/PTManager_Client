@@ -19,14 +19,18 @@ import android.widget.Toast;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.adapter.lecture.LectureListAdapter;
 import com.teamnova.ptmanager.adapter.lecture.LectureRegisteredMemberListAdapter;
+import com.teamnova.ptmanager.adapter.lesson.reservation.ReservationListAdapter;
 import com.teamnova.ptmanager.databinding.ActivityLectureRegisterdMemberListBinding;
 import com.teamnova.ptmanager.databinding.ActivityLessonRegisterBinding;
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
+import com.teamnova.ptmanager.model.reservation.ReservationInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.schedule.lecture.pass.PassRegisterActivity;
 import com.teamnova.ptmanager.ui.schedule.lesson.LessonRegisterActivity;
+import com.teamnova.ptmanager.ui.schedule.reservation.ReservationApprovementActivity;
 import com.teamnova.ptmanager.viewmodel.schedule.lecture.LectureViewModel;
+import com.teamnova.ptmanager.viewmodel.schedule.lesson.LessonViewModel;
 
 import java.util.ArrayList;
 
@@ -44,6 +48,15 @@ public class LectureRegisterdMemberListActivity extends AppCompatActivity implem
     private LectureRegisteredMemberListAdapter lectureRegisteredMemberListAdapter;
     private RecyclerView recyclerView_member_list;
     private RecyclerView.LayoutManager layoutManager;
+
+    // 리사이클러뷰 테스트
+    /*private RecyclerView recyclerviewReservationList;
+    private ReservationListAdapter reservationListAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private LessonViewModel lessonViewModel;
+    private ArrayList<ReservationInfo> reservationList;*/
+
+
 
     // setResult를 사용하기 위해 해당 액티비티의 참조를 adapter로 보내 줌.
     private Activity activity;
@@ -64,6 +77,7 @@ public class LectureRegisterdMemberListActivity extends AppCompatActivity implem
 
     public void setOnClickListener(){
         binding.btnSelectMember.setOnClickListener(this);
+        binding.btnBack.setOnClickListener(this);
     }
 
     // 초기화
@@ -112,6 +126,34 @@ public class LectureRegisterdMemberListActivity extends AppCompatActivity implem
             // 강의를 수강할 수 있는 회원목록 가져오기 통신
             lectureViewModel.getLectureRegisteredMemberList(resultHandler, lectureId);
         }
+
+        // 리사이클러뷰 테스트
+
+        /*reservationList = new ArrayList<>();
+        lessonViewModel = new ViewModelProvider(this).get(LessonViewModel.class);
+
+        resultHandler = new Handler(Looper.myLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                // 예약정보 리스트 가져오기 성공
+                if(msg.what == 10){
+                    // 예약정보 리스트 가져오기 성공
+                    reservationList = (ArrayList<ReservationInfo>) msg.obj;
+
+                    Log.d("예약정보 사이즈: ", "" + reservationList.size());
+
+                    recyclerviewReservationList = binding.recyclerviewMemberList;
+                    layoutManager = new LinearLayoutManager(LectureRegisterdMemberListActivity.this);
+                    recyclerviewReservationList.setLayoutManager(layoutManager);
+
+                    // 예약정보 가져오면 리사이클러뷰 세팅
+                    reservationListAdapter = new ReservationListAdapter(reservationList, LectureRegisterdMemberListActivity.this);
+                    recyclerviewReservationList.setAdapter(reservationListAdapter);
+                }
+            }
+        };
+        lessonViewModel.getReservedMemberList(resultHandler, TrainerHomeActivity.staticLoginUserInfo.getLoginId());*/
+
     }
 
     @Override
@@ -151,6 +193,9 @@ public class LectureRegisterdMemberListActivity extends AppCompatActivity implem
                 finish();
 
                 // 레슨액티비티로 전송
+                break;
+            case R.id.btn_back: // 뒤로가기
+                onBackPressed();
                 break;
         }
     }

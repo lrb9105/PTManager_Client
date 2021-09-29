@@ -116,6 +116,7 @@ public class MemberLessonAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         // 출석체크를 하지 않았고 취소를 하지 않았다면
         if((attendanceYn == null || attendanceYn.isEmpty()) && lessonSchInfo.getCancelYn().equals("N")){
+            Log.d("예약정보 출력: ",attendanceYn + " : " + lessonSchInfo.getCancelYn());
             if("Y".equals(lessonSchInfo.getConfirmYn())){
                 confirmYnName = "예약";
             } else if(lessonSchInfo.getReservationConfirmYn().equals("M")){
@@ -129,6 +130,7 @@ public class MemberLessonAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 attendanceYnOrConfirmYn = "예약취소";
             }
         } else { // 나머진 출석관련
+            Log.d("예약정보 출력22: ",attendanceYn + " : " + lessonSchInfo.getCancelYn());
             attendanceYnName = lessonSchInfo.getAttendanceYnName();
             attendanceYnOrConfirmYn = attendanceYnName;
         }

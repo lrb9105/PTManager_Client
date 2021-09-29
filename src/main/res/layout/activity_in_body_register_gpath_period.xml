@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_add_lesson_complete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_baseline_arrow_back_ios_32"
+            android:background="@android:color/transparent"/>
+
+        <TextView
+            android:id="@+id/todayDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="기간 설정"
+            android:textSize="30sp"
+            android:layout_weight="3">
+        </TextView>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/light_blue"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp"/>
+
+    <!-- 인바디 입력 데이터 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <!-- 시작일자 -->
+        <TextView
+            android:id="@+id/inbody_graph_srt_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:text="시작 일자">
+        </TextView>
+
+        <TextView
+            android:id="@+id/inbody_graph_srt_date_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:layout_weight="3"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:hint="클릭해서 시작일자 선택">
+        </TextView>
+
+        <!-- 종료일자 -->
+        <TextView
+            android:id="@+id/inbody_graph_end_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:text="종료 일자">
+        </TextView>
+
+        <TextView
+            android:id="@+id/inbody_graph_end_date_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:hint="클릭해서 종료일자 선택">
+        </TextView>
+
+        <Button
+            android:id="@+id/btn_select_inbody_period"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="완료"
+            android:textSize="30sp"/>
+    </LinearLayout>
+</LinearLayout>

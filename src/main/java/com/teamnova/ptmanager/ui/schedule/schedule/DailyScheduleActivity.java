@@ -55,6 +55,7 @@ public class DailyScheduleActivity extends AppCompatActivity implements View.OnC
 
     public void setOnclickListener(){
         binding.btnAddLesson.setOnClickListener(this);
+        binding.btnBack.setOnClickListener(this);
     }
 
 
@@ -70,7 +71,9 @@ public class DailyScheduleActivity extends AppCompatActivity implements View.OnC
 
                 startActivity(intent);
                 break;
-
+            case R.id.btn_back: // 뒤로가기
+                onBackPressed();
+                break;
             default:
                 break;
         }

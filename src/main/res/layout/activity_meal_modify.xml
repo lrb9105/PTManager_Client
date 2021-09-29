@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_add_lesson_complete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_baseline_arrow_back_ios_32"
+            android:background="@android:color/transparent"/>
+
+        <TextView
+            android:id="@+id/todayDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="식사정보 수정"
+            android:textSize="30sp"
+            android:textColor="@color/black"
+            android:layout_weight="3">
+
+        </TextView>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/light_blue"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp"/>
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- 인바디 입력 데이터 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
+
+                <!-- 검사일시 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="25dp"
+                    android:padding="2dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/inbody_check_date_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_weight="2"
+                        android:textSize="22sp"
+                        android:text="2021.07.26">
+                    </TextView>
+                </LinearLayout>
+
+
+                <!-- 식사종류 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/meal_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:text="식사 종류">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/meal_type_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
+                        />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/light_blue"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"/>
+
+                <!-- 식사 사진 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/inbody_height"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:text="식사 사진">
+                    </TextView>
+
+                    <!-- 식사사진 여러장 보게하기 위해 -->
+                    <ImageView
+                        android:id="@+id/selected_meal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/camera"
+                        android:layout_gravity="center"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/light_blue"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"/>
+
+                <!-- 식사기록 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/meal_contents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:text="식사기록">
+                    </TextView>
+
+                    <EditText
+                        android:id="@+id/meal_contents_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:textColor="@color/black"
+                        android:layout_weight="2"
+                        android:textSize="20sp"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        android:hint="식사정보 입력">
+                    </EditText>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_meal_modify"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="완료"
+                    android:textSize="30sp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

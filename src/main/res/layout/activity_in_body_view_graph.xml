@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_add_lesson_complete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_baseline_arrow_back_ios_32"
+            android:background="@android:color/transparent"/>
+
+        <TextView
+            android:id="@+id/todayDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="인바디 변화그래프"
+            android:textSize="30sp"
+            android:layout_weight="3">
+        </TextView>
+
+        <!--        <ImageButton
+                    android:id="@+id/btn_reserve_lesson"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_baseline_add_40" />-->
+    </LinearLayout>
+    <!-- 인바디 입력 데이터 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:orientation="horizontal">
+            
+            <Button
+                android:id="@+id/btn_inbody_period"
+                android:layout_width="match_parent"
+                android:text="2021.07.01(월) - 2021.07.27(화)"
+                android:textSize="18dp"
+                android:padding="5dp"
+                android:layout_height="wrap_content"/>
+
+            <!--<TextView
+                android:id="@+id/add_repeat_sch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_weight="2"
+                android:text="기간설정"
+                android:textSize="18dp"
+                android:textColor="@color/blue" />-->
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/srt_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            
+            android:textColor="@color/black" />
+
+        <ScrollView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <!-- 체중 그래프 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="체중(kg)"
+                    android:textSize="20dp"
+                    android:textColor="@color/black" />
+                <com.jjoe64.graphview.GraphView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dip"
+                    android:layout_marginBottom="30dp"
+                    android:id="@+id/graph_weight" />
+
+                <!-- 근육량 그래프 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="근육량(kg)"
+                    android:textSize="20dp"
+                    android:textColor="@color/black" />
+                <com.jjoe64.graphview.GraphView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dip"
+                    android:layout_marginBottom="30dp"
+                    android:id="@+id/graph_muscle_mass" />
+
+                <!-- 체지방량 그래프 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="체지방량(kg)"
+                    android:textSize="20dp"
+                    android:textColor="@color/black" />
+                <com.jjoe64.graphview.GraphView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dip"
+                    android:layout_marginBottom="30dp"
+                    android:id="@+id/graph_body_fat" />
+
+                <!-- BMI 그래프 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="BMI(kg/m²)"
+                    android:textSize="20dp"
+                    android:textColor="@color/black" />
+                <com.jjoe64.graphview.GraphView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dip"
+                    android:layout_marginBottom="30dp"
+                    android:id="@+id/graph_bmi" />
+
+                <!-- 체지방률 그래프 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="체지방률(%)"
+                    android:textSize="20dp"
+                    android:textColor="@color/black" />
+                <com.jjoe64.graphview.GraphView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dip"
+                    android:layout_marginBottom="30dp"
+                    android:id="@+id/graph_body_fat_percent" />
+
+                <!-- 내장지방 그래프 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="내장지방 레벨(level)"
+                    android:textSize="20dp"
+                    android:textColor="@color/black" />
+                <com.jjoe64.graphview.GraphView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dip"
+                    android:layout_marginBottom="30dp"
+                    android:id="@+id/graph_fat_level" />
+
+                <!-- 기초대사량 그래프 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="기초대사량(kcal)"
+                    android:textSize="20dp"
+                    android:textColor="@color/black" />
+                <com.jjoe64.graphview.GraphView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dip"
+                    android:id="@+id/graph_basal_metabolic_rate" />
+
+                <!-- 기초대사량 그래프 -->
+                <com.jjoe64.graphview.GraphView
+                    android:visibility="invisible"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dip"
+                    />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</LinearLayout>

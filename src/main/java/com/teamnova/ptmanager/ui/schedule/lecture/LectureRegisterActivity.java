@@ -36,6 +36,7 @@ public class LectureRegisterActivity extends AppCompatActivity implements View.O
     // 온클릭리스너 등록
     public void setOnclickListener(){
         binding.layoutLectureType.setOnClickListener(this);
+        binding.btnBack.setOnClickListener(this);
     }
 
 
@@ -49,7 +50,9 @@ public class LectureRegisterActivity extends AppCompatActivity implements View.O
                 intent = new Intent(LectureRegisterActivity.this, LectureListActivity.class);
                 startActivity(intent);
                 break;
-
+            case R.id.btn_back: // 뒤로가기
+                onBackPressed();
+                break;
             default:
                 break;
         }

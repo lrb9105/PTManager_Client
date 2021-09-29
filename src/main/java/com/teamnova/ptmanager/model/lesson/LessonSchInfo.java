@@ -43,9 +43,13 @@ public class LessonSchInfo implements Serializable {
     private String loginId;
     @SerializedName("reservationConfirmYn")
     private String reservationConfirmYn;
+    @SerializedName("rejectReason")
+    private String rejectReason;
+    @SerializedName("cancelDenyReason")
+    private String cancelDenyReason;
 
 
-    public LessonSchInfo(String lessonSchId, String userName, String confirmYn, String confirmYnName, String repeatSchId, String lessonDate, String lessonSrtTime, String lessonEndTime, String repeatYn, String cancelYn, String cancelReason, String attendanceYn, String attendanceYnName, String memo, String lectureName, String repeatDay, String loginId, String reservationConfirmYn) {
+    public LessonSchInfo(String lessonSchId, String userName, String confirmYn, String confirmYnName, String repeatSchId, String lessonDate, String lessonSrtTime, String lessonEndTime, String repeatYn, String cancelYn, String cancelReason, String attendanceYn, String attendanceYnName, String memo, String lectureName, String repeatDay, String loginId, String reservationConfirmYn, String rejectReason, String cancelDenyReason) {
         this.lessonSchId = lessonSchId;
         this.userName = userName;
         this.confirmYn = confirmYn;
@@ -64,6 +68,8 @@ public class LessonSchInfo implements Serializable {
         this.repeatDay = repeatDay;
         this.loginId = loginId;
         this.reservationConfirmYn = reservationConfirmYn;
+        this.rejectReason = rejectReason;
+        this.cancelDenyReason = cancelDenyReason;
     }
 
     public String getLessonSchId() {
@@ -100,6 +106,14 @@ public class LessonSchInfo implements Serializable {
 
     public String getRepeatSchId() {
         return repeatSchId;
+    }
+
+    public String getCancelDenyReason() {
+        return cancelDenyReason;
+    }
+
+    public void setCancelDenyReason(String cancelDenyReason) {
+        this.cancelDenyReason = cancelDenyReason;
     }
 
     public void setRepeatSchId(String repeatSchId) {
@@ -208,5 +222,18 @@ public class LessonSchInfo implements Serializable {
 
     public void setReservationConfirmYn(String reservationConfirmYn) {
         this.reservationConfirmYn = reservationConfirmYn;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
+    }
+
+    // 데이터 있는지 여부(서버에서 무조건 객체를 가져오는데 db조회 결과가 없을 경우 id에 null이 들어있음)
+    public boolean isNoData(){
+        return lessonSchId == null;
     }
 }

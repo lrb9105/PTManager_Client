@@ -55,6 +55,10 @@ public interface LessonService {
     @POST("lesson/cancelLesson.php")
     Call<String> requestCancelLesson(@Field("lessonSchId") String lessonSchId, @Field("cancelReason") String cancelReason);
 
+    // 레슨 예약 승인/거절
+    @POST("lesson/approveReservation.php")
+    Call<String> approveReservation(@Body ArrayList<ReservationInfo> reservationList);
+
 
 
 

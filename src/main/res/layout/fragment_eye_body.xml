@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:padding="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/eyebody_compare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="@string/eyebody_compare"
+                android:layout_gravity="center_vertical"
+                android:textSize="25dp"
+                android:textColor="@color/black"
+                android:layout_marginRight="10dp"/>
+
+            <TextView
+                android:id="@+id/eyebody_compare_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="right"
+                android:text="@string/eyebody_more"
+                android:textSize="20dp"
+                android:textColor="@color/blue"
+                />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/light_blue"
+            android:layout_marginBottom="10dp"/>
+
+        <include
+            layout="@layout/item_eyebody_compare"
+            android:id="@+id/eyebody_compare_layout"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/light_blue"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:padding="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/eyebody_change"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="@string/eyebody_change"
+                android:layout_gravity="center_vertical"
+                android:textSize="25dp"
+                android:textColor="@color/black"
+                android:layout_marginRight="10dp"/>
+
+            <TextView
+                android:id="@+id/eyebody_change_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="right"
+                android:text="@string/eyebody_more"
+                android:textSize="20dp"
+                android:textColor="@color/blue"
+                />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/light_blue"
+            android:layout_marginBottom="10dp"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/eyebody_change_table">
+
+            <TableRow
+                android:id="@+id/eyebody_change_row1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <include
+                    layout="@layout/item_eyebody_change"
+                    android:id="@+id/eyebody_change_layout1"/>
+
+                <include
+                    layout="@layout/item_eyebody_change"
+                    android:id="@+id/eyebody_change_layout2"/>
+
+                <include
+                    layout="@layout/item_eyebody_change"
+                    android:id="@+id/eyebody_change_layout3"/>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/eyebody_change_row2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <include
+                    layout="@layout/item_eyebody_change"
+                    android:id="@+id/eyebody_change_layout4"/>
+
+                <include
+                    layout="@layout/item_eyebody_change"
+                    android:id="@+id/eyebody_change_layout5"/>
+
+                <include
+                    layout="@layout/item_eyebody_change"
+                    android:id="@+id/eyebody_change_layout6"/>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/eyebody_change_row3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <include
+                    layout="@layout/item_eyebody_change"
+                    android:id="@+id/eyebody_change_layout7"/>
+
+                <include
+                    layout="@layout/item_eyebody_change"
+                    android:id="@+id/eyebody_change_layout8"/>
+
+                <include
+                    layout="@layout/item_eyebody_change"
+                    android:id="@+id/eyebody_change_layout9"/>
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+</ScrollView>

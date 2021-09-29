@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.adapter.friend.FriendAddAdapter;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 /**
  * 1. [트레이너]내 강의 목록을 보여주는 액티비티
  * */
-public class LectureListActivity extends AppCompatActivity {
+public class LectureListActivity extends AppCompatActivity implements View.OnClickListener{
     // binder
     private ActivityLectureListBinding binding;
 
@@ -101,7 +102,18 @@ public class LectureListActivity extends AppCompatActivity {
             }
         };
 
+        binding.btnBack.setOnClickListener(this);
+
         // 강의목록 가져오기 통신
         lectureViewModel.getLectureList(resultHandler, trainerLoginId);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.btn_back: // 뒤로가기
+                onBackPressed();
+                break;
+        }
     }
 }

@@ -112,6 +112,7 @@ public class DayViewActivity extends AppCompatActivity {
                                 if(e.getLessonSchId().equals(lessonSchId)){
                                     e.setmName(memberInfo.getUserName() + "(취소대기)");
                                     events.set(i,e);
+                                    //events.remove(i);
                                     break;
                                 }
                             }
@@ -192,6 +193,13 @@ public class DayViewActivity extends AppCompatActivity {
                 intent.putExtra("memberInfo",memberInfo);
 
                 startActivityResult.launch(intent);
+            }
+        });
+
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
@@ -317,6 +325,8 @@ public class DayViewActivity extends AppCompatActivity {
                 } else if(lesson.getCancelYn().equals("Y")){
                     attendanceYnOrConfirmYn = "(예약취소)";
                 }
+            } else if(lesson.getReservationConfirmYn().equals("N")){
+                attendanceYnOrConfirmYn = "(예약취소)";
             } else{
                 attendanceYnName = lesson.getAttendanceYnName();
                 attendanceYnOrConfirmYn = attendanceYnName;

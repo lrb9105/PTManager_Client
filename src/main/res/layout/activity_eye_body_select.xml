@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_add_eyebody_compare"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_baseline_arrow_back_ios_32"
+            android:background="@android:color/transparent"/>
+
+        <TextView
+            android:id="@+id/textview_select_eyebody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="눈바디 선택"
+            android:textSize="30sp"
+            android:textColor="@color/black"
+            android:layout_weight="1">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/select_eyebody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="완료"
+            android:textSize="25dp"
+            android:textColor="@color/blue"/>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="1dp"
+        android:background="@color/light_blue"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_eyebody_select"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="match_parent"/>
+</LinearLayout>

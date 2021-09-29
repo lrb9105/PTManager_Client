@@ -35,10 +35,16 @@ public class ReservationInfo implements Serializable {
     private String reservationConfirmYn;
     @SerializedName("profileId")
     private String profileId;
+    @SerializedName("approvementYn")
+    private String approvementYn;
+    @SerializedName("rejectReason")
+    private String rejectReason;
+    @SerializedName("cancelReason")
+    private String cancelReason;
     private String check;
 
 
-    public ReservationInfo(String lessonSchId, String userName, String confirmYn, String confirmYnName, String lessonDate, String lessonSrtTime, String lessonEndTime, String cancelYn, String cancelReqDatetime, String attendanceYn, String attendanceYnName, String memo, String lectureName, String reservationConfirmYn, String profileId) {
+    public ReservationInfo(String lessonSchId, String userName, String confirmYn, String confirmYnName, String lessonDate, String lessonSrtTime, String lessonEndTime, String cancelYn, String cancelReqDatetime, String attendanceYn, String attendanceYnName, String memo, String lectureName, String reservationConfirmYn, String profileId, String approvementYn, String rejectReason, String cancelReason) {
         this.lessonSchId = lessonSchId;
         this.userName = userName;
         this.confirmYn = confirmYn;
@@ -54,6 +60,9 @@ public class ReservationInfo implements Serializable {
         this.lectureName = lectureName;
         this.reservationConfirmYn = reservationConfirmYn;
         this.profileId = profileId;
+        this.approvementYn = approvementYn;
+        this.rejectReason = rejectReason;
+        this.cancelReason = cancelReason;
     }
 
     public String getLessonSchId() {
@@ -183,6 +192,30 @@ public class ReservationInfo implements Serializable {
 
     public void setCheck(String check) {
         this.check = check;
+    }
+
+    public String getApprovementYn() {
+        return approvementYn;
+    }
+
+    public void setApprovementYn(String approvementYn) {
+        this.approvementYn = approvementYn;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
+    }
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
+
+    public void setCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
     }
 
     @Override

@@ -97,4 +97,22 @@ dependencies {
 
     // ViewPager2
     implementation "androidx.viewpager2:viewpager2:1.0.0"
+
+    // imagepicker
+    implementation 'com.github.maayyaannkk:ImagePicker:1.0.10'
+
+    // floating button
+    implementation 'com.oguzdev:CircularFloatingActionMenu:1.0.2'
+
+    // 그래프
+    implementation 'com.jjoe64:graphview:4.2.2'
+
+    // numberPicker
+    implementation 'biz.kasual:materialnumberpicker:1.2.1'
+
+    // swipe 아이템
+    implementation 'com.roughike:swipe-selector:1.0.6'
+
+    // expandable TextView
+    implementation 'com.ms-square:expandableTextView:0.1.4'
 }

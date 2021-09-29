@@ -21,6 +21,7 @@ import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.ui.schedule.lecture.pass.PassRegisterActivity;
 import com.teamnova.ptmanager.ui.schedule.lesson.LessonRegisterActivity;
+import com.teamnova.ptmanager.util.DialogUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -103,11 +104,9 @@ public class LectureListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             @Override
             public void onClick(View v) {
                 // 다이얼로그 출력
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                String msg = "[" + lectureInfo.getLectureName() +"] \n선택하신 강의를 추가하시겠습니까?";
 
-                builder.setMessage("[" + lectureInfo.getLectureName() +"] \n선택하신 강의를 추가하시겠습니까?");
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                DialogInterface.OnClickListener positiverActListener = new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int id)
                     {
@@ -127,10 +126,9 @@ public class LectureListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                         Log.d("강의 선택 완료", "11");
                     }
-                });
+                };
 
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                DialogUtil.msgDialog(context, msg, positiverActListener, null);
             }
         });
     }

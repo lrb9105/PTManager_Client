@@ -140,10 +140,13 @@ public class LessonDetailActivity extends AppCompatActivity implements View.OnCl
 
     // 사용자 타입에 따라 보여주는 버튼 다르게 하기
     public void setVisibleBtn(String userType){
-        if("0".equals(userType) && lessonSchInfo.getAttendanceYn() == null && lessonSchInfo.getConfirmYn().equals("Y")){ // 트레이너이고 출석/결석 하지 않았을 때
+        if("0".equals(userType) && lessonSchInfo.getAttendanceYn() == null
+                && lessonSchInfo.getConfirmYn().equals("Y")
+                && !lessonSchInfo.getCancelYn().equals("Y")
+                && !lessonSchInfo.getCancelYn().equals("M")){ // 트레이너이고 출석/결석 하지 않았을 때
             binding.layoutLessonReserve.setVisibility(View.GONE);
             Log.d("트레이너","11");
-        } else if("1".equals(userType) && lessonSchInfo.getConfirmYn().equals("Y") && lessonSchInfo.getAttendanceYn() == null ){ //일반회원이고 출석,결석하지 않았고 예약 상태일 때
+        } else if("1".equals(userType) && lessonSchInfo.getConfirmYn().equals("Y") && lessonSchInfo.getAttendanceYn() == null && !lessonSchInfo.getCancelYn().equals("Y")){ //일반회원이고 출석,결석하지 않았고 예약 상태일 때
             binding.layoutAddLessonComplete.setVisibility(View.GONE);
             Log.d("일반회원","11");
         } else if("1".equals(userType)){ // 일반회원
@@ -189,10 +192,31 @@ public class LessonDetailActivity extends AppCompatActivity implements View.OnCl
         }
 
         // 메모
-        if(lessonSchInfo.getMemo() == null){ // 메모가 없다면 ui숨기기
+        if(lessonSchInfo.getMemo() == null || lessonSchInfo.getMemo().equals("")){ // 메모가 없다면 ui숨기기
             binding.layoutMemo.setVisibility(View.GONE);
         } else{
             binding.memo.setText(lessonSchInfo.getMemo());
+        }
+
+        // 취소요청 사유
+        if(lessonSchInfo.getCancelReason() == null || lessonSchInfo.getCancelReason().equals("")){ // 취소요청 사유가 없다면 ui숨기기
+            binding.layoutCancelReq.setVisibility(View.GONE);
+        } else{
+            binding.cancelReq.setText(lessonSchInfo.getCancelReason());
+        }
+
+        // 예약 거절 사유
+        if(lessonSchInfo.getRejectReason() == null || lessonSchInfo.getRejectReason().equals("")){ // 거절 사유가 없다면 ui숨기기
+            binding.layoutRejectReason.setVisibility(View.GONE);
+        } else{
+            binding.rejectReason.setText(lessonSchInfo.getRejectReason());
+        }
+
+        // 예약취소 거절 사유
+        if(lessonSchInfo.getCancelDenyReason() == null || lessonSchInfo.getCancelDenyReason().equals("")){ // 거절 사유가 없다면 ui숨기기
+            binding.layoutCancelDenyReason.setVisibility(View.GONE);
+        } else{
+            binding.cancelDenyReason.setText(lessonSchInfo.getCancelDenyReason());
         }
 
         // 레슨상태정보(예약대기, 예약, 출석, 결석)
@@ -217,9 +241,11 @@ public class LessonDetailActivity extends AppCompatActivity implements View.OnCl
             } else if(lessonSchInfo.getCancelYn().equals("Y")){
                 attendanceYnOrConfirmYn = "(예약취소)";
             }
+        } else if(lessonSchInfo.getReservationConfirmYn().equals("N")){
+            attendanceYnOrConfirmYn = "(예약취소)";
         } else{
             attendanceYnName = lessonSchInfo.getAttendanceYnName();
-            attendanceYnOrConfirmYn = attendanceYnName;
+            attendanceYnOrConfirmYn = "(" + attendanceYnName + ")";
         }
 
         binding.lessonDetail.setText("레슨 내역" + attendanceYnOrConfirmYn);
@@ -229,6 +255,7 @@ public class LessonDetailActivity extends AppCompatActivity implements View.OnCl
     public void setOnclickListener(){
         binding.checkAttendance.setOnClickListener(this);
         binding.lessonReserveCancel.setOnClickListener(this);
+        binding.btnBack.setOnClickListener(this);
     }
 
 
@@ -242,7 +269,7 @@ public class LessonDetailActivity extends AppCompatActivity implements View.OnCl
                 intent = new Intent(LessonDetailActivity.this, LessonAttendanceActivity.class);
                 //String lessonId = ; - 시간별 일정에서 넘어올 때 레슨id를 가져옴!
 
-                intent.putExtra("lessonId", lessonSchId);
+                intent.putExtra("lessonInfo", lessonSchInfo);
                 startActivityResult.launch(intent);
 
                 break;
@@ -284,6 +311,9 @@ public class LessonDetailActivity extends AppCompatActivity implements View.OnCl
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
 
+                break;
+            case R.id.btn_back: // 뒤로가기
+                onBackPressed();
                 break;
             default:
                 break;

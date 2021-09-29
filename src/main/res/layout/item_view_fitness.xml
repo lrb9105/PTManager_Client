@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_fitness"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/light_blue"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp"/>
+
+    <TextView
+        android:id="@+id/fitness_kind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:text="벤치프레스">
+    </TextView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_blue"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp"/>
+
+    <TextView
+        android:id="@+id/fitness_set_num"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:gravity="right"
+        android:textSize="20sp"
+        android:layout_marginRight="10dp"
+        android:text="1세트        50kg X 10회">
+    </TextView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/light_blue"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp"/>
+</LinearLayout>

@@ -42,6 +42,7 @@ import com.teamnova.ptmanager.ui.schedule.lecture.LectureListActivity;
 import com.teamnova.ptmanager.ui.schedule.lecture.LectureRegisterActivity;
 import com.teamnova.ptmanager.ui.schedule.lecture.LectureRegisterdMemberListActivity;
 import com.teamnova.ptmanager.ui.schedule.lecture.pass.PassRegisterActivity;
+import com.teamnova.ptmanager.ui.schedule.reservation.ReservationApprovementActivity;
 import com.teamnova.ptmanager.ui.schedule.schedule.DailyScheduleActivity;
 import com.teamnova.ptmanager.ui.schedule.schedule.RepeatRegisterActivity;
 import com.teamnova.ptmanager.util.GetDate;
@@ -351,8 +352,13 @@ public class LessonRegisterActivity extends AppCompatActivity implements View.On
                     // 이 강의 등록회원 액티비티로 이동
                     intent = new Intent(LessonRegisterActivity.this, LectureRegisterdMemberListActivity.class);
 
-                    lectureId = lectureInfo.getLectureId();
+                   lectureId = lectureInfo.getLectureId();
 
+                    // 테스트
+                    /*Log.d("여기 안들어옴?", "123123123");
+                    intent = new Intent(this, ReservationApprovementActivity.class);
+                    startActivity(intent);
+*/
                 } else {
                     Toast.makeText(this, "강의를 선택해주세요", Toast.LENGTH_SHORT).show();
                     return;

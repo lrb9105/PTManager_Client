@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 인바디프래그먼트 홈-->
+<LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/add_inbody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="인바디등록"/>
+
+        <Button
+            android:id="@+id/graph_inbody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:text="인바디 그래프"/>
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                android:id="@+id/calendar_inBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:mcv_selectionColor="#00F" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_inBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/inBody_graph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FFFFFF"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/album"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/mainFab"
+        app:layout_constraintEnd_toEndOf="@id/mainFab"
+        app:layout_constraintStart_toStartOf="@id/mainFab"
+        app:layout_constraintTop_toTopOf="@id/mainFab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/inBodyRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FFFFFF"
+        android:src="@drawable/delete_custom"
+        android:layout_gravity="end|bottom"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/mainFab"
+        app:layout_constraintEnd_toEndOf="@id/mainFab"
+        app:layout_constraintStart_toStartOf="@id/mainFab"
+        app:layout_constraintTop_toTopOf="@id/mainFab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/mainFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/menu_change" />-->
+</LinearLayout>
