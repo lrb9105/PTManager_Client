@@ -8,26 +8,326 @@
     android:orientation="vertical"
     android:padding="15dp">
 
-    <ImageButton
-        android:id="@+id/btn_back"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="left"
-        android:src="@drawable/common_close_small_custom"
-        android:background="@android:color/transparent"/>
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/create_custom_fitness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="나만의 운동 만들기"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textSize="25sp"/>
+
+        <TextView
+            android:id="@+id/modify_custom_fitness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="나만의 운동 수정/삭제"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_weight="1"
+            android:textSize="25sp"/>
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:src="@drawable/common_close_small_custom"
+            android:background="@android:color/transparent"/>
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/light_blue"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"/>
 
     <LinearLayout
-        android:id="@+id/layout_initial_and_found"
+        android:id="@+id/layout_custom_data_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="운동이름"
+            android:textColor="@color/black"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/editText_custom_fitness_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:inputType="text"
+            android:hint="추가할 운동 이름을 입력하세요"
+            android:background="@drawable/border_line"
+            android:padding="5dp"
+            android:maxLength="100"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_radio_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="운동구분"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:layout_weight="1"
+            android:textSize="20sp"/>
+
+
+        <RadioGroup
+            android:id="@+id/radio_grp1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- 유산소 -->
+            <RadioButton
+                android:id="@+id/radio_cardio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="유산소운동" />
+            <!-- 근력 -->
+            <RadioButton
+                android:id="@+id/radio_weight"
+                android:text="근력운동"
+                android:checked="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1" />
+            <!-- 맨몸 -->
+            <RadioButton
+                android:id="@+id/radio_body"
+                android:text="맨몸운동"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_radio_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="운동 상세구분"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:layout_weight="1"
+            android:textSize="20sp"/>
+
+        <com.whygraphics.multilineradiogroup.MultiLineRadioGroup
+            xmlns:multi_line_radio_group="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/radio_grp2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            multi_line_radio_group:default_button="button_2"
+            multi_line_radio_group:max_in_row="3"
+            multi_line_radio_group:radio_buttons="@array/radio_buttons" />
+
+
+        <!--<RadioGroup
+            android:id="@+id/radio_grp2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                &lt;!&ndash; 등 &ndash;&gt;
+                <RadioButton
+                    android:id="@+id/radio_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="등" />
+                &lt;!&ndash; 가슴 &ndash;&gt;
+                <RadioButton
+                    android:id="@+id/radio_chest"
+                    android:text="가슴"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1" />
+                &lt;!&ndash; 어깨 &ndash;&gt;
+                <RadioButton
+                    android:id="@+id/radio_sholder"
+                    android:text="어깨"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1" />
+                &lt;!&ndash; 복근 &ndash;&gt;
+                <RadioButton
+                    android:id="@+id/radio_bokguen"
+                    android:text="복근"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                &lt;!&ndash; 삼두 &ndash;&gt;
+                <RadioButton
+                    android:id="@+id/radio_samdu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="삼두" />
+
+                &lt;!&ndash; 이두 &ndash;&gt;
+                <RadioButton
+                    android:id="@+id/radio_edu"
+                    android:text="이두"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+                &lt;!&ndash; 엉덩이 &ndash;&gt;
+                <RadioButton
+                    android:id="@+id/radio_hip"
+                    android:text="엉덩이"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1" />
+                &lt;!&ndash; 전신 &ndash;&gt;
+                <RadioButton
+                    android:id="@+id/radio_all_body"
+                    android:text="전신"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                &lt;!&ndash; 기타 &ndash;&gt;
+                <RadioButton
+                    android:id="@+id/radio_etc"
+                    android:text="기타"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </RadioGroup>-->
+
+        <!--<RadioGroup
+            android:id="@+id/radio_grp3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            &lt;!&ndash; 이두 &ndash;&gt;
+            <RadioButton
+                android:id="@+id/radio_edu"
+                android:text="이두"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+            &lt;!&ndash; 엉덩이 &ndash;&gt;
+            <RadioButton
+                android:id="@+id/radio_hip"
+                android:text="엉덩이"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1" />
+            &lt;!&ndash; 전신 &ndash;&gt;
+            <RadioButton
+                android:id="@+id/radio_all_body"
+                android:text="전신"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1" />
+            &lt;!&ndash; 기타 &ndash;&gt;
+            <RadioButton
+                android:id="@+id/radio_etc"
+                android:text="기타"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1" />
+        </RadioGroup>-->
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_register_custom_fitness"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="운동저장"
+        android:backgroundTint="@color/blue"
+        android:textSize="30dp"
+        android:textColor="@color/white"/>
+
+    <LinearLayout
+        android:id="@+id/layout_custom_dialog_modify_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_modify_custom_fitness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:text="운동수정"
+            android:backgroundTint="@color/blue"
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:layout_marginRight="20dp"
+            android:textColor="@color/white"/>
+
+        <Button
+            android:id="@+id/btn_delete_custom_fitness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:text="운동삭제"
+            android:backgroundTint="@color/blue"
+            android:textSize="20dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/white"/>
     </LinearLayout>
 </LinearLayout>

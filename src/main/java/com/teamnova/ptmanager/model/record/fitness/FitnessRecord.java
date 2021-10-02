@@ -15,14 +15,26 @@ public class FitnessRecord implements Serializable {
     private String fitnessKindsId;
     @SerializedName("fitnessDate")
     private String fitnessDate;
+    @SerializedName("part")
+    private String part;
+    @SerializedName("fitnessKindName")
+    private String fitnessKindName;
+    @SerializedName("fitnessType")
+    private String fitnessType;
+    @SerializedName("fitnessKindsType")
+    private String fitnessKindsType;
     @SerializedName("fitnessRecordDetailList")
     private ArrayList<FitnessRecordDetail> fitnessRecordDetailList;
 
-    public FitnessRecord(String fitnessRecordId, String userId, String fitnessKindsId, String fitnessDate, ArrayList<FitnessRecordDetail> fitnessRecordDetailList) {
+    public FitnessRecord(String fitnessRecordId, String userId, String fitnessKindsId, String fitnessDate, String part, String fitnessKindName, String fitnessType, String fitnessKindsType, ArrayList<FitnessRecordDetail> fitnessRecordDetailList) {
         this.fitnessRecordId = fitnessRecordId;
         this.userId = userId;
         this.fitnessKindsId = fitnessKindsId;
         this.fitnessDate = fitnessDate;
+        this.part = part;
+        this.fitnessKindName = fitnessKindName;
+        this.fitnessType = fitnessType;
+        this.fitnessKindsType = fitnessKindsType;
         this.fitnessRecordDetailList = fitnessRecordDetailList;
     }
 
@@ -56,6 +68,38 @@ public class FitnessRecord implements Serializable {
 
     public void setFitnessDate(String fitnessDate) {
         this.fitnessDate = fitnessDate;
+    }
+
+    public String getPart() {
+        return part;
+    }
+
+    public void setPart(String part) {
+        this.part = part;
+    }
+
+    public String getFitnessKindName() {
+        return fitnessKindName;
+    }
+
+    public void setFitnessKindName(String fitnessKindName) {
+        this.fitnessKindName = fitnessKindName;
+    }
+
+    public String getFitnessType() {
+        return fitnessType;
+    }
+
+    public void setFitnessType(String fitnessType) {
+        this.fitnessType = fitnessType;
+    }
+
+    public String getFitnessKindsType() {
+        return fitnessKindsType;
+    }
+
+    public void setFitnessKindsType(String fitnessKindsType) {
+        this.fitnessKindsType = fitnessKindsType;
     }
 
     public ArrayList<FitnessRecordDetail> getFitnessRecordDetailList() {

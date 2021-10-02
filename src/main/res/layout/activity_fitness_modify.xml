@@ -1,9 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.record.fitness.FitnessModifyActivity">
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_baseline_arrow_back_ios_32"
+            android:background="@android:color/transparent"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="운동기록 수정"
+            android:layout_gravity="center_vertical"
+            android:textSize="20dp"
+            android:textColor="@color/black"
+            android:layout_marginRight="10dp"/>
+
+        <TextView
+            android:id="@+id/btn_modify_fitness_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수정완료"
+            android:layout_gravity="center_vertical"
+            android:textSize="20dp"
+            android:textColor="@color/blue"
+            android:layout_marginRight="20dp"/>
+
+        <TextView
+            android:id="@+id/btn_delete_fitness_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="식제완료"
+            android:layout_gravity="center_vertical"
+            android:textSize="20dp"
+            android:textColor="@color/red"
+            android:layout_marginRight="10dp"/>
+
+        <!--<ImageButton
+            android:id="@+id/btn_move_to_fitness_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:padding="5dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_baseline_add_40" />-->
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/fitness_selected_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2021년 9우러 29일 (수)"
+        android:layout_gravity="center"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:layout_marginBottom="5dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview_fitness_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+</LinearLayout>

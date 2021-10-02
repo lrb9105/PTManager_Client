@@ -13,6 +13,7 @@ import com.teamnova.ptmanager.ui.changehistory.eyebody.EyeBodyFragment;
 import com.teamnova.ptmanager.ui.changehistory.inbody.InBodyFragment;
 import com.teamnova.ptmanager.ui.home.member.fragment.ChildFragment2;
 import com.teamnova.ptmanager.ui.member.memberinfo.MemberBasicInfoFragment;
+import com.teamnova.ptmanager.ui.record.fitness.FitnessFragment;
 import com.teamnova.ptmanager.ui.record.meal.MealFragment;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class MemberInfoVPAdapter extends FragmentStateAdapter {
         fragList.add(new EyeBodyFragment());
         fragList.add(new InBodyFragment());
         fragList.add(new MealFragment());
-        fragList.add(new ChildFragment2());
+        fragList.add(new FitnessFragment());
     }
 
     public MemberInfoVPAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {

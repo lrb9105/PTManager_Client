@@ -83,7 +83,7 @@ public class FitnessKindsListFragment extends Fragment {
                             // 운동입력 화면에서 받아온 운동기록
                             FitnessRecord fitnessInfo = (FitnessRecord)result.getData().getSerializableExtra("fitnessInfo");
 
-                            Intent intent = new Intent(requireActivity(), FitnessRegisterActivity.class);
+                            Intent intent = new Intent(getActivity(), FitnessRegisterActivity.class);
                             intent.putExtra("fitnessInfo", fitnessInfo);
 
                             getActivity().setResult(Activity.RESULT_OK, intent);
@@ -93,7 +93,7 @@ public class FitnessKindsListFragment extends Fragment {
                     }
                 });
         super.onCreate(savedInstanceState);
-        fitnessViewModel = new ViewModelProvider(requireActivity()).get(FitnessViewModel.class);
+        fitnessViewModel = new ViewModelProvider(getActivity()).get(FitnessViewModel.class);
     }
 
     @Override
@@ -102,83 +102,102 @@ public class FitnessKindsListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_kinds_list, container, false);
 
+        /** 즐겨찾기*/
+        if(type == 1) { //즐겨찾기 프래그먼트에만 적용되도록
+            fitnessViewModel.getFavoriteList().observe(getActivity(), fitnessKindsList -> {
+                // 리사이클러뷰 세팅
+                recyclerView = view.findViewById(R.id.recyclerview_kinds_list);
+                layoutManager = new LinearLayoutManager(getActivity());
+                recyclerView.setLayoutManager(layoutManager);
+
+                // 데이터 가져와서 adapter에 넘겨 줌
+                fitnessKindsListAdapter = new FitnessKindsListAdapter(fitnessKindsList, getActivity(),startActivityResult, fitnessViewModel, memberInfo);
+                recyclerView.setAdapter(fitnessKindsListAdapter);
+            });
+        }
+
         // getViewLifecycleOwner(): Fragment view의 라이프사이클이다. 따라서 view가 생성되는 onCreateView()에서 사용해야 한다!!
         // 부모 액트의 라이프사이클을 따라가게 하기위해 getActivity()를 사용
         fitnessViewModel.getFitnessKindsList().observe(getActivity(), fitnessKindsList -> {
             ArrayList<FitnessKinds> tempKindsList = new ArrayList<>();
             String typeStr = "";
 
-            switch (type){
-                case 1: //즐겨찾기
-                    typeStr = "즐겨찾기";
-                    break;
-                case 2: //전체
-                    tempKindsList = fitnessKindsList;
-                    break;
-                case 3: //가슴
-                    typeStr = "가슴";
-                    break;
-                case 4: //어깨
-                    typeStr = "어깨";
-                    break;
-                case 5: //등
-                    typeStr = "등";
-                    break;
-                case 6: //복근
-                    typeStr = "복근";
-                    break;
-                case 7: //삼두
-                    typeStr = "삼두";
-                    break;
-                case 8: //이두
-                    typeStr = "이두";
-                    break;
-                case 9: //엉덩이
-                    typeStr = "엉덩이";
-                    break;
-                case 10: //전신
-                    typeStr = "전신";
-                    break;
-                case 11: //코어
-                    typeStr = "코어";
-                    break;
-            }
+            if(type != 1) { // 즐겨찾기 아닌 경우
+                switch (type){
+                    case 2: //전체
+                        tempKindsList = fitnessKindsList;
+                        break;
+                    case 3: //가슴
+                        typeStr = "가슴";
+                        break;
+                    case 4: //어깨
+                        typeStr = "어깨";
+                        break;
+                    case 5: //등
+                        typeStr = "등";
+                        break;
+                    case 6: //복근
+                        typeStr = "복근";
+                        break;
+                    case 7: //삼두
+                        typeStr = "삼두";
+                        break;
+                    case 8: //이두
+                        typeStr = "이두";
+                        break;
+                    case 9: //엉덩이
+                        typeStr = "엉덩이";
+                        break;
+                    case 10: //전신
+                        typeStr = "전신";
+                        break;
+                    case 11: //코어
+                        typeStr = "코어";
+                        break;
+                    case 12: //맨몸
+                        typeStr = "맨몸";
+                        break;
+                    case 13: //유산소
+                        typeStr = "유산소";
+                        break;
+                    case 14: //기타
+                        typeStr = "기타";
+                        break;
+                }
 
-            if(!typeStr.equals("")){
-                for(int i = 0; i < fitnessKindsList.size(); i++){
-                    if(fitnessKindsList.get(i).getPart().equals(typeStr)){
-                        tempKindsList.add(fitnessKindsList.get(i));
+                if(!typeStr.equals("")){
+                    for(int i = 0; i < fitnessKindsList.size(); i++){
+                        if(fitnessKindsList.get(i).getPart().equals(typeStr)){
+                            tempKindsList.add(fitnessKindsList.get(i));
+                        }
                     }
                 }
-            }
 
-            // 리사이클러뷰 세팅
-            recyclerView = view.findViewById(R.id.recyclerview_kinds_list);
-            layoutManager = new LinearLayoutManager(requireActivity());
-            recyclerView.setLayoutManager(layoutManager);
-
-            // 데이터 가져와서 adapter에 넘겨 줌
-            fitnessKindsListAdapter = new FitnessKindsListAdapter(tempKindsList, requireActivity(),startActivityResult, fitnessViewModel, memberInfo);
-            recyclerView.setAdapter(fitnessKindsListAdapter);
-        });
-
-        /** 즐겨찾기*/
-        if(type == 1) { //즐겨찾기 프래그먼트에만 적용되도록
-            fitnessViewModel.getFavoriteList().observe(getActivity(), fitnessKindsList -> {
                 // 리사이클러뷰 세팅
                 recyclerView = view.findViewById(R.id.recyclerview_kinds_list);
-                layoutManager = new LinearLayoutManager(requireActivity());
+                layoutManager = new LinearLayoutManager(getActivity());
                 recyclerView.setLayoutManager(layoutManager);
 
                 // 데이터 가져와서 adapter에 넘겨 줌
-                fitnessKindsListAdapter = new FitnessKindsListAdapter(fitnessKindsList, requireActivity(),startActivityResult, fitnessViewModel, memberInfo);
+                fitnessKindsListAdapter = new FitnessKindsListAdapter(tempKindsList, getActivity(),startActivityResult, fitnessViewModel, memberInfo);
                 recyclerView.setAdapter(fitnessKindsListAdapter);
-            });
-        }
+            } else{
+                // DUMMY 아답터
+                fitnessKindsListAdapter = new FitnessKindsListAdapter(fitnessKindsList, getActivity(),startActivityResult, fitnessViewModel, memberInfo);
+                for(int i = 0; i < fitnessKindsList.size(); i++){
+                    if(fitnessKindsList.get(i).getIsFavoriteYn().equals("1")){
+                        // 즐겨찾기 프래그에 있는 애들은 처음부터 검은별
+                        fitnessKindsList.get(i).setFavoriteChecked(true);
+                        tempKindsList.add(fitnessKindsList.get(i));
+
+                        fitnessViewModel.getFavoriteList().setValue(tempKindsList);
+                    }
+                }
+            }
+        });
 
         /** 운동종류 검색*/
-        fitnessViewModel.getSearchText().observe(requireActivity(), searchText ->{
-
+        fitnessViewModel.getSearchText().observe(getActivity(), searchText ->{
             fitnessKindsListAdapter.getFilter().filter(searchText);
         });
 

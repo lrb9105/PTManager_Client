@@ -375,7 +375,7 @@ public class InBodyFragment extends Fragment implements View.OnClickListener{
                 Retrofit retrofit= RetrofitInstance.getRetroClient();
                 InBodyService service = retrofit.create(InBodyService.class);
 
-                String dateYMD = ""+ date.getYear() + (date.getMonth() <10 ? "0"+(date.getMonth()+1) : (date.getMonth()+1)) + (date.getDay() <10 ? "0" + date.getDay() : date.getDay());
+                String dateYMD = ""+ date.getYear() + (date.getMonth() < 9 ? "0"+(date.getMonth()+1) : (date.getMonth()+1)) + (date.getDay() <10 ? "0" + date.getDay() : date.getDay());
 
                 // http request 객체 생성
                 Call<ArrayList<InBody>> call = service.getInBodyInfo(memberInfo.getUserId(),dateYMD);

@@ -45,6 +45,12 @@ public class FitnessKindsListVPAdapter extends FragmentStateAdapter {
         fragList.add(new FitnessKindsListFragment(10, memberInfo));
         //코어
         fragList.add(new FitnessKindsListFragment(11, memberInfo));
+        //맨몸
+        fragList.add(new FitnessKindsListFragment(12, memberInfo));
+        //유산소
+        fragList.add(new FitnessKindsListFragment(13, memberInfo));
+        //기타
+        fragList.add(new FitnessKindsListFragment(14, memberInfo));
     }
 
     public FitnessKindsListVPAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {

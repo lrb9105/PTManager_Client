@@ -50,6 +50,7 @@ import com.teamnova.ptmanager.viewmodel.record.fitness.FitnessViewModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 
 import retrofit2.Call;
@@ -116,21 +117,38 @@ public class FitnessFragment extends Fragment implements View.OnClickListener{
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
+                            System.out.println("들어옴3");
                             /** HashSet에 넣어준다.*/
                             //FitnessRecord addedFitnessRecord = (FitnessRecord)result.getData().getSerializableExtra("fitnessRecord");
                             //String date = addedFitnessRecord.getFitnessDate();
 
                             String selectedDateYMD = (String)result.getData().getSerializableExtra("selectedDateYMD");
+                            ArrayList<FitnessRecord> fitnessRecordList = (ArrayList<FitnessRecord>)result.getData().getSerializableExtra("fitnessRecordList");
 
                             int year = Integer.parseInt(selectedDateYMD.substring(0,4));
                             // month는 0부터 시작!
                             int month = Integer.parseInt(selectedDateYMD.substring(4,6)) - 1;
                             int dayOfWeek = Integer.parseInt(selectedDateYMD.substring(6,8));
 
+                            // HashSet에 추가
                             CalendarDay c = CalendarDay.from(year, month, dayOfWeek);
                             dateSet.add(c);
 
+                            // 등록한 날짜가 선택되도록
+                            System.out.println(111);
+                            Calendar calendarToday = Calendar.getInstance();
+                            calendarToday.set(year, Integer.parseInt(selectedDateYMD.substring(4,6)), dayOfWeek);
+
+                            calendar.setDateSelected(calendarToday, true);
+
                             fitnessViewModel.getDateSet().setValue(dateSet);
+
+                            // 텍스트 뷰 없애기
+                            binding.btnAddFitness.setVisibility(View.GONE);
+
+                            // 등록한 데이터 받아와서 뿌려주기
+                            adapter = new FitnessListAdapter(fitnessRecordList, requireActivity(), startActivityResult2, memberInfo);
+                            recyclerView.setAdapter(adapter);
                         }
                     }
                 });
@@ -150,14 +168,37 @@ public class FitnessFragment extends Fragment implements View.OnClickListener{
 
                             // 수정 시
                             if(isModified != null && isModified.equals("true")){
-                                FitnessRecord modifiedFitnessRecord = (FitnessRecord)intent.getSerializableExtra("modifiedFitnessRecord");
-                                int position = intent.getIntExtra("position", 9999);
+                                ArrayList<FitnessRecord> modifiedFitnessRecordList = (ArrayList<FitnessRecord>)intent.getSerializableExtra("modifiedFitnessRecordList");
 
-                                // adapter의 modify실행
-                                adapter.modifyFitnessInfo(position, modifiedFitnessRecord);
-                            } else if(isDeleted != null && isDeleted.equals("true")){ // 삭제제 시
-                                int position = intent.getIntExtra("position", 9999);
-                                adapter.deleteInBodyInfo(position);
+                                // 수정 시 리사이클러뷰 데이터 수정
+                                adapter = new FitnessListAdapter(modifiedFitnessRecordList, requireActivity(), startActivityResult2, memberInfo);
+                                recyclerView.setAdapter(adapter);
+                            } else if(isDeleted != null && isDeleted.equals("true")){ // 삭제 시
+                                String deletedDay = intent.getStringExtra("deletedDay");
+
+                                System.out.println(deletedDay);
+
+                                // 삭제한 날짜의 빨간점 지우기
+                                dateSet = fitnessViewModel.getDateSet().getValue();
+
+                                int year = Integer.parseInt(deletedDay.substring(0,4));
+                                // month는 0부터 시작!
+                                int month = Integer.parseInt(deletedDay.substring(4,6)) - 1;
+                                int dayOfWeek = Integer.parseInt(deletedDay.substring(6,8));
+
+                                CalendarDay c = CalendarDay.from(year, month, dayOfWeek);
+                                System.out.println(dateSet.size());
+                                dateSet.remove(c);
+                                System.out.println(dateSet.size());
+
+                                // viewModel에 저장
+                                fitnessViewModel.getDateSet().setValue(dateSet);
+
+                                // 운동기록(리사이클러뷰 삭제)
+                                adapter.clearAllFitnessInfo();
+
+                                // 텍스트 뷰 보여주기
+                                binding.btnAddFitness.setVisibility(View.VISIBLE);
                             }
                         }
                     }
@@ -237,11 +278,6 @@ public class FitnessFragment extends Fragment implements View.OnClickListener{
         /** onClickListener 등록 */
         setOnClickListener();
 
-        /** 트레이너인 경우 비활성화*/
-        if(TrainerHomeActivity.staticLoginUserInfo != null){
-            binding.btnAddFitness.setVisibility(View.GONE);
-        }
-
         observe();
     }
 
@@ -249,6 +285,7 @@ public class FitnessFragment extends Fragment implements View.OnClickListener{
         // 날짜리스트 데이터 변경된 경우 점찍기
         fitnessViewModel.getDateSet().observe(requireActivity(), dateSet -> {
             Log.d("dateSet사이즈3: ", "" + dateSet.size());
+            calendar.removeDecorator(decorator);
 
             this.dateSet = dateSet;
 
@@ -272,9 +309,9 @@ public class FitnessFragment extends Fragment implements View.OnClickListener{
                 Retrofit retrofit= RetrofitInstance.getRetroClient();
                 FitnessService service = retrofit.create(FitnessService.class);
 
-                selectedDateYMD = ""+ date.getYear() + (date.getMonth() <10 ? "0"+(date.getMonth()+1) : (date.getMonth()+1)) + (date.getDay() <10 ? "0" + date.getDay() : date.getDay());
+                selectedDateYMD = ""+ date.getYear() + (date.getMonth() < 10 ? "0"+(date.getMonth()+1) : (date.getMonth()+1)) + (date.getDay() <10 ? "0" + date.getDay() : date.getDay());
 
-                System.out.println(selectedDateYMD);
+                System.out.println("오늘 날짜: " + selectedDateYMD);
 
                 // http request 객체 생성
                 Call<ArrayList<FitnessRecord>> call = service.getFitnessInfoByDay(memberInfo.getUserId(),selectedDateYMD);
@@ -282,6 +319,7 @@ public class FitnessFragment extends Fragment implements View.OnClickListener{
                 new GetFitnessListCall().execute(call);
 
             }
+
         });
 
         // 오늘 날짜가 선택되도록
@@ -290,7 +328,7 @@ public class FitnessFragment extends Fragment implements View.OnClickListener{
     }
 
     /**  운동 정보 가져오기 */
-    private class GetFitnessListCall extends AsyncTask<Call, Void, String> {
+    public class GetFitnessListCall extends AsyncTask<Call, Void, String> {
         private retrofit2.Response<ArrayList<FitnessRecord>> response;
         @Override
         protected void onPreExecute() {
@@ -317,16 +355,27 @@ public class FitnessFragment extends Fragment implements View.OnClickListener{
 
         @Override
         protected void onPostExecute(String result) {
-            // 결과값을 가져 왔다면 ->  db에서 아무런 데이터를 조회해오지 못하면 "[]"값을 가져온다.
-            // 인바디 정보 리사이클러뷰에 세팅
-            adapter = new FitnessListAdapter(clickedFitnessList, requireActivity(), startActivityResult2, memberInfo);
-            recyclerView.setAdapter(adapter);
-            binding.btnAddFitnessToday.setVisibility(View.VISIBLE);
+
+            //binding.btnAddFitnessToday.setVisibility(View.VISIBLE);
 
             // 데이터가 없다면
             if(result.equals("[]")){
-                adapter.clearAllFitnessInfo();
-                binding.btnAddFitnessToday.setVisibility(View.GONE);
+                if(adapter != null){
+                    adapter.clearAllFitnessInfo();
+                    //binding.btnAddFitnessToday.setVisibility(View.GONE);
+                }
+                // 탭하여 운동기록 추가버튼 생성
+                /** 트레이너가 아니라면*/
+                if(TrainerHomeActivity.staticLoginUserInfo == null){
+                    binding.btnAddFitness.setVisibility(View.VISIBLE);
+                }
+            } else {
+                // 탭하여 운동기록 추가버튼 제거
+                binding.btnAddFitness.setVisibility(View.GONE);
+                // 결과값을 가져 왔다면 ->  db에서 아무런 데이터를 조회해오지 못하면 "[]"값을 가져온다.
+                // 운동기록 정보 리사이클러뷰에 세팅
+                adapter = new FitnessListAdapter(clickedFitnessList, requireActivity(), startActivityResult2, memberInfo);
+                recyclerView.setAdapter(adapter);
             }
         }
     }

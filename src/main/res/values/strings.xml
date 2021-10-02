@@ -267,6 +267,20 @@
         <item>Mon</item>
     </string-array>
 
+    <!-- 운동상세구분 라디오 버튼 -->
+    <string-array name="radio_buttons">
+        <item>등</item>
+        <item>가슴</item>
+        <item>어깨</item>
+        <item>복근</item>
+        <item>삼두</item>
+        <item>이두</item>
+        <item>엉덩이</item>
+        <item>전신</item>
+        <item>코어</item>
+        <item>기타</item>
+    </string-array>
+
     <string name="title_activity_post_modify">PostModifyActivity</string>
     <!--
     This string is used for square devices and overridden by hello_world in

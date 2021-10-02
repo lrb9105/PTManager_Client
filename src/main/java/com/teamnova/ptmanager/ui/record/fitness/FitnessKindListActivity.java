@@ -17,8 +17,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -32,11 +38,13 @@ import com.teamnova.ptmanager.model.record.fitness.FitnessRecord;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.network.RetrofitInstance;
 import com.teamnova.ptmanager.network.record.fitness.FitnessService;
+import com.teamnova.ptmanager.test.TestActivity;
 import com.teamnova.ptmanager.ui.home.member.MemberHomeActivity;
 import com.teamnova.ptmanager.ui.home.member.ViewPagerAdapter;
 import com.teamnova.ptmanager.ui.record.fitness.adapter.FitnessKindsListVPAdapter;
 import com.teamnova.ptmanager.ui.record.fitness.adapter.FitnessListAdapter;
 import com.teamnova.ptmanager.viewmodel.record.fitness.FitnessViewModel;
+import com.whygraphics.multilineradiogroup.MultiLineRadioGroup;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +52,7 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-
+/** 운동선택 화면*/
 public class FitnessKindListActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
     // binder
     private ActivityFitnessKindListBinding binding;
@@ -67,6 +75,11 @@ public class FitnessKindListActivity extends AppCompatActivity implements View.O
     // 기록을 등록할 날짜
     private String selectedDateYMD;
 
+    // 커스텀 운동 파라미터
+    private String customFitnessName;
+    private String fitnessType;
+    private String fitnessType2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +90,22 @@ public class FitnessKindListActivity extends AppCompatActivity implements View.O
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
+                            System.out.println("들어옴");
+
                             Intent intent = new Intent(FitnessKindListActivity.this, MemberHomeActivity.class);
 
                             /** FitnessFragment에 운동을 기록한 날짜를 전달.*/
                             String selectedDateYMD = (String)result.getData().getSerializableExtra("selectedDateYMD");
+                            ArrayList<FitnessRecord> fitnessRecordList = (ArrayList<FitnessRecord>)result.getData().getSerializableExtra("fitnessRecordList");
+
+                            System.out.println("오늘 날짜: " + selectedDateYMD);
 
                             intent.putExtra("selectedDateYMD", selectedDateYMD);
+                            intent.putExtra("fitnessRecordList", fitnessRecordList);
                             setResult(Activity.RESULT_OK, intent);
+
+                            System.out.println("들어옴2");
+
                             finish();
                         }
                     }
@@ -131,7 +153,7 @@ public class FitnessKindListActivity extends AppCompatActivity implements View.O
         String[] titleArr = new String[]{"즐겨찾기","전체","가슴","어깨"
                                         ,"등","복근","삼두"
                                         ,"이두","엉덩이","전신"
-                                        ,"코어"};
+                                        ,"코어","맨몸","유산소","기타"};
 
         TabLayout tabLayout = binding.tabLayout;
         ViewPager2 viewPager2 = binding.viewPager;
@@ -173,6 +195,73 @@ public class FitnessKindListActivity extends AppCompatActivity implements View.O
                 customFitnessCreateDialog.dismiss();
             }
         });
+
+        // 운동타입1 근력운동으로 초기화
+        fitnessType = "근력운동";
+
+        // 근력 운동 선택 시
+        RadioGroup grp1 = customFitnessCreateDialog.findViewById(R.id.radio_grp1);
+
+        MultiLineRadioGroup grp2 = customFitnessCreateDialog.findViewById(R.id.radio_grp2);
+        LinearLayout layout2 = customFitnessCreateDialog.findViewById(R.id.layout_radio_2);
+
+        grp1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                RadioButton select = radioGroup.findViewById(id);
+                String selectStr = select.getText().toString();
+
+                // 근력운동 선택 시 상세 라디오 그룹 표출
+                if(selectStr.equals("근력운동")){
+                    layout2.setVisibility(View.VISIBLE);
+                } else{
+                    layout2.setVisibility(View.GONE);
+                }
+
+                fitnessType = selectStr;
+                Log.d("운동타입1:", fitnessType);
+
+            }
+        });
+
+        grp2.setOnCheckedChangeListener(new MultiLineRadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(ViewGroup group, RadioButton button) {
+                fitnessType2 = button.getText().toString();
+                Log.d("운동타입3:", fitnessType);
+            }
+        });
+
+        // 운동 저장 시
+        customFitnessCreateDialog.findViewById(R.id.btn_register_custom_fitness).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(((EditText)(customFitnessCreateDialog.findViewById(R.id.editText_custom_fitness_name))).getText().toString().equals("")){
+                    Toast.makeText(FitnessKindListActivity.this, "운동이름을 입력하세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.d("운동타입2:", fitnessType);
+
+                // 운동명
+                customFitnessName = ((EditText)(customFitnessCreateDialog.findViewById(R.id.editText_custom_fitness_name))).getText().toString();
+
+                // 운동타입 숫자로 변경
+                if(fitnessType.equals("유산소운동")){
+                    fitnessType = "0";
+                    fitnessType2 = "유산소";
+                } else if(fitnessType.equals("근력운동")) {
+                    fitnessType = "1";
+                } else if(fitnessType.equals("맨몸운동")) {
+                    fitnessType = "2";
+                    fitnessType2 = "맨몸";
+                }
+
+                registerCustomFitness(customFitnessName, fitnessType, fitnessType2);
+
+                customFitnessCreateDialog.dismiss();
+            }
+        });
     }
 
     @Override
@@ -202,21 +291,22 @@ public class FitnessKindListActivity extends AppCompatActivity implements View.O
         FitnessService service = retrofit.create(FitnessService.class);
 
         // http request 객체 생성
-        Call<ArrayList<FitnessKinds>> call = service.getFitnessKindsList();
+        Call<ArrayList<FitnessKinds>> call = service.getFitnessKindsList(memberInfo.getUserId());
         //Call<String> call = service.getFitnessKindsList2();
 
         new GetFitnessKindsListCall().execute(call);
     }
 
     /** 나만의 운동 만들기*/
-    public void registerCustomFitness(){
+    public void registerCustomFitness(String customFitnessName, String fitnessType, String fitnessType2){
         Retrofit retrofit= RetrofitInstance.getRetroClient();
         FitnessService service = retrofit.create(FitnessService.class);
 
         // 커스텀 운동
-        FitnessKinds customFitness = new FitnessKinds();
-
-        // 데이터 추가
+        FitnessKinds customFitness = new FitnessKinds(null, fitnessType2, customFitnessName, fitnessType, memberInfo.getUserId());
+        customFitness.setFavoriteChecked(false);
+        customFitness.setIsFavoriteYn("0");
+        customFitness.setChecked(false);
 
         // http request 객체 생성
         Call<String> call = service.registerCustomFitness(customFitness);
@@ -309,6 +399,11 @@ public class FitnessKindListActivity extends AppCompatActivity implements View.O
         @Override
         protected void onPostExecute(String result) {
             // viewModel에 커스텀 운동 추가!
+
+            Log.d("결과: ", result.replace("\"",""));
+            // 저장 완료 시 서버에서 id전송
+            customFitness.setFitnessKindId(result.replace("\"",""));
+
             ArrayList<FitnessKinds> currentList = fitnessViewModel.getFitnessKindsList().getValue();
             currentList.add(customFitness);
             fitnessViewModel.getFitnessKindsList().setValue(currentList);

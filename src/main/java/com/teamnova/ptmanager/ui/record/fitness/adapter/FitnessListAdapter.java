@@ -36,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 
 public class FitnessListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-    private ArrayList<FitnessRecord> fitnessList;
+    private ArrayList<FitnessRecord> fitnessRecordList;
     private Context context;
     // 수정, 삭제화면으로 이동
     private ActivityResultLauncher<Intent> startActivityResult;
@@ -57,8 +57,8 @@ public class FitnessListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public FitnessListAdapter(ArrayList<FitnessRecord> fitnessList, Context context, ActivityResultLauncher<Intent> startActivityResult, FriendInfoDto memberInfo){
-        this.fitnessList = fitnessList;
+    public FitnessListAdapter(ArrayList<FitnessRecord> fitnessRecordList, Context context, ActivityResultLauncher<Intent> startActivityResult, FriendInfoDto memberInfo){
+        this.fitnessRecordList = fitnessRecordList;
         this.context = context;
         this.startActivityResult = startActivityResult;
         this.memberInfo = memberInfo;
@@ -76,30 +76,33 @@ public class FitnessListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        /*FitnessRecord fitnessInfo = fitnessList.get(position);
+        FitnessRecord fitnessInfo = fitnessRecordList.get(position);
 
         // 운동명
-        ((FitnessListViewHolder)holder).fitness_kind.setText(fitnessInfo.getFitnessKindName());
+        ((FitnessListViewHolder)holder).fitness_kind.setText(fitnessInfo.getPart() + "|  " + fitnessInfo.getFitnessKindName());
 
-        *//** 세트, 횟수, 분 *//*
+        /** 세트, 횟수, 분 */
         // 운동타입 - 0: 근력운동, 1: 유산소운동 or 맨몸운동
         String type = fitnessInfo.getFitnessType();
         // 운동기록
         String record = "";
 
         for(FitnessRecordDetail detail : fitnessInfo.getFitnessRecordDetailList()){
-            // 근력운동
+            // 유산소운동
             if(type.equals("0")){
-                record += detail.getSetNum() + "세트" + "        " + detail.getWeight() + "kg" + " X " + detail.getNum() + "회\n";
-
-                Log.d("세트는 제대로 나오나?", "" + detail.getSetNum() + " : " + record);
-
-            } else { //유산소, 맨몸 운동 - kg이 없음, 시간에 값이 있다면 분, km에 값이 있다면 km로 하기
                 if(detail.getFitnessTimeMinute() != 0){
-                    record += detail.getSetNum() + "세트" + "        " + detail.getFitnessTimeMinute() + "분";
-                }else{
-                    record += detail.getSetNum() + "세트" + "        " + detail.getKm() + "km";
-                }
+                    record += detail.getSetNum() + "세트" + "        " + detail.getFitnessTimeMinute() + "분\n";
+                }/*else{ //맨몸운동
+                    record += detail.getSetNum() + "세트" + "        " + detail.getNum() + "회\n";
+                }*/
+            } else if(type.equals("1")){ //근력 운동
+                record += detail.getSetNum() + "세트" + "        " + detail.getWeight() + "kg" + " X " + detail.getNum() + "회\n";
+            }else{ //맨몸운동
+                if(detail.getNum() != 0){
+                    record += detail.getSetNum() + "세트" + "        " + detail.getNum() + "회\n";
+                }/*else{ //맨몸운동
+                    record += detail.getSetNum() + "세트" + "        " + detail.getNum() + "분\n";
+                }*/
             }
         }
 
@@ -109,51 +112,52 @@ public class FitnessListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ((FitnessListViewHolder)holder).layout_fitness.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                *//** 운동 수정/삭제화면으로 이동 *//*
+                /** 운동 수정/삭제화면으로 이동 */
                 Intent intent = new Intent(context, FitnessModifyActivity.class);
 
-                intent.putExtra("fitnessRecord", fitnessInfo);
+                intent.putExtra("fitnessRecordList", fitnessRecordList);
                 intent.putExtra("memberInfo", memberInfo);
+                intent.putExtra("exerciseDate", fitnessInfo.getFitnessDate());
 
                 startActivityResult.launch(intent);
             }
-        });*/
+        });
 
     }
 
     @Override
     public int getItemCount() {
-        return fitnessList.size();
+        return fitnessRecordList.size();
     }
 
     // 리사이클러뷰의 모든데이터 삭제
     public void clearAllFitnessInfo(){
-        int size = fitnessList.size();
-        fitnessList.clear();
+        int size = fitnessRecordList.size();
+        fitnessRecordList.clear();
         notifyItemRangeRemoved(0, size);
     }
 
     public ArrayList<FitnessRecord> getFitnessList() {
-        return fitnessList;
+        return fitnessRecordList;
     }
 
     // 운동기록 추가
     public void addFitnessInfo(FitnessRecord fitnessRecord){
-        fitnessList.add(fitnessRecord);
+        fitnessRecordList.add(fitnessRecord);
 
-        notifyItemInserted(fitnessList.size());
+        notifyItemInserted(fitnessRecordList.size());
     }
 
     // 운동기록 수정
     public void modifyFitnessInfo(int position, FitnessRecord fitnessRecord){
-        fitnessList.set(position,fitnessRecord);
+        fitnessRecordList.set(position,fitnessRecord);
         notifyItemChanged(position);
     }
 
     // 운동기록 삭제
     public void deleteInBodyInfo(int position){
-        fitnessList.remove(position);
+        fitnessRecordList.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, fitnessList.size());
+        notifyItemRangeChanged(position, fitnessRecordList.size());
     }
 }

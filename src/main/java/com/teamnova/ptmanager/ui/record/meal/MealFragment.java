@@ -440,7 +440,7 @@ public class MealFragment extends Fragment implements View.OnClickListener{
                 Retrofit retrofit= RetrofitInstance.getRetroClient();
                 MealService service = retrofit.create(MealService.class);
 
-                String dateYMD = ""+ date.getYear() + (date.getMonth() <10 ? "0"+(date.getMonth()+1) : (date.getMonth()+1)) + (date.getDay() <10 ? "0" + date.getDay() : date.getDay());
+                String dateYMD = ""+ date.getYear() + (date.getMonth() < 9 ? "0"+(date.getMonth()+1) : (date.getMonth()+1)) + (date.getDay() <10 ? "0" + date.getDay() : date.getDay());
 
                 // http request 객체 생성
                 Call<MealHistoryInfo> call = service.getMealList(memberInfo.getUserId(),dateYMD);

@@ -280,7 +280,7 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
                     intent.putExtra("memberInfo", memberInfo);
 
                     //date
-                    String date2 = ""+ date.getYear() + (date.getMonth() <10 ? "0"+(date.getMonth()+1) : (date.getMonth()+1)) + (date.getDay() <10 ? "0" + date.getDay() : date.getDay());
+                    String date2 = ""+ date.getYear() + (date.getMonth() < 9 ? "0"+(date.getMonth()+1) : (date.getMonth()+1)) + (date.getDay() <10 ? "0" + date.getDay() : date.getDay());
 
                     intent.putExtra("todayDate", date.getYear()+"년 " + (date.getMonth()+1) + "월 " + date.getDay() + "일");
                     intent.putExtra("todayDateForServer", date2);

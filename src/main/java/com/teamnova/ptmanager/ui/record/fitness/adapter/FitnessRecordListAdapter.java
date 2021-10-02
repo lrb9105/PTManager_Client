@@ -2,14 +2,19 @@ package com.teamnova.ptmanager.ui.record.fitness.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.teamnova.ptmanager.R;
@@ -17,6 +22,9 @@ import com.teamnova.ptmanager.model.record.fitness.FitnessKinds;
 import com.teamnova.ptmanager.model.record.fitness.FitnessRecord;
 import com.teamnova.ptmanager.model.record.fitness.FitnessRecordDetail;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
+import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
+import com.teamnova.ptmanager.ui.record.fitness.FitnessModifyActivity;
+import com.teamnova.ptmanager.util.GetDate;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -24,44 +32,65 @@ import java.util.ArrayList;
 /** 운동기록리스트 아답터*/
 public class FitnessRecordListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     // 운동종류리스트
-    private ArrayList<FitnessKinds> fitnessList;
+    //private ArrayList<FitnessKinds> fitnessList;
+
     // 운동기록을 관리하는 리스트
     private ArrayList<FitnessRecord> fitnessRecordList;
 
+    // context
     private Context context;
+    
+    // 사용자 정보
     private FriendInfoDto memberInfo;
 
     // 운동일
     private String selectedDateYMD;
 
 
-    // 인바디 사진정보 담을 뷰홀더
-    public class FitnessListViewHolder extends RecyclerView.ViewHolder {
-        TextView fitness_kind;
-        TextView fitness_set_num;
-        LinearLayout layout_fitness;
+    // 운동기록 정보를 담을 뷰홀더
+    public class FitnessRecordViewHolder extends RecyclerView.ViewHolder {
+        TextView part;
+        TextView fitnessKindName;
+        RecyclerView recyclerviewSetNum;
+        Button addSet;
+        Button deleteSet;
+        ImageView btnDeleteFitnessRecord;
 
-        public FitnessListViewHolder(View itemView) {
+        public FitnessRecordViewHolder(View itemView) {
             super(itemView);
-            fitness_kind = itemView.findViewById(R.id.fitness_kind);
-            fitness_set_num = itemView.findViewById(R.id.fitness_set_num);
-            layout_fitness = itemView.findViewById(R.id.layout_fitness);
+            part = itemView.findViewById(R.id.part);
+            fitnessKindName = itemView.findViewById(R.id.fitness_name);
+            recyclerviewSetNum = itemView.findViewById(R.id.recyclerview_set_num);
+            addSet = itemView.findViewById(R.id.add_set);
+            deleteSet = itemView.findViewById(R.id.delete_set);
+            btnDeleteFitnessRecord = itemView.findViewById(R.id.btn_delete_fitness_record);
+
+            hideBtnForModifyOrDelete();
+        }
+
+        /** 트레이너의 경우 세트 추가/삭제/ 항목삭제 못하도록 관련 버튼 안보이게 하기*/
+        public void hideBtnForModifyOrDelete() {
+            // 트레이너 라면
+            if (TrainerHomeActivity.staticLoginUserInfo != null) {
+                addSet.setVisibility(View.GONE);
+                deleteSet.setVisibility(View.GONE);
+                btnDeleteFitnessRecord.setVisibility(View.GONE);
+            }
         }
     }
 
-    public FitnessRecordListAdapter(ArrayList<FitnessKinds> fitnessList, Context context, FriendInfoDto memberInfo, String selectedDateYMD){
-        this.fitnessList = fitnessList;
+    public FitnessRecordListAdapter(ArrayList<FitnessRecord> fitnessRecordList, Context context, FriendInfoDto memberInfo, String selectedDateYMD){
+        this.fitnessRecordList = fitnessRecordList;
         this.context = context;
         this.memberInfo = memberInfo;
         this.selectedDateYMD = selectedDateYMD;
-        fitnessRecordList = makeFitnessRecordList(fitnessList);
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemInBody = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_view_fitness, parent, false);
-        FitnessListViewHolder vh = new FitnessListViewHolder(itemInBody);
+        View itemInBody = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fitness_record, parent, false);
+        FitnessRecordViewHolder vh = new FitnessRecordViewHolder(itemInBody);
 
         return vh;
     }
@@ -69,18 +98,55 @@ public class FitnessRecordListAdapter extends RecyclerView.Adapter<RecyclerView.
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        /*FitnessRecord fitnessInfo = fitnessList.get(position);
+        // 특정위치의 운동기록 객체
+        FitnessRecord fitnessRecordInfo = fitnessRecordList.get(position);
 
+        // 운동부위
+        ((FitnessRecordViewHolder)holder).part.setText(fitnessRecordInfo.getPart());
         // 운동명
-        ((FitnessListViewHolder)holder).fitness_kind.setText(fitnessInfo.getFitnessKindName());
+        ((FitnessRecordViewHolder)holder).fitnessKindName.setText(fitnessRecordInfo.getFitnessKindName());
+        // 운동기록 상세
+        ArrayList<FitnessRecordDetail> fitnessRecordInfoDetail = fitnessRecordInfo.getFitnessRecordDetailList();
 
-        *//** 세트, 횟수, 분 *//*
+        // 리사이클러뷰
+        FitnessRecordDetailListAdapter fitnessRecordDetailListAdapter = new FitnessRecordDetailListAdapter(fitnessRecordInfoDetail, context, Integer.parseInt(fitnessRecordInfo.getFitnessType()));
+        RecyclerView recyclerView = ((FitnessRecordViewHolder)holder).recyclerviewSetNum;
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(fitnessRecordDetailListAdapter);
+
+        // 세트추가 버튼 클릭
+        ((FitnessRecordViewHolder)holder).addSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 세트리스트 객체의 참조 가져오기
+                fitnessRecordDetailListAdapter.addFitnessDetailInfo();
+            }
+        });
+
+        // 세트제거 버튼 클릭
+        ((FitnessRecordViewHolder)holder).deleteSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fitnessRecordDetailListAdapter.deleteFitnessDetailInfo();
+            }
+        });
+
+        // 아이템 삭제
+        ((FitnessRecordViewHolder)holder).btnDeleteFitnessRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fitnessRecordDetailListAdapter.clearAllFitnessInfo();
+                deleteInBodyInfo(position);
+            }
+        });
+
         // 운동타입 - 0: 근력운동, 1: 유산소운동 or 맨몸운동
-        String type = fitnessInfo.getFitnessType();
-        // 운동기록
-        String record = "";
+        //String type = fitnessRecordInfo.getFitnessType();
 
-        for(FitnessRecordDetail detail : fitnessInfo.getFitnessRecordDetailList()){
+        /*// 운동기록
+        String record = "";
+        for(FitnessRecordDetail detail : fitnessRecordInfo.getFitnessRecordDetailList()){
             // 근력운동
             if(type.equals("0")){
                 record += detail.getSetNum() + "세트" + "        " + detail.getWeight() + "kg" + " X " + detail.getNum() + "회\n";
@@ -94,70 +160,42 @@ public class FitnessRecordListAdapter extends RecyclerView.Adapter<RecyclerView.
                     record += detail.getSetNum() + "세트" + "        " + detail.getKm() + "km";
                 }
             }
-        }
-
-        ((FitnessListViewHolder)holder).fitness_set_num.setText(record);
-
-        // 클릭 시 운동 수정/삭제화면으로 이동
-        ((FitnessListViewHolder)holder).layout_fitness.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                *//** 운동 수정/삭제화면으로 이동 *//*
-                Intent intent = new Intent(context, FitnessModifyActivity.class);
-
-                intent.putExtra("fitnessRecord", fitnessInfo);
-                intent.putExtra("memberInfo", memberInfo);
-
-                startActivityResult.launch(intent);
-            }
-        });*/
-
+        }*/
     }
 
     @Override
     public int getItemCount() {
-        return fitnessList.size();
+        return fitnessRecordList.size();
     }
 
     // 리사이클러뷰의 모든데이터 삭제
     public void clearAllFitnessInfo(){
-        int size = fitnessList.size();
-        fitnessList.clear();
+        int size = fitnessRecordList.size();
+        fitnessRecordList.clear();
         notifyItemRangeRemoved(0, size);
     }
 
-    public ArrayList<FitnessRecord> makeFitnessRecordList(ArrayList<FitnessKinds> fitnessList){
-        ArrayList<FitnessRecord> fitnessRecordList = new ArrayList<>();
-
-        for(FitnessKinds fitness : fitnessList){
-            FitnessRecord tempRecord = new FitnessRecord(null, memberInfo.getUserId(), fitness.getFitnessKindId(), selectedDateYMD, new ArrayList<>());
-            fitnessRecordList.add(tempRecord);
-        }
-
+    public ArrayList<FitnessRecord> getFitnessList() {
         return fitnessRecordList;
     }
 
-    public ArrayList<FitnessKinds> getFitnessList() {
-        return fitnessList;
-    }
-
     // 운동기록 추가
-    public void addFitnessInfo(FitnessKinds fitnessKind){
-        fitnessList.add(fitnessKind);
+    public void addFitnessInfo(FitnessRecord fitnessRecord){
+        fitnessRecordList.add(fitnessRecord);
 
-        notifyItemInserted(fitnessList.size());
+        notifyItemInserted(fitnessRecordList.size());
     }
 
     // 운동기록 수정
-    public void modifyFitnessInfo(int position, FitnessKinds fitnessKind){
-        fitnessList.set(position,fitnessKind);
+    public void modifyFitnessInfo(int position, FitnessRecord fitnessRecord){
+        fitnessRecordList.set(position,fitnessRecord);
         notifyItemChanged(position);
     }
 
     // 운동기록 삭제
     public void deleteInBodyInfo(int position){
-        fitnessList.remove(position);
+        fitnessRecordList.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, fitnessList.size());
+        notifyItemRangeChanged(position, fitnessRecordList.size());
     }
 }

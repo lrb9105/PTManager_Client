@@ -115,4 +115,11 @@ dependencies {
 
     // expandable TextView
     implementation 'com.ms-square:expandableTextView:0.1.4'
+    
+    // 커스텀 라디오 버튼
+    implementation 'com.github.jeffreyliu8:FlexBoxRadioGroup:0.0.8'
+
+    // 다중라인 라디오버튼
+    implementation 'com.github.Gavras:MultiLineRadioGroup:v1.0.0.6'
+
 }

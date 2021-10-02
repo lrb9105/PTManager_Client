@@ -46,6 +46,14 @@ public class FitnessKinds implements Serializable {
         this.userId = userId;
     }
 
+    public FitnessKinds(String fitnessKindId, String part, String fitnessKindName, String fitnessType, String userId) {
+        this.fitnessKindId = fitnessKindId;
+        this.part = part;
+        this.fitnessKindName = fitnessKindName;
+        this.fitnessType = fitnessType;
+        this.userId = userId;
+    }
+
     public FitnessKinds(String fitnessKindId, String part, String fitnessKindName, String savePath, String fitnessType, String writerUserId, String fitnessKindsType, String pubYn, String fitnessKindsFavoriteId, String userId, String isFavoriteYn) {
         this.fitnessKindId = fitnessKindId;
         this.part = part;

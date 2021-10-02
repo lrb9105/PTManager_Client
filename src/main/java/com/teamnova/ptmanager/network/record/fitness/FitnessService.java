@@ -41,7 +41,7 @@ public interface FitnessService {
 
     // 운동종류 리스트 가져오기
     @GET("fitness/getFitnessKindsList.php")
-    Call<ArrayList<FitnessKinds>> getFitnessKindsList();
+    Call<ArrayList<FitnessKinds>> getFitnessKindsList(@Query("userId") String userId);
 
     // 운동종류 리스트 가져오기
     @GET("fitness/getFitnessKindsList.php")
@@ -51,11 +51,37 @@ public interface FitnessService {
     @GET("fitness/getFitnessDateList.php")
     Call<ArrayList<String>> getFitnessDateList(@Query("userId") String userId);
 
-    // 운동기록 정보 저장
+    // 커스텀 운동정보 저장
     @POST("fitness/registerCustomFitness.php")
     Call<String> registerCustomFitness(@Body FitnessKinds customFitnessInfo);
 
     // 즐겨찾기 정보 수정
     @POST("fitness/modifyFavorite.php")
     Call<String> modifyFavorite(@Body FavoriteReq favoriteReq);
+
+    // 운동 기록 저장
+    @POST("fitness/registerFitnessRecordList.php")
+    Call<String> registerFitnessRecordList(@Body ArrayList<FitnessRecord> fitnessRecordList);
+
+    // 운동 기록 수정
+    @POST("fitness/modifyFitnessRecordList.php")
+    Call<String> modifyFitnessRecordList(@Body ArrayList<FitnessRecord> fitnessRecordList);
+
+    // 운동 기록 삭제
+    @POST("fitness/deleteFitnessRecordList.php")
+    Call<String> deleteFitnessRecordList(@Body ArrayList<FitnessRecord> fitnessRecordList);
+
+    // 커스텀 운동 기록 수정
+    @POST("fitness/modifyCustomFitnessInfo.php")
+    Call<String> modifyCustomFitness(@Body FitnessKinds fitnessInfo);
+
+    // 커스텀 운동 기록 삭제
+    @POST("fitness/deleteCustomFitnessInfo.php")
+    Call<String> deleteCustomFitness(@Body String fitnessKindsId);
+
+    // 커스텀 운동기록 정보 가져오기
+    @GET("fitness/getCustomFitness.php")
+    //Call<String> getCustomFitness(@Query("fitnessKindsId") String fitnessKindsId);
+    Call<FitnessKinds> getCustomFitness(@Query("fitnessKindsId") String fitnessKindsId);
+
 }
