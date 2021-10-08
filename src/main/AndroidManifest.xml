@@ -15,10 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PTManager"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ui.chatting.ChattingActivity"></activity>
         <activity
             android:name=".ui.splash.SplashActivity"
-            android:theme="@style/SplashAppTheme"
-            >
+            android:theme="@style/SplashAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,12 +26,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.record.fitness.FitnessEnterActivity" />
-        <activity android:name=".ui.record.fitness.FitnessKindListActivity" >
-            <!--<intent-filter>
+        <activity android:name=".ui.record.fitness.FitnessKindListActivity">
+
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
         <activity android:name=".ui.record.fitness.FitnessModifyActivity" />
         <activity android:name=".ui.record.fitness.FitnessRegisterActivity" />
@@ -41,7 +44,7 @@
         <activity android:name=".ui.changehistory.eyebody.EyeBodyCompareEnLargeActivity" />
         <activity android:name=".ui.changehistory.eyebody.EyeBodyEnLargeActivity" />
         <activity android:name=".ui.changehistory.inbody.InBodyRegisterGpathPeriodActivity" />
-        <activity android:name=".ui.changehistory.inbody.InBodyViewGraphActivity"/>
+        <activity android:name=".ui.changehistory.inbody.InBodyViewGraphActivity" />
         <activity android:name=".ui.changehistory.inbody.InBodyRegisterActivity" />
         <activity android:name=".ui.changehistory.eyebody.EyeBodySaveActivity" />
         <activity android:name=".ui.changehistory.eyebody.ExampleActivity" />
@@ -90,8 +93,7 @@
         </provider>
 
         <activity android:name=".ui.register.SelectProfileActivity" />
-        <activity android:name=".ui.login.LoginActivity">
-        </activity>
+        <activity android:name=".ui.login.LoginActivity"></activity>
         <activity android:name=".ui.login.findid.FindIdActivity" />
         <activity android:name=".ui.register.PrivateInfoActivity" />
         <activity android:name=".ui.register.UsingTermsActivity" />

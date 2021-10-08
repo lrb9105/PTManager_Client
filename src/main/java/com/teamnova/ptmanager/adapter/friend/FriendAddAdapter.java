@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -18,8 +19,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.teamnova.ptmanager.R;
+import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
+import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDtoWithUserId;
+import com.teamnova.ptmanager.network.RetrofitInstance;
+import com.teamnova.ptmanager.network.changehistory.inbody.InBodyService;
+import com.teamnova.ptmanager.ui.changehistory.inbody.InBodyModifyActivity;
+import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
+import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.login.LoginActivity;
 import com.teamnova.ptmanager.ui.login.findpw.FindPw3Activity;
 import com.teamnova.ptmanager.ui.member.memberinfo.MemberInfoActivity;
@@ -28,7 +36,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Retrofit;
 
+/** 트레이너 홈 화면에서 회원목록 표시 할 리사이클러뷰와 연결해주는 어댑터*/
 public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     // ViewHolder에 매칭시키기위한 친구목록 데이터
     private ArrayList<FriendInfoDto> friendsList;
@@ -126,14 +137,48 @@ public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ((FriendAddViewHolder)holder).remain_cnt_exp_date.setVisibility(View.GONE);
         }
 
+        /** 회원 클릭 시 다이얼로그 생성*/
         friendLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, MemberInfoActivity.class);
 
-                intent.putExtra("memberInfo",friendInfo);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-                context.startActivity(intent);
+                builder.setItems(new String[]{"회원정보 보기", "대화 하기"}, new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int pos)
+                    {
+                        if(pos == 0){
+                            /** 회원정보 보기 */
+                            Intent intent = new Intent(context, MemberInfoActivity.class);
+
+                            intent.putExtra("memberInfo",friendInfo);
+
+                            context.startActivity(intent);
+                        }else{
+                            /** 채팅화면 생성*/
+                            Intent intent = new Intent(context, ChattingActivity.class);
+
+                            /** 채팅참여자 정보 생성 */
+                            ArrayList<ChattingMemberDto> chatMemberList = new ArrayList<>();
+
+                            // 트레이너 정보
+                            UserInfoDto trainerInfo = TrainerHomeActivity.staticLoginUserInfo;
+                            // 회원 정보
+                            FriendInfoDto memberInfo = friendInfo;
+
+                            chatMemberList.add(ChattingMemberDto.makeChatMemberInfo(trainerInfo));
+                            chatMemberList.add(ChattingMemberDto.makeChatMemberInfo(memberInfo));
+
+                            intent.putExtra("chatMemberList",chatMemberList);
+
+                            context.startActivity(intent);
+                        }
+                    }
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
     }

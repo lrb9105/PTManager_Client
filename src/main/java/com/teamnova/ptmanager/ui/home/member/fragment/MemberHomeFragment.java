@@ -33,9 +33,11 @@ import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.adapter.friend.FriendAddAdapter;
 import com.teamnova.ptmanager.databinding.FragmentMemberHomeBinding;
 import com.teamnova.ptmanager.databinding.FragmentTrainerHomeBinding;
+import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
+import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.home.member.DayViewActivity;
 import com.teamnova.ptmanager.ui.home.member.Event;
 import com.teamnova.ptmanager.ui.home.member.ViewPagerAdapter;
@@ -43,6 +45,7 @@ import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.login.LoginActivity;
 import com.teamnova.ptmanager.ui.login.findpw.FindPw3Activity;
 import com.teamnova.ptmanager.ui.member.MemberAddActivity;
+import com.teamnova.ptmanager.ui.member.memberinfo.MemberInfoActivity;
 import com.teamnova.ptmanager.ui.schedule.schedule.DailyScheduleActivity;
 import com.teamnova.ptmanager.ui.schedule.schedule.decorator.DotDecorator;
 import com.teamnova.ptmanager.ui.schedule.schedule.decorator.SaturdayDecorator;
@@ -72,6 +75,9 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
     // 트레이너 정보를 가져오기 위한 viewModel
     private LoginViewModel loginViewModel;
     private LessonViewModel lessonViewModel;
+    
+    // 트레이너 정보
+    private UserInfoDto trainerInfo;
 
     // 회원 정보
     private FriendInfoDto memberInfo;
@@ -211,6 +217,10 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
 
         // 트레이너 정보의 변경 확인
         loginViewModel.getUserInfo().observe(requireActivity(), loginUserInfo ->{
+
+            System.out.println("=사용자아이디: " + loginUserInfo.getUserId());
+
+            trainerInfo = loginUserInfo;
             updateTrainerUi(loginUserInfo);
         });
 
@@ -289,6 +299,47 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
 
                     //startActivity(intent);
                 }
+            }
+        });
+
+        binding.layoutTrainerInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 트레이너 정보 클릭 시 프로필 정보 or 채팅 가능한 다이얼로그 출력
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+
+                builder.setItems(new String[]{"트레이너정보 보기", "대화 하기"}, new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int pos)
+                    {
+                        if(pos == 0){
+                            /** 트레이너정보 보기 */
+
+                        }else{
+                            /** 채팅화면 생성*/
+                            Intent intent = new Intent(requireActivity(), ChattingActivity.class);
+
+                            /** 채팅참여자 정보 생성 */
+                            ArrayList<ChattingMemberDto> chatMemberList = new ArrayList<>();
+
+                            // 트레이너 정보
+                            UserInfoDto trainerInfo = MemberHomeFragment.this.trainerInfo;
+
+                            // 회원 정보
+                            FriendInfoDto memberInfo = MemberHomeFragment.this.memberInfo;
+
+                            chatMemberList.add(ChattingMemberDto.makeChatMemberInfo(memberInfo));
+                            chatMemberList.add(ChattingMemberDto.makeChatMemberInfo(trainerInfo));
+
+                            intent.putExtra("chatMemberList",chatMemberList);
+
+                            requireActivity().startActivity(intent);
+                        }
+                    }
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
     }

@@ -11,11 +11,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityMemberHomeBinding;
+import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
+import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
+import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
 import com.teamnova.ptmanager.ui.changehistory.ChangeHistoryFragment;
+import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.home.member.fragment.MemberHomeFragment;
 import com.teamnova.ptmanager.ui.moreinfo.MoreInfoFragment;
 import com.teamnova.ptmanager.ui.record.RecordFragment;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
+
+import java.util.ArrayList;
 
 public class MemberHomeActivity extends AppCompatActivity {
     ActivityMemberHomeBinding binding;
@@ -100,6 +106,22 @@ public class MemberHomeActivity extends AppCompatActivity {
                     if(memberHomeFragment != null) transaction2.show(memberHomeFragment).commit();
                     if(moreInfoFragment != null) fragmentManager.beginTransaction().hide(moreInfoFragment).commit();
 
+                    break;
+                case R.id.item_chatting: // 채팅
+                    /** 채팅화면 생성*/
+                    Intent intent2 = new Intent(this, ChattingActivity.class);
+
+                    /** 채팅참여자 정보 생성 */
+                    ArrayList<ChattingMemberDto> chatMemberList = new ArrayList<>();
+
+                    // 회원 정보
+                    FriendInfoDto memberInfo = friendViewModel.getFriendInfo().getValue();
+
+                    intent2.putExtra("userInfo",ChattingMemberDto.makeChatMemberInfo(memberInfo));
+                    intent2.putExtra("chatRoomId","CHATTING_ROOM_16");
+
+                    startActivity(intent2);
+                    //transaction2.replace(binding.trainerFrame.getId(), changeHistoryFragment,"frag2").commit();
                     break;
                 case R.id.item_history: // 변화관리
                     if(changeHistoryFragment == null) {

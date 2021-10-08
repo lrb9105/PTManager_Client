@@ -8,12 +8,12 @@ import java.io.Serializable;
  *  유저 정보를 저장하는 클래스
  * */
 public class UserInfoDto  implements Serializable {
+    @SerializedName("profileId")
+    private String profileId;
     @SerializedName("userType")
     private int userType;
     @SerializedName("loginId")
     private String loginId;
-    @SerializedName("profileId")
-    private String profileId;
     @SerializedName("pw")
     private String pw;
     @SerializedName("userName")
@@ -26,6 +26,8 @@ public class UserInfoDto  implements Serializable {
     private String birth;
     @SerializedName("gender")
     private int gender;
+    @SerializedName("userId")
+    private String userId;
 
     public UserInfoDto(int userType, String loginId, String pw, String userName, String phoneNum, String branchOffice, String birth, int gender) {
         this.userType = userType;
@@ -48,6 +50,19 @@ public class UserInfoDto  implements Serializable {
         this.branchOffice = branchOffice;
         this.birth = birth;
         this.gender = gender;
+    }
+
+    public UserInfoDto(String profileId, int userType, String loginId, String pw, String userName, String phoneNum, String branchOffice, String birth, int gender, String userId) {
+        this.profileId = profileId;
+        this.userType = userType;
+        this.loginId = loginId;
+        this.pw = pw;
+        this.userName = userName;
+        this.phoneNum = phoneNum;
+        this.branchOffice = branchOffice;
+        this.birth = birth;
+        this.gender = gender;
+        this.userId = userId;
     }
 
     public int getUserType() {
@@ -120,6 +135,14 @@ public class UserInfoDto  implements Serializable {
 
     public void setProfileId(String profileId) {
         this.profileId = profileId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Override

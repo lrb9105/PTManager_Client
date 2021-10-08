@@ -28,11 +28,13 @@ import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityFindPw2Binding;
 import com.teamnova.ptmanager.databinding.ActivityHomeBinding;
 import com.teamnova.ptmanager.databinding.ActivityMainBinding;
+import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.lesson.LessonInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDtoWithUserId;
 import com.teamnova.ptmanager.test.TestActivity;
+import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerHomeFragment;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerScheduleFragment;
 import com.teamnova.ptmanager.ui.moreinfo.MoreInfoFragment;
@@ -176,10 +178,10 @@ public class TrainerHomeActivity extends AppCompatActivity {
             FragmentTransaction transaction2 = fragmentManager.beginTransaction();
 
             switch(item.getItemId()) {
-                case R.id.item_home:
+                case R.id.item_home: // 홈
                     transaction2.replace(binding.trainerFrame.getId(), trainerHomeFragment,"frag1").commit();
                     break;
-                case R.id.item_shcedule:
+                case R.id.item_shcedule: // 스케줄
                     transaction2.replace(binding.trainerFrame.getId(), trainerScheduleFragment,"frag2").commit();
                     break;
                 case R.id.item_more: // 더보기
@@ -188,6 +190,19 @@ public class TrainerHomeActivity extends AppCompatActivity {
                     }
 
                     transaction2.replace(binding.trainerFrame.getId(), moreInfoFragment,"frag2").commit();
+                    break;
+                case R.id.item_chatting: // 채팅
+                    /** 채팅화면 생성*/
+                    Intent intent2 = new Intent(this, ChattingActivity.class);
+
+                    /** 채팅참여자 정보 생성 */
+                    // 회원 정보
+                    UserInfoDto userInfo = staticLoginUserInfo;
+
+                    intent2.putExtra("userInfo",ChattingMemberDto.makeChatMemberInfo(userInfo));
+                    intent2.putExtra("chatRoomId","CHATTING_ROOM_16");
+
+                    startActivity(intent2);
                     break;
             }
             return true;
