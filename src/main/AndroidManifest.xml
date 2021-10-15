@@ -15,7 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PTManager"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.chatting.ChattingActivity"></activity>
+        <activity android:name=".test.ProfileExActivity"/>
+        <activity
+            android:name=".ui.chatting.ChattingActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.splash.SplashActivity"
             android:theme="@style/SplashAppTheme">
@@ -93,7 +96,7 @@
         </provider>
 
         <activity android:name=".ui.register.SelectProfileActivity" />
-        <activity android:name=".ui.login.LoginActivity"></activity>
+        <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.login.findid.FindIdActivity" />
         <activity android:name=".ui.register.PrivateInfoActivity" />
         <activity android:name=".ui.register.UsingTermsActivity" />

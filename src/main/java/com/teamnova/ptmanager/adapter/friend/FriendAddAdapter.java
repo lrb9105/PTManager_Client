@@ -144,7 +144,9 @@ public class FriendAddAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-                builder.setItems(new String[]{"회원정보 보기", "대화 하기"}, new DialogInterface.OnClickListener(){
+                builder.setTitle(friendInfo.getUserName());
+
+                builder.setItems(new String[]{"회원정보 보기", "채팅 하기"}, new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int pos)
                     {

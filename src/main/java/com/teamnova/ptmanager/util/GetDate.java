@@ -17,6 +17,15 @@ public class GetDate {
         return date;
     }
 
+    // 오늘날짜 출력 yyyy-MM-dd HH:mm:ss:
+    public static String getTodayDateWithTime(){
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+        String date = simpleDateFormat.format(new Date());
+        return date;
+    }
+
     // 특정날짜 출력 yyyy년 MM월 dd일
     public static String getDateWithYMD(String dateOfYYYYMMDD){
         String year = dateOfYYYYMMDD.substring(0,4);

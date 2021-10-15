@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,6 +53,7 @@ import com.teamnova.ptmanager.ui.schedule.schedule.decorator.SaturdayDecorator;
 import com.teamnova.ptmanager.ui.schedule.schedule.decorator.SundayDecorator;
 import com.teamnova.ptmanager.ui.schedule.schedule.decorator.TodayDecorator;
 import com.teamnova.ptmanager.util.GetDate;
+import com.teamnova.ptmanager.viewmodel.chatting.ChattingViewModel;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
 import com.teamnova.ptmanager.viewmodel.login.LoginViewModel;
 import com.teamnova.ptmanager.viewmodel.schedule.lesson.LessonViewModel;
@@ -75,6 +77,9 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
     // 트레이너 정보를 가져오기 위한 viewModel
     private LoginViewModel loginViewModel;
     private LessonViewModel lessonViewModel;
+
+    // 채팅관련 viewModel
+    private ChattingViewModel chattingViewModel;
     
     // 트레이너 정보
     private UserInfoDto trainerInfo;
@@ -168,6 +173,7 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
         friendViewModel = new ViewModelProvider(requireActivity()).get(FriendViewModel.class);
         loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         lessonViewModel = new ViewModelProvider(requireActivity()).get(LessonViewModel.class);
+        chattingViewModel = new ViewModelProvider(requireActivity()).get(ChattingViewModel.class);
 
         // 로그인한 회원 정보 observe
         friendViewModel.getFriendInfo().observe(requireActivity(), memberInfo -> {
@@ -308,7 +314,9 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
                 // 트레이너 정보 클릭 시 프로필 정보 or 채팅 가능한 다이얼로그 출력
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
 
-                builder.setItems(new String[]{"트레이너정보 보기", "대화 하기"}, new DialogInterface.OnClickListener(){
+                builder.setTitle(MemberHomeFragment.this.trainerInfo.getUserName());
+
+                builder.setItems(new String[]{"트레이너정보 보기", "채팅 하기"}, new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int pos)
                     {
@@ -342,6 +350,8 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
                 alertDialog.show();
             }
         });
+
+        binding.logout.setOnClickListener(this);
     }
 
     // 로그인한 회원의 ui 업데이트
@@ -409,12 +419,24 @@ public class MemberHomeFragment extends Fragment implements View.OnClickListener
     public void onClick(View v) {
         Intent intent;
 
-        /*switch(v.getId()){
-            case  R.id.btn_add_member:
+        switch(v.getId()){
+            case  R.id.logout: // 로그아웃 버튼 클릭
+                // shared 정보 삭제
+                /** 로그아웃*/
+                SharedPreferences auto = getActivity().getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = auto.edit();
+                //editor.clear()는 auto에 들어있는 모든 정보를 기기에서 지웁니다.
+                editor.clear();
+                editor.commit();
+
+                // 로그인 화면으로 이동
+                intent = new Intent(requireActivity(), LoginActivity.class);
+                startActivity(intent);
+                getActivity().finish();
 
                 break;
             default:
                 break;
-        }*/
+        }
     }
 }

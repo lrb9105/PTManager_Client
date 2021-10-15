@@ -7,20 +7,24 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * 채팅방 정보를 담는 dto
+ * 채팅방리스트에서 사용할 정보를 담는 dto
  * */
-public class ChatRoomInfoDto implements Serializable {
+public class ChatRoomInfoForListDto implements Serializable {
     @SerializedName("chattingRoomId")
     private String chattingRoomId;
     @SerializedName("chattingRoomName")
     private String chattingRoomName;
-    @SerializedName("chattingMemberList")
-    private ArrayList<ChattingMemberDto> chattingMemberList;
+    @SerializedName("latestMsg")
+    private String latestMsg;
+    @SerializedName("latestMsgTime")
+    private String latestMsgTime;
 
-    public ChatRoomInfoDto(String chattingRoomId, String chattingRoomName, ArrayList<ChattingMemberDto> chattingMemberList) {
+
+    public ChatRoomInfoForListDto(String chattingRoomId, String chattingRoomName, String latestMsg, String latestMsgTime) {
         this.chattingRoomId = chattingRoomId;
         this.chattingRoomName = chattingRoomName;
-        this.chattingMemberList = chattingMemberList;
+        this.latestMsg = latestMsg;
+        this.latestMsgTime = latestMsgTime;
     }
 
     public String getChattingRoomId() {
@@ -39,19 +43,27 @@ public class ChatRoomInfoDto implements Serializable {
         this.chattingRoomName = chattingRoomName;
     }
 
-    public ArrayList<ChattingMemberDto> getChattingMemberList() {
-        return chattingMemberList;
+    public String getLatestMsg() {
+        return latestMsg;
     }
 
-    public void setChattingMemberList(ArrayList<ChattingMemberDto> chattingMemberList) {
-        this.chattingMemberList = chattingMemberList;
+    public void setLatestMsg(String latestMsg) {
+        this.latestMsg = latestMsg;
+    }
+
+    public String getLatestMsgTime() {
+        return latestMsgTime;
+    }
+
+    public void setLatestMsgTime(String latestMsgTime) {
+        this.latestMsgTime = latestMsgTime;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ChatRoomInfoDto that = (ChatRoomInfoDto) o;
+        ChatRoomInfoForListDto that = (ChatRoomInfoForListDto) o;
         return Objects.equals(chattingRoomId, that.chattingRoomId);
     }
 

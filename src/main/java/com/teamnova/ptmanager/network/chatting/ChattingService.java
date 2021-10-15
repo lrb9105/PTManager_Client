@@ -1,6 +1,8 @@
 package com.teamnova.ptmanager.network.chatting;
 
+import com.teamnova.ptmanager.model.chatting.ChatMsgInfo;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoDto;
+import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
 import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 
@@ -21,6 +23,17 @@ public interface ChattingService {
     //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
     Call<ChatRoomInfoDto> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
 
+    /** 채팅방 리스트 정보 가져오기*/
+    @GET("chattingroom/getChattingRoomList.php")
+    //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
+    Call<ArrayList<ChatRoomInfoForListDto>> getChattingRoomList(@Query("userId") String userId);
+
+    /** 특정 채팅방의 메시지 리스트가져오기*/
+    @GET("chatting/getMsgListInfo.php")
+    //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
+    Call<ArrayList<ChatMsgInfo>> getMsgListInfo(@Query("chattingRoomId") String roomId, @Query("userId") String userId);
+
+
     /** 채팅방 정보 저장하기*/
     @POST("chattingroom/insertChatRoomInfo.php")
     Call<String> insertChatRoomInfo(@Body ChatRoomInfoDto chatRoomInfoDto);
@@ -28,6 +41,11 @@ public interface ChattingService {
     /** 채팅참여자가 속해있는 채팅방 아이디가져오기*/
     @POST("chattingroom/getExistedChatRoomId.php")
     Call<String> getExistedChatRoomId(@Body ArrayList<ChattingMemberDto> chatMemberList);
+
+    /** 채팅방의 멤버리스트 가져오기*/
+    @GET("chattingroom/getChatMemberList.php")
+    //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
+    Call<ArrayList<ChattingMemberDto>> getChatMemberList(@Query("chattingRoomId") String roomId);
 
 
     @FormUrlEncoded

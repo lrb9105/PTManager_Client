@@ -1,4 +1,4 @@
-package com.teamnova.ptmanager.ui.moreinfo;
+package com.teamnova.ptmanager.ui.chatting;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.teamnova.ptmanager.R;
+import com.teamnova.ptmanager.databinding.FragmentChattingListBinding;
 import com.teamnova.ptmanager.databinding.FragmentMoreinfoBinding;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.ui.login.LoginActivity;
@@ -22,8 +23,8 @@ import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
 /**
  * 더보기 화면 프래그먼트
  * */
-public class MoreInfoFragment extends Fragment implements View.OnClickListener {
-    FragmentMoreinfoBinding binding;
+public class MoreInfoFragment2 extends Fragment implements View.OnClickListener {
+    FragmentChattingListBinding binding;
 
     // 데이터를 공유할 viewModel
     private FriendViewModel friendViewModel;
@@ -35,7 +36,7 @@ public class MoreInfoFragment extends Fragment implements View.OnClickListener {
     private ActivityResultLauncher<Intent> startActivityResult;
 
 
-    public MoreInfoFragment() {
+    public MoreInfoFragment2() {
         // Required empty public constructor
     }
 
@@ -48,8 +49,8 @@ public class MoreInfoFragment extends Fragment implements View.OnClickListener {
      * @return A new instance of fragment TrainerHomeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MoreInfoFragment newInstance(String param1, String param2) {
-        MoreInfoFragment fragment = new MoreInfoFragment();
+    public static MoreInfoFragment2 newInstance(String param1, String param2) {
+        MoreInfoFragment2 fragment = new MoreInfoFragment2();
         return fragment;
     }
 
@@ -110,7 +111,7 @@ public class MoreInfoFragment extends Fragment implements View.OnClickListener {
         Log.d("변화기록 프래그먼트의 onCreateView", "얍얍");
 
         // binder객체 생성 및 레이아웃 사용
-        binding = FragmentMoreinfoBinding.inflate(inflater, container, false);
+        binding = FragmentChattingListBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         setOnclickListener();
@@ -122,7 +123,7 @@ public class MoreInfoFragment extends Fragment implements View.OnClickListener {
     public void initialize(){ }
 
     public void setOnclickListener(){
-        binding.logout.setOnClickListener(this);
+        //binding.logout.setOnClickListener(this);
     }
 
     @Override

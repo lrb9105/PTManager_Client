@@ -6,45 +6,27 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.teamnova.mylibrary.WeekDayView;
-import com.teamnova.mylibrary.WeekViewEvent;
 import com.teamnova.ptmanager.R;
-import com.teamnova.ptmanager.databinding.ActivityFindPw2Binding;
 import com.teamnova.ptmanager.databinding.ActivityHomeBinding;
-import com.teamnova.ptmanager.databinding.ActivityMainBinding;
-import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.lesson.LessonInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
-import com.teamnova.ptmanager.model.userInfo.UserInfoDtoWithUserId;
-import com.teamnova.ptmanager.test.TestActivity;
-import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerHomeFragment;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerScheduleFragment;
+import com.teamnova.ptmanager.ui.moreinfo.ChatListFragment2;
 import com.teamnova.ptmanager.ui.moreinfo.MoreInfoFragment;
-import com.teamnova.ptmanager.ui.register.RegisterActivity;
 import com.teamnova.ptmanager.ui.schedule.schedule.fragment.WeekSchFragment;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
 import com.teamnova.ptmanager.viewmodel.login.LoginViewModel;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class TrainerHomeActivity extends AppCompatActivity {
     // 사용자 정보를 담을 dto
@@ -69,6 +51,9 @@ public class TrainerHomeActivity extends AppCompatActivity {
 
     // 더보기 프래그먼트
     private MoreInfoFragment moreInfoFragment;
+
+    // 채팅 프래그먼트
+    private ChatListFragment2 chatListFragment;
 
     // 로그인 시 로그인 act로부터 loginId 받아옴
     private String loginId;
@@ -189,20 +174,24 @@ public class TrainerHomeActivity extends AppCompatActivity {
                         moreInfoFragment = new MoreInfoFragment();
                     }
 
-                    transaction2.replace(binding.trainerFrame.getId(), moreInfoFragment,"frag2").commit();
+                    transaction2.replace(binding.trainerFrame.getId(), moreInfoFragment,"frag3").commit();
                     break;
                 case R.id.item_chatting: // 채팅
-                    /** 채팅화면 생성*/
-                    Intent intent2 = new Intent(this, ChattingActivity.class);
+                    if(chatListFragment == null) {
+                        chatListFragment = new ChatListFragment2();
 
-                    /** 채팅참여자 정보 생성 */
+                    }
+                    transaction2.replace(binding.trainerFrame.getId(), chatListFragment,"frag4").commit();
+
+                    /*Intent intent2 = new Intent(this, ChattingActivity.class);
+
                     // 회원 정보
                     UserInfoDto userInfo = staticLoginUserInfo;
 
                     intent2.putExtra("userInfo",ChattingMemberDto.makeChatMemberInfo(userInfo));
                     intent2.putExtra("chatRoomId","CHATTING_ROOM_16");
 
-                    startActivity(intent2);
+                    startActivity(intent2);*/
                     break;
             }
             return true;
