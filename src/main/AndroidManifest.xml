@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.teamnova.ptmanager">
+
     <!-- retrofit2사용하기 위한 권한 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 카메라 사용하기 위한 권한 -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+     See README(https://goo.gl/l4GJaQ) for more. -->
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/camera" />
+    <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+         notification message. See README(https://goo.gl/6BKBk7) for more. -->
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_color"
+        android:resource="@color/colorAccent" />
 
     <application
         android:allowBackup="true"
@@ -15,10 +27,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PTManager"
         android:usesCleartextTraffic="true">
-        <activity android:name=".test.ProfileExActivity"/>
+        <service
+            android:name=".service.chatting.ChattingNotificationService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".test.ProfileExActivity" />
         <activity
             android:name=".ui.chatting.ChattingActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".ui.home.trainer.TrainerHomeActivity"/>
+        
         <activity
             android:name=".ui.splash.SplashActivity"
             android:theme="@style/SplashAppTheme">
@@ -29,7 +51,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.record.fitness.FitnessEnterActivity" />
-        <activity android:name=".ui.record.fitness.FitnessKindListActivity">
+        <activity android:name=".ui.record.fitness.FitnessKindListActivity" />
+        <activity android:name=".ui.chatting.ChattingPossibleMemberListActivity">
 
             <!--
             <intent-filter>

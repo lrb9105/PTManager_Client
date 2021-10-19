@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.teamnova.ptmanager.R;
+import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.lecture.LectureInfoDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 
@@ -28,7 +29,8 @@ import java.util.Calendar;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * 수강가능한 회원목록 보여주는 리사이클러뷰 아답터
+ * 1. 수강가능한 회원목록 보여주는 리사이클러뷰 아답터
+ * 2. 채팅가능한 회원 리스트를 보여주는 아답터
  * */
 public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 /*    private SharedPreferences sp;
@@ -36,6 +38,7 @@ public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<Rec
 
     // ViewHolder에 매칭시키기위한 회원목록 데이터
     private ArrayList<FriendInfoDto> memberList;
+    private ArrayList<ChattingMemberDto> chatMemberList;
     private Context context;
     private Activity activity;
 
@@ -66,6 +69,19 @@ public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<Rec
         this.memberList = memberList;
         this.context = context;
         this.activity = activity;
+
+        Log.d("adapter생성시 회원수 확인: ", ""+ memberList.size());
+
+        // sp생성
+        //sp = context.getSharedPreferences("memberCheck",Context.MODE_PRIVATE);
+    }
+
+    // Adapter를 생성할 때 받아오는 데이터와 컨텍스트
+    public LectureRegisteredMemberListAdapter(ArrayList<FriendInfoDto> memberList, ArrayList<ChattingMemberDto> chatMemberList, Context context, Activity activity) {
+        this.memberList = memberList;
+        this.context = context;
+        this.activity = activity;
+        this.chatMemberList = chatMemberList;
 
         Log.d("adapter생성시 회원수 확인: ", ""+ memberList.size());
 
@@ -110,6 +126,18 @@ public class LectureRegisteredMemberListAdapter extends RecyclerView.Adapter<Rec
                 memberList.set(position, memberInfo);
             }
         });
+
+        // 기존에 채팅에 참여하고 있는 사용자 정보가 있다면 그들의 체크박스를 없애기!
+        if(chatMemberList != null){
+            for(ChattingMemberDto c : chatMemberList){
+                String userId = c.getUserId();
+
+                if(memberInfo.getUserId().equals(userId)){
+                    check.setVisibility(View.GONE);
+                }
+            }
+        }
+
         int remainCnt = memberInfo.getTotalCnt() - memberInfo.getUsedCnt();
 
         // 성별

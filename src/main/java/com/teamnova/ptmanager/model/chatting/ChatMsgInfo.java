@@ -10,7 +10,7 @@ public class ChatMsgInfo implements Serializable {
     private String chattingMsgId;
     @SerializedName("chattingMemberId") //userId임!!!!
     private String chattingMemberId;
-    @SerializedName("chattingMemberName") //userId임!!!!
+    @SerializedName("chattingMemberName")
     private String chattingMemberName;
     @SerializedName("chattingRoomId")
     private String chattingRoomId;
@@ -18,14 +18,20 @@ public class ChatMsgInfo implements Serializable {
     private String msg;
     @SerializedName("creDatetime")
     private String creDatetime;
+    @SerializedName("notReadUserCount")
+    private int notReadUserCount;
+    @SerializedName("msgIdx")
+    private int msgIdx;
 
-    public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime) {
+    public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime, int notReadUserCount, int msgIdx) {
         this.chattingMsgId = chattingMsgId;
         this.chattingMemberId = chattingMemberId;
         this.chattingMemberName = chattingMemberName;
         this.chattingRoomId = chattingRoomId;
         this.msg = msg;
         this.creDatetime = creDatetime;
+        this.notReadUserCount = notReadUserCount;
+        this.msgIdx = msgIdx;
     }
 
     public String getChattingMsgId() {
@@ -74,5 +80,21 @@ public class ChatMsgInfo implements Serializable {
 
     public void setCreDatetime(String creDatetime) {
         this.creDatetime = creDatetime;
+    }
+
+    public int getNotReadUserCount() {
+        return notReadUserCount;
+    }
+
+    public void setNotReadUserCount(int notReadUserCount) {
+        this.notReadUserCount = notReadUserCount;
+    }
+
+    public int getMsgIdx() {
+        return msgIdx;
+    }
+
+    public void setMsgIdx(int msgIdx) {
+        this.msgIdx = msgIdx;
     }
 }

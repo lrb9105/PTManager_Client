@@ -7,13 +7,16 @@ import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
 import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.network.RetrofitInstance;
 import com.teamnova.ptmanager.network.chatting.ChattingService;
+import com.teamnova.ptmanager.ui.chatting.sync.SyncDeleteMember;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncGetChatMemberList;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncGetChatRoomInfo;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncGetChatRoomList;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncGetExistedChatRoomId;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncInsertChatRoomInfo;
+import com.teamnova.ptmanager.ui.chatting.sync.SyncInsertMemberList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -143,5 +146,49 @@ public class ChattingRoomManager {
         }
 
         return t.getRoomId();
+    }
+
+    /** 초대된 사용자 정보를 저장하라 */
+    public void insertMemberList(ArrayList<ChattingMemberDto> chatMemberList, String chatRoomId){
+        ChattingService service = retrofit.create(ChattingService.class);
+
+
+        // http request 객체 생성
+        // HashMap될까?
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("roomId", chatRoomId);
+        hashMap.put("chatMemberList", chatMemberList);
+
+        Call<String> call = service.insertMemberList(hashMap);
+
+        // 서버에 데이터를 저장하는 동기 함수의 쓰레드
+        SyncInsertMemberList t = new SyncInsertMemberList(call);
+        t.start();
+
+        try {
+            // 쓰레드에서 데이터를 저장할 때 main쓰레드는 중지를 시켜야 하므로 join()사용
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /** 채팅을 나간 참여자 정보 삭제요청*/
+    public void deleteMemberFromChatRoom(HashMap<String , String> map){
+        ChattingService service = retrofit.create(ChattingService.class);
+
+        Call<String> call = service.deleteMemberFromChatRoom(map);
+
+        // 서버에 데이터를 저장하는 동기 함수의 쓰레드
+        SyncDeleteMember t = new SyncDeleteMember(call);
+        t.start();
+
+        try {
+            // 쓰레드에서 데이터를 저장할 때 main쓰레드는 중지를 시켜야 하므로 join()사용
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

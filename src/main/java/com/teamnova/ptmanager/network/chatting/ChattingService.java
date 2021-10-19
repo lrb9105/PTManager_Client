@@ -7,9 +7,11 @@ import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -38,6 +40,11 @@ public interface ChattingService {
     @POST("chattingroom/insertChatRoomInfo.php")
     Call<String> insertChatRoomInfo(@Body ChatRoomInfoDto chatRoomInfoDto);
 
+    /** 새로 초대한 인원 저장하기*/
+    @POST("chattingroom/insertMemberList.php")
+    Call<String> insertMemberList(@Body HashMap hashMap);
+
+
     /** 채팅참여자가 속해있는 채팅방 아이디가져오기*/
     @POST("chattingroom/getExistedChatRoomId.php")
     Call<String> getExistedChatRoomId(@Body ArrayList<ChattingMemberDto> chatMemberList);
@@ -46,6 +53,11 @@ public interface ChattingService {
     @GET("chattingroom/getChatMemberList.php")
     //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
     Call<ArrayList<ChattingMemberDto>> getChatMemberList(@Query("chattingRoomId") String roomId);
+
+    /** 채팅방을 나간 회원 삭제요청*/
+    @POST("chattingroom/deleteMemberFromChatRoom.php")
+    //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
+    Call<String> deleteMemberFromChatRoom(@Body HashMap hashMap);
 
 
     @FormUrlEncoded

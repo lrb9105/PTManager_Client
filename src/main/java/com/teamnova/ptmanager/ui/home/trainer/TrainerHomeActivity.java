@@ -18,6 +18,7 @@ import com.teamnova.ptmanager.databinding.ActivityHomeBinding;
 import com.teamnova.ptmanager.model.lesson.LessonInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
+import com.teamnova.ptmanager.service.chatting.ChattingNotificationService;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerHomeFragment;
 import com.teamnova.ptmanager.ui.home.trainer.fragment.TrainerScheduleFragment;
 import com.teamnova.ptmanager.ui.moreinfo.ChatListFragment2;
@@ -71,6 +72,9 @@ public class TrainerHomeActivity extends AppCompatActivity {
 
         // 기존에는 layout이 들어갔는데 대신 getRoot를 넣어준다.
         setContentView(binding.getRoot());
+
+        // 앱이 시작되면 이 값을 true로 변경한다.
+        ChattingNotificationService.isActRunning = true;
 
         initialize();
 

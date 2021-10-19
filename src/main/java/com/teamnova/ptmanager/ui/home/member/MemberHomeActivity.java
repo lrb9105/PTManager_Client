@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityMemberHomeBinding;
+import com.teamnova.ptmanager.service.chatting.ChattingNotificationService;
 import com.teamnova.ptmanager.ui.changehistory.ChangeHistoryFragment;
 import com.teamnova.ptmanager.ui.home.member.fragment.MemberHomeFragment;
 import com.teamnova.ptmanager.ui.moreinfo.ChatListFragment2;
@@ -47,6 +48,9 @@ public class MemberHomeActivity extends AppCompatActivity {
 
         // 기존에는 layout이 들어갔는데 대신 getRoot를 넣어준다.
         setContentView(binding.getRoot());
+
+        // 앱이 시작되면 이 값을 true로 변경한다.
+        ChattingNotificationService.isActRunning = true;
         
         super.onCreate(savedInstanceState);
 

@@ -54,7 +54,6 @@ public class LoginApiClient {
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.d("로그인실패: ", t.getMessage());
-                Log.d("로그인실패: ", t.getCause().getMessage());
                 loginResult.postValue(null);
 
             }

@@ -29,6 +29,20 @@ android:layout_height="wrap_content">
         app:layout_constraintTop_toBottomOf="@+id/textView_date" />
 
     <TextView
+        android:id="@+id/not_read_user_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_weight="1"
+        android:textSize="15sp"
+        android:text="1"
+        android:textColor="@color/yellow"
+        app:layout_constraintBottom_toBottomOf="@+id/user_profile"
+        app:layout_constraintEnd_toStartOf="@+id/textViewMyTime" />
+
+    <TextView
         android:id="@+id/editText_MyMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -20,6 +20,7 @@ import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.adapter.lecture.LectureRegisteredMemberListAdapter;
 import com.teamnova.ptmanager.databinding.ActivityChattingPossibleMemberListBinding;
 import com.teamnova.ptmanager.databinding.ActivityLectureRegisterdMemberListBinding;
+import com.teamnova.ptmanager.manager.ChattingRoomManager;
 import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
@@ -46,9 +47,14 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
     private RecyclerView recyclerView_member_list;
     private RecyclerView.LayoutManager layoutManager;
 
+    // 기존에 생성된 대화방의 채팅 참여자 리스트
+    private ArrayList<ChattingMemberDto> chatMemberList;
 
     // setResult를 사용하기 위해 해당 액티비티의 참조를 adapter로 보내 줌.
     private Activity activity;
+
+    // 사용자 id
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +77,7 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
 
     // 초기화
     public void initialize(){
-        // lectureiewModel 초기화
+        // viewModel 초기화
         friendViewModel = new ViewModelProvider(this).get(FriendViewModel.class);
 
         // 채팅참여자 정보
@@ -79,8 +85,23 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
         ChattingMemberDto chattingMemberDto = null;
 
         if(intent != null){
-            // 채팅방 생성자 정보
+            // 채팅방 생성자 정보 - 채팅방리스트에서 새로운 대화방 생성 시
             chattingMemberDto = (ChattingMemberDto)intent.getSerializableExtra("chattingMemberDto");
+
+            // 생성된 대화방에서 새로운 사용자 초대 시
+            if(chattingMemberDto == null) {
+                userId = intent.getStringExtra("userId");
+
+                chatMemberList = (ArrayList<ChattingMemberDto>)intent.getSerializableExtra("chatMemberList");
+
+                // 로그인한 사용자(트레이너)의 정보를 chattingMemberDto에 넣는다.
+                for(ChattingMemberDto member : chatMemberList){
+                    if(userId.equals(member.getUserId())){
+                        chattingMemberDto = member;
+                        break;
+                    }
+                }
+            }
         }
 
         // Retrofit 통신 핸들러
@@ -88,12 +109,15 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
             @Override
             public void handleMessage(@NonNull Message msg) {
                 // 회원 목록 가져오기 성공
-                if(msg.what == 1){
+                if(msg.what == 0){
                     // 회원 목록 가져오기
                     // 회원 목록 데이터 가져 옴
                     ArrayList<FriendInfoDto> registeredMemberList = (ArrayList<FriendInfoDto>)msg.obj;
 
-                    if(registeredMemberList != null){
+                    System.out.println("회원리스트 사이즈: " + registeredMemberList.size());
+
+                    // 새로운 대화방 생성 시, 채팅에 참여중인 회원리스트가 없음!
+                    if(registeredMemberList != null && chatMemberList == null){
                         // 리사이클러뷰 세팅
                         recyclerView_member_list = binding.recyclerviewMemberList;
                         layoutManager = new LinearLayoutManager(ChattingPossibleMemberListActivity.this);
@@ -101,6 +125,16 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
 
                         // 데이터 가져와서 adapter에 넘겨 줌
                         lectureRegisteredMemberListAdapter = new LectureRegisteredMemberListAdapter(registeredMemberList, ChattingPossibleMemberListActivity.this, activity);
+                        recyclerView_member_list.setAdapter(lectureRegisteredMemberListAdapter);
+                    } else if(chatMemberList != null) { // 생성된 대화방에서 새로운 사용자 초대 시, 채팅에 참여중인 회원리스트가 있음!
+                        // 리사이클러뷰 세팅
+                        recyclerView_member_list = binding.recyclerviewMemberList;
+                        layoutManager = new LinearLayoutManager(ChattingPossibleMemberListActivity.this);
+                        recyclerView_member_list.setLayoutManager(layoutManager);
+
+                        // 데이터 가져와서 adapter에 넘겨 줌
+                        // 채팅 참여자의 정보도 함께 넘겨주고 채팅 참여자의 경우 체크박스를 없앤다!!!
+                        lectureRegisteredMemberListAdapter = new LectureRegisteredMemberListAdapter(registeredMemberList, chatMemberList, ChattingPossibleMemberListActivity.this, activity);
                         recyclerView_member_list.setAdapter(lectureRegisteredMemberListAdapter);
                     } else{
                         Toast.makeText(ChattingPossibleMemberListActivity.this, "대화초대가 가능한 회원이 없습니다.", Toast.LENGTH_SHORT).show();
@@ -128,7 +162,7 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
                 /** 채팅참여자 정보 생성 */
                 ArrayList<ChattingMemberDto> chatMemberList = new ArrayList<>();
 
-                // 트레이너 정보
+                // 트레이너 정보 - 현재 채팅리스트에서 대화방 생성은 트레이너밖에 못하므로 트레이너 정보를 가져 옴
                 UserInfoDto trainerInfo = TrainerHomeActivity.staticLoginUserInfo;
 
                 chatMemberList.add(ChattingMemberDto.makeChatMemberInfo(trainerInfo));
@@ -148,16 +182,27 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
                         Log.d("getCheck()가 null: ", member.getUserId());
                     }
                 }
+                Intent intent = new Intent(this, ChattingActivity.class);
 
-                Intent intent = null;
+                // 새로운 방 생성 시
+                if(userId == null) {
+                    intent.putExtra("chatMemberList",chatMemberList);
 
-                intent = new Intent(this, ChattingActivity.class);
+                    startActivity(intent);
 
-                intent.putExtra("chatMemberList",chatMemberList);
+                } else { // 기존에 생성된 대화방에서 새로운 사용자 초대 시
+                    // 새로 생성된 초대자 리스트에서 첫번쨰는 트레이너 아이디 이므로 지워준다!
+                    chatMemberList.remove(0);
 
-                startActivity(intent);
+                    intent.putExtra("chatMemberList",chatMemberList);
+
+                    setResult(Activity.RESULT_OK, intent);
+                }
+
 
                 finish();
+
+
                 break;
             case R.id.btn_back: // 뒤로가기
                 onBackPressed();

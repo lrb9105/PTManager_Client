@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.model.chatting.ChatMsgInfo;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
@@ -33,9 +34,9 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private Context context;
     private ActivityResultLauncher<Intent> startActivity;
     private String userID;
-    private HashMap<String, Bitmap> userProfileMap;
+    private HashMap<String, String> userProfileMap;
 
-    public ChattingMsgListAdapter(ArrayList<ChatMsgInfo> chattingMsgList, Context context, ActivityResultLauncher<Intent> startActivity, String userId, HashMap<String, Bitmap> userProfileMap){
+    public ChattingMsgListAdapter(ArrayList<ChatMsgInfo> chattingMsgList, Context context, ActivityResultLauncher<Intent> startActivity, String userId, HashMap<String, String> userProfileMap){
         this.chattingMsgList = chattingMsgList;
         this.context = context;
         this.startActivity = startActivity;
@@ -51,6 +52,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         TextView editText_MyMsg;
         TextView textViewMyTime;
         CircleImageView user_profile;
+        TextView not_read_user_count;
 
         public MyMsgViewHolder(View itemView) {
             super(itemView);
@@ -61,6 +63,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             editText_MyMsg = itemView.findViewById(R.id.editText_MyMsg);
             textViewMyTime = itemView.findViewById(R.id.textViewMyTime);
             user_profile = itemView.findViewById(R.id.user_profile);
+            not_read_user_count = itemView.findViewById(R.id.not_read_user_count);
         }
     }
 
@@ -72,6 +75,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         TextView editText_OpponentMsg;
         TextView textView_oppo_time;
         CircleImageView user_profile;
+        TextView not_read_user_count;
 
         public OpponentMsgViewHolderViewHolder(View itemView) {
             super(itemView);
@@ -82,6 +86,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             editText_OpponentMsg = itemView.findViewById(R.id.editText_OpponentMsg);
             textView_oppo_time = itemView.findViewById(R.id.textView_oppo_time);
             user_profile = itemView.findViewById(R.id.user_profile);
+            not_read_user_count = itemView.findViewById(R.id.not_read_user_count);
         }
     }
 
@@ -93,6 +98,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         TextView editText_MyMsg;
         TextView textViewMyTime;
         CircleImageView user_profile;
+        TextView not_read_user_count;
 
         public MyMsgViewHolderWithDay(View itemView) {
             super(itemView);
@@ -103,6 +109,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             editText_MyMsg = itemView.findViewById(R.id.editText_MyMsg);
             textViewMyTime = itemView.findViewById(R.id.textViewMyTime);
             user_profile = itemView.findViewById(R.id.user_profile);
+            not_read_user_count = itemView.findViewById(R.id.not_read_user_count);
         }
     }
 
@@ -116,6 +123,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         TextView editText_OpponentMsg;
         TextView textView_oppo_time;
         CircleImageView user_profile;
+        TextView not_read_user_count;
 
         public OpponentMsgViewHolderViewHolderWithDay(View itemView) {
             super(itemView);
@@ -127,6 +135,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             editText_OpponentMsg = itemView.findViewById(R.id.editText_OpponentMsg);
             textView_oppo_time = itemView.findViewById(R.id.textView_oppo_time);
             user_profile = itemView.findViewById(R.id.user_profile);
+            not_read_user_count = itemView.findViewById(R.id.not_read_user_count);
         }
     }
 
@@ -175,28 +184,85 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         // 내가 작성한 메시지일 경우
         if(holder instanceof MyMsgViewHolder){
-            // 프로필, 메시지, 시간 세팅
-            ((MyMsgViewHolder)holder).user_profile.setImageBitmap(userProfileMap.get(chattingDto.getChattingMemberId()));
+            /** 프로필, 메시지, 시간 세팅 */
+
+            // 프로필 id가 null이라면
+            if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
+                ((MyMsgViewHolder)holder).user_profile.setImageDrawable(context.getDrawable(R.drawable.profile_boy));
+            } else{
+                Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((MyMsgViewHolder)holder).user_profile);
+            }
+
             ((MyMsgViewHolder)holder).editText_MyMsg.setText(chattingDto.getMsg());
             ((MyMsgViewHolder)holder).textViewMyTime.setText(chattingDto.getCreDatetime());
+
+            ((MyMsgViewHolder)holder).not_read_user_count.setVisibility(View.GONE);
+
+            if(chattingDto.getNotReadUserCount() <= 0){
+                ((MyMsgViewHolder)holder).not_read_user_count.setVisibility(View.GONE);
+            } else {
+                ((MyMsgViewHolder)holder).not_read_user_count.setVisibility(View.VISIBLE);
+
+                ((MyMsgViewHolder)holder).not_read_user_count.setText(chattingDto.getNotReadUserCount());
+            }
         } else if(holder instanceof OpponentMsgViewHolderViewHolder){ //상대방이 작성한 메시지인 경우
-            ((OpponentMsgViewHolderViewHolder)holder).user_profile.setImageBitmap(userProfileMap.get(chattingDto.getChattingMemberId()));
+            if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
+                ((OpponentMsgViewHolderViewHolder)holder).user_profile.setImageDrawable(context.getDrawable(R.drawable.profile_boy));
+            } else{
+                Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((OpponentMsgViewHolderViewHolder)holder).user_profile);
+            }
             ((OpponentMsgViewHolderViewHolder)holder).textView_oppo_nickName.setText(chattingDto.getChattingMemberName());
             ((OpponentMsgViewHolderViewHolder)holder).editText_OpponentMsg.setText(chattingDto.getMsg());
             ((OpponentMsgViewHolderViewHolder)holder).textView_oppo_time.setText(chattingDto.getCreDatetime());
+
+            ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setVisibility(View.GONE);
+
+            if(chattingDto.getNotReadUserCount() <= 0){
+                ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setVisibility(View.GONE);
+            } else {
+                ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setVisibility(View.VISIBLE);
+
+                ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setText(chattingDto.getNotReadUserCount());
+            }
         } else if(holder instanceof MyMsgViewHolderWithDay){ //내가 작성했고 날짜를 보여줘야 하는 경우
-            ((MyMsgViewHolderWithDay)holder).user_profile.setImageBitmap(userProfileMap.get(chattingDto.getChattingMemberId()));
+            if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
+                ((MyMsgViewHolderWithDay)holder).user_profile.setImageDrawable(context.getDrawable(R.drawable.profile_boy));
+            } else{
+                Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((MyMsgViewHolderWithDay)holder).user_profile);
+            }
             ((MyMsgViewHolderWithDay)holder).editText_MyMsg.setText(chattingDto.getMsg());
             ((MyMsgViewHolderWithDay)holder).textViewMyTime.setText(chattingDto.getCreDatetime());
             ((MyMsgViewHolderWithDay)holder).textView_date.setText(getDate(chattingDto.getCreDatetime()));
 
+            ((MyMsgViewHolderWithDay)holder).not_read_user_count.setVisibility(View.GONE);
+
+            if(chattingDto.getNotReadUserCount() <= 0){
+                ((MyMsgViewHolderWithDay)holder).not_read_user_count.setVisibility(View.GONE);
+            } else {
+                ((MyMsgViewHolderWithDay)holder).not_read_user_count.setVisibility(View.VISIBLE);
+
+                ((MyMsgViewHolderWithDay)holder).not_read_user_count.setText(chattingDto.getNotReadUserCount());
+            }
         } else if(holder instanceof OpponentMsgViewHolderViewHolderWithDay){ //상대방이 작성했고 날짜를 보여줘야 하는 경우
-            ((OpponentMsgViewHolderViewHolderWithDay)holder).user_profile.setImageBitmap(userProfileMap.get(chattingDto.getChattingMemberId()));
+            if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
+                ((OpponentMsgViewHolderViewHolderWithDay)holder).user_profile.setImageDrawable(context.getDrawable(R.drawable.profile_boy));
+            } else{
+                Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((OpponentMsgViewHolderViewHolderWithDay)holder).user_profile);
+            }
             ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_oppo_nickName.setText(chattingDto.getChattingMemberName());
             ((OpponentMsgViewHolderViewHolderWithDay)holder).editText_OpponentMsg.setText(chattingDto.getMsg());
             ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_oppo_time.setText(chattingDto.getCreDatetime());
             ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_date.setText(getDate(chattingDto.getCreDatetime()));
 
+            ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setVisibility(View.GONE);
+
+            if(chattingDto.getNotReadUserCount() <= 0){
+                ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setVisibility(View.GONE);
+            } else {
+                ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setVisibility(View.VISIBLE);
+
+                ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setText(chattingDto.getNotReadUserCount());
+            }
         } else if(holder instanceof EnterAndExitViewHolder){ //나가거나 들어온 경우
             ((EnterAndExitViewHolder)holder).textView_enter_or_exit.setText(chattingDto.getMsg());
         }
@@ -212,7 +278,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public int getItemViewType(int position) {
         int viewType = 0;
-        boolean isMyChat = chattingMsgList.get(position).getChattingMemberId().equals(userID);
+        boolean isMyChat = chattingMsgList.get(position).getChattingMemberId() != null? chattingMsgList.get(position).getChattingMemberId().equals(userID) : false;
         boolean isDateShowed = false;
 
         if(position != 0){
@@ -222,7 +288,9 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
         }
 
-        if(isMyChat && (position == 0 || isDateShowed)){ // 내가 작성했고 날짜를 보여줘야 할 때
+        if(chattingMsgList.get(position).getMsg().contains("입장했습니다.") || chattingMsgList.get(position).getMsg().contains("나갔습니다.")){
+            viewType = 4;
+        } else if(isMyChat && (position == 0 || isDateShowed)){ // 내가 작성했고 날짜를 보여줘야 할 때
             viewType = 2;
         } else if(!isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성했고 날짜를 보여줘야 할 때
             viewType = 3;
@@ -230,8 +298,6 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             viewType = 0;
         } else if(!isMyChat){ // 상대방이 작성했고 날짜를 보여줄 필요가 없을 때
             viewType = 1;
-        } else {
-            viewType = 4;
         }
 
         return viewType;
@@ -265,5 +331,33 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         date2 += " " + GetDate.getDayOfWeek(date1) + "요일";
 
         return date2;
+    }
+
+    // 특정 범위에 idx에 포함된 메시지의 안읽은 유저수 --
+    public void updateNotReadUserCountMinus(int startIdx){
+        // 아이템리스트에서 startIdx값을 가지고 있는 아이템의 인덱스 찾기
+        int itemStartNum = 0;
+
+        for(int i = 0; i< chattingMsgList.size(); i++){
+            if(chattingMsgList.get(i).getMsgIdx() == startIdx){
+                itemStartNum = i;
+            }
+        }
+
+        for(int i = itemStartNum; i< chattingMsgList.size(); i++){
+            chattingMsgList.get(i).setNotReadUserCount(chattingMsgList.get(i).getNotReadUserCount() - 1);
+        }
+
+        notifyItemRangeChanged(itemStartNum, chattingMsgList.size() - itemStartNum);
+    }
+
+    // 내가 작성한 메시지 업데이트
+    public void updateCntAndIdx(int notReadUserCount, int msgIdx){
+        // 가장 마지막에 등록된 메시지 - 내가 작성한 메시지 업데이트
+        int position = chattingMsgList.size() - 1;
+
+        chattingMsgList.get(position).setNotReadUserCount(notReadUserCount);
+        chattingMsgList.get(position).setMsgIdx(msgIdx);
+        notifyItemChanged(position);
     }
 }

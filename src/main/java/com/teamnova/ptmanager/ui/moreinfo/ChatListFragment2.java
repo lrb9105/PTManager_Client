@@ -28,9 +28,11 @@ import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
+import com.teamnova.ptmanager.ui.chatting.ChattingPossibleMemberListActivity;
 import com.teamnova.ptmanager.ui.chatting.adapter.ChattingListAdapter;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.login.LoginActivity;
+import com.teamnova.ptmanager.ui.login.findpw.FindPw3Activity;
 import com.teamnova.ptmanager.viewmodel.chatting.ChattingViewModel;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
 
@@ -159,7 +161,7 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
     }
 
     public void setOnclickListener(){
-
+        binding.chatButtonInvite.setOnClickListener(this);
     }
 
     /** 사용자가 포함된 채팅방리스트를 가져와라*/
@@ -169,23 +171,13 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
-        Intent intent;
-
         switch(v.getId()){
-            case  R.id.logout: // 로그아웃 버튼 클릭
-                // shared 정보 삭제
-                /** 로그아웃*/
-                SharedPreferences auto = getActivity().getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
-                SharedPreferences.Editor editor = auto.edit();
-                //editor.clear()는 auto에 들어있는 모든 정보를 기기에서 지웁니다.
-                editor.clear();
-                editor.commit();
+            case  R.id.chat_button_invite: // 로그아웃 버튼 클릭
+                Intent intent = new Intent(requireActivity(), ChattingPossibleMemberListActivity.class);
 
-                // 로그인 화면으로 이동
-                intent = new Intent(requireActivity(), LoginActivity.class);
+                intent.putExtra("chattingMemberDto",ChattingMemberDto.makeChatMemberInfo(TrainerHomeActivity.staticLoginUserInfo));
+
                 startActivity(intent);
-                getActivity().finish();
-
                 break;
             default:
                 break;
