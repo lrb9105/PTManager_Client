@@ -194,8 +194,10 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
 
             ((MyMsgViewHolder)holder).editText_MyMsg.setText(chattingDto.getMsg());
-            ((MyMsgViewHolder)holder).textViewMyTime.setText(chattingDto.getCreDatetime());
+            ((MyMsgViewHolder)holder).textViewMyTime.setText(getTime(chattingDto.getCreDatetime()));
 
+            // 리사이클러뷰는 뷰홀더를 재활용하기 때문에 처음에 무조건 GONE을 해주고 데이터가 있는경우에만 VISIBLE을 해줘야 한다.
+            // 이렇게 하지 않으면 안읽은사람 = 0인데도 기존 뷰홀더가 사용하던 값을 가지고 올 수 있다.
             ((MyMsgViewHolder)holder).not_read_user_count.setVisibility(View.GONE);
 
             if(chattingDto.getNotReadUserCount() <= 0){
@@ -203,7 +205,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             } else {
                 ((MyMsgViewHolder)holder).not_read_user_count.setVisibility(View.VISIBLE);
 
-                ((MyMsgViewHolder)holder).not_read_user_count.setText(chattingDto.getNotReadUserCount());
+                ((MyMsgViewHolder)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
             }
         } else if(holder instanceof OpponentMsgViewHolderViewHolder){ //상대방이 작성한 메시지인 경우
             if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
@@ -213,7 +215,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
             ((OpponentMsgViewHolderViewHolder)holder).textView_oppo_nickName.setText(chattingDto.getChattingMemberName());
             ((OpponentMsgViewHolderViewHolder)holder).editText_OpponentMsg.setText(chattingDto.getMsg());
-            ((OpponentMsgViewHolderViewHolder)holder).textView_oppo_time.setText(chattingDto.getCreDatetime());
+            ((OpponentMsgViewHolderViewHolder)holder).textView_oppo_time.setText(getTime(chattingDto.getCreDatetime()));
 
             ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setVisibility(View.GONE);
 
@@ -222,7 +224,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             } else {
                 ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setVisibility(View.VISIBLE);
 
-                ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setText(chattingDto.getNotReadUserCount());
+                ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
             }
         } else if(holder instanceof MyMsgViewHolderWithDay){ //내가 작성했고 날짜를 보여줘야 하는 경우
             if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
@@ -231,7 +233,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((MyMsgViewHolderWithDay)holder).user_profile);
             }
             ((MyMsgViewHolderWithDay)holder).editText_MyMsg.setText(chattingDto.getMsg());
-            ((MyMsgViewHolderWithDay)holder).textViewMyTime.setText(chattingDto.getCreDatetime());
+            ((MyMsgViewHolderWithDay)holder).textViewMyTime.setText(getTime(chattingDto.getCreDatetime()));
             ((MyMsgViewHolderWithDay)holder).textView_date.setText(getDate(chattingDto.getCreDatetime()));
 
             ((MyMsgViewHolderWithDay)holder).not_read_user_count.setVisibility(View.GONE);
@@ -241,7 +243,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             } else {
                 ((MyMsgViewHolderWithDay)holder).not_read_user_count.setVisibility(View.VISIBLE);
 
-                ((MyMsgViewHolderWithDay)holder).not_read_user_count.setText(chattingDto.getNotReadUserCount());
+                ((MyMsgViewHolderWithDay)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
             }
         } else if(holder instanceof OpponentMsgViewHolderViewHolderWithDay){ //상대방이 작성했고 날짜를 보여줘야 하는 경우
             if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
@@ -251,7 +253,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
             ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_oppo_nickName.setText(chattingDto.getChattingMemberName());
             ((OpponentMsgViewHolderViewHolderWithDay)holder).editText_OpponentMsg.setText(chattingDto.getMsg());
-            ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_oppo_time.setText(chattingDto.getCreDatetime());
+            ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_oppo_time.setText(getTime(chattingDto.getCreDatetime()));
             ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_date.setText(getDate(chattingDto.getCreDatetime()));
 
             ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setVisibility(View.GONE);
@@ -261,7 +263,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             } else {
                 ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setVisibility(View.VISIBLE);
 
-                ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setText(chattingDto.getNotReadUserCount());
+                ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
             }
         } else if(holder instanceof EnterAndExitViewHolder){ //나가거나 들어온 경우
             ((EnterAndExitViewHolder)holder).textView_enter_or_exit.setText(chattingDto.getMsg());
@@ -306,6 +308,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 채팅 메시지 추가
     public void addChatMsgInfo(ChatMsgInfo chatMsgInfo){
+        System.out.println("addChatMsgInfo 실행");
         // 3. 리사에 잘 넘어와서 이 메소드가 호출 되는가?
         System.out.println();
         int size = getItemCount();
@@ -333,26 +336,57 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return date2;
     }
 
+    // 시간 반환
+    public String getTime(String creDatetime){
+        String[] dateArr = creDatetime.split(" ")[1].split(":");
+
+        String time = dateArr[0] + ":" + dateArr[1];
+
+        return GetDate.getAmPmTime(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]));
+    }
+
     // 특정 범위에 idx에 포함된 메시지의 안읽은 유저수 --
-    public void updateNotReadUserCountMinus(int startIdx){
+    public void updateNotReadUserCountMinus(int previousLastIdx){
         // 아이템리스트에서 startIdx값을 가지고 있는 아이템의 인덱스 찾기
-        int itemStartNum = 0;
+        int itemStartIdx = 0;
 
         for(int i = 0; i< chattingMsgList.size(); i++){
-            if(chattingMsgList.get(i).getMsgIdx() == startIdx){
-                itemStartNum = i;
+            if(chattingMsgList.get(i).getMsgIdx() == previousLastIdx){
+                itemStartIdx = i;
+
+                System.out.println("2 & 6. 찾은 idx: " + itemStartIdx);
+                break;
             }
         }
 
-        for(int i = itemStartNum; i< chattingMsgList.size(); i++){
-            chattingMsgList.get(i).setNotReadUserCount(chattingMsgList.get(i).getNotReadUserCount() - 1);
+        // 리스트에 있는 동일한 메시지 인덱스를 가지고 있는 아이템의 다음 아이템부터 시작해야 하므로 +1을 해준다.
+        // itemStartIdx가 0이라는 것은 맨처음 방생성이 되고 한번도 채팅방에 들어가지 않았다는 거임
+        // 이때는 리스트에 있는 모든 메시지의 안읽은 사용자수를 - 해야 하므로  다음 아이템 인덱스로 설정하지 않는다.
+        // 반면 0이 아니하는 것은 idx가 일치하는 메시지가 리스트에 존재하는 것이고 그 메시지까지는 읽었다는 것이므로 그 메시지 다음 메시지부터 안읽은 사용자를 -해주기 위해
+        // 다음 아이템 인덱스로 설정한다.
+        if(itemStartIdx != 0){
+            itemStartIdx += 1;
         }
 
-        notifyItemRangeChanged(itemStartNum, chattingMsgList.size() - itemStartNum);
+        // 기존 마지막 인덱스와 리스트의 마지막 인덱스가 동일하지않다면 즉, 새로 추가된 메시지가 있다면
+        // 혹은 맨처음 메시지라면
+        if(previousLastIdx != chattingMsgList.get(chattingMsgList.size() - 1).getMsgIdx() || itemStartIdx == 0){
+            for(int i = itemStartIdx; i< chattingMsgList.size(); i++){
+                chattingMsgList.get(i).setNotReadUserCount(chattingMsgList.get(i).getNotReadUserCount() - 1);
+            }
+
+            // 2. 내 것 안읽은 메시지 --
+            System.out.println("2 & 6.itemStartIdx: " + itemStartIdx);
+            System.out.println("2 & 6.chattingMsgList.size() - itemStartIdx: " + (chattingMsgList.size() - itemStartIdx));
+
+            notifyItemRangeChanged(itemStartIdx, chattingMsgList.size() - itemStartIdx);
+        }
     }
 
     // 내가 작성한 메시지 업데이트
     public void updateCntAndIdx(int notReadUserCount, int msgIdx){
+        System.out.println("updateCntAndIdx 실행");
+
         // 가장 마지막에 등록된 메시지 - 내가 작성한 메시지 업데이트
         int position = chattingMsgList.size() - 1;
 

@@ -1,5 +1,6 @@
 package com.teamnova.ptmanager.ui.splash;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -10,6 +11,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.installations.InstallationTokenResult;
 import com.teamnova.ptmanager.MainActivity;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityLoginBinding;
@@ -49,6 +54,23 @@ public class SplashActivity extends AppCompatActivity {
      *  1. 역할: 컴포넌트 초기화
      * */
     public void initialize(){
+        // 새로운 토큰 생성
+        FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstallationTokenResult> task) {
+                if(!task.isSuccessful()){
+                    return;
+                }
+                // Get new Instance ID token
+                String token = task.getResult().getToken();
+
+                // 서버에 토큰 저장
+                saveToken(token);
+
+                System.out.println("token: " + token);
+            }
+        });
+
         /** 초기화 */
         // ViewModel 참조객체를 생성하는 부분
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
@@ -118,5 +140,9 @@ public class SplashActivity extends AppCompatActivity {
                 Toast.makeText(this, "로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void saveToken(String token ){
+
     }
 }

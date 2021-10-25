@@ -30,6 +30,7 @@ import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.chatting.ChattingPossibleMemberListActivity;
 import com.teamnova.ptmanager.ui.chatting.adapter.ChattingListAdapter;
+import com.teamnova.ptmanager.ui.home.member.MemberHomeActivity;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.login.LoginActivity;
 import com.teamnova.ptmanager.ui.login.findpw.FindPw3Activity;
@@ -51,7 +52,8 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
     // 회원 정보
     private FriendInfoDto memberInfo;
 
-    // 눈바디 비교 정보 가져올 객체
+    // 채팅방 나가기 시 채팅방 리스트에서 채팅방을 삭제하기 위한 정보를 가지고 있는 객체
+    // 채팅방 만들기 시 채팅방 리스트에 채팅방을 추가하기 위한 정보를 가지고 있는 객체
     private ActivityResultLauncher<Intent> startActivityResult;
 
     // 채팅방 매니져
@@ -82,23 +84,55 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // 채팅방리스트에서 채팅방 삭제
         startActivityResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
+                            System.out.println("");
                             // 방을 나간 채팅방 정보
                             ChatRoomInfoForListDto exitedChatRoomInfo = (ChatRoomInfoForListDto)result.getData().getSerializableExtra("exitedChatRoomInfo");
+                            // 새로 생성 혹은 수정된 방 정보
+                            ChatRoomInfoForListDto addedOrModifiedChatRoomInfo = (ChatRoomInfoForListDto)result.getData().getSerializableExtra("addedOrModifiedChatRoomInfo");
 
-                            // 채팅뷰모델의 채팅리스트 객체 업데이트
-                            ArrayList<ChatRoomInfoForListDto> c = chattingViewModel.getChattingList().getValue();
-                            // 나온 방 리스트에서 삭제
-                            c.remove(exitedChatRoomInfo);
+                            // 방 나가기
+                            if(exitedChatRoomInfo != null){
+                                // 채팅뷰모델의 채팅리스트 객체 업데이트
+                                ArrayList<ChatRoomInfoForListDto> c = chattingViewModel.getChattingList().getValue();
+                                // 나온 방 리스트에서 삭제
+                                c.remove(exitedChatRoomInfo);
 
-                            chattingViewModel.getChattingList().setValue(c);
+                                chattingViewModel.getChattingList().setValue(c);
+                            } else if(addedOrModifiedChatRoomInfo != null) { // 방 생성 or 방 수정
+                                // 채팅뷰모델의 채팅리스트 객체 업데이트
+                                ArrayList<ChatRoomInfoForListDto> list = chattingViewModel.getChattingList().getValue();
+                                // 리스트에서 넘어온 채팅방 정보 객체와 동일한 아이디를 갖는 객체가 있는지 확인
+                                boolean isModified = false;
+
+                                for(int i = 0; i < list.size(); i++){
+                                    // 이미 리스트에 존재하는 채팅방이라면 내용 수정 -> 포지션 0으로 옮기기
+                                    if(list.get(i).getChattingRoomId().equals(addedOrModifiedChatRoomInfo.getChattingRoomId())){
+                                        isModified = true;
+                                        // 수정된 값으로 변경하기 - 이전 리스트 삭제
+                                        // 새로운 리스트 생성
+                                        list.remove(i);
+                                        list.add(0, addedOrModifiedChatRoomInfo);
+                                        break;
+                                    }
+                                }
+
+                                // 추가라면
+                                if(!isModified){
+                                    list.add(0, addedOrModifiedChatRoomInfo);
+                                }
+
+                                chattingViewModel.getChattingList().setValue(list);
+                            }
                         }
                     }
                 });
+
         super.onCreate(savedInstanceState);
 
         Log.d("홈 프래그먼트의 onCreate", "얍얍");
@@ -158,6 +192,13 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
         // 채팅방 리스트 가져와서 뷰모델에 세팅
         chattingViewModel.getChattingList().setValue(this.getChatRoomList(userId));
 
+        // 채팅방 만들기 버튼 트레이너인 경우에만 나오도록
+        if(TrainerHomeActivity.staticLoginUserInfo != null) { //트레이너 라면
+            binding.chatButtonInvite.setVisibility(View.VISIBLE);
+        } else{
+            binding.chatButtonInvite.setVisibility(View.GONE);
+        }
+
     }
 
     public void setOnclickListener(){
@@ -172,12 +213,12 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case  R.id.chat_button_invite: // 로그아웃 버튼 클릭
+            case  R.id.chat_button_invite: // 채팅방 만들기
                 Intent intent = new Intent(requireActivity(), ChattingPossibleMemberListActivity.class);
 
                 intent.putExtra("chattingMemberDto",ChattingMemberDto.makeChatMemberInfo(TrainerHomeActivity.staticLoginUserInfo));
 
-                startActivity(intent);
+                startActivityResult.launch(intent);
                 break;
             default:
                 break;

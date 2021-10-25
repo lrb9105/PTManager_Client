@@ -18,13 +18,16 @@ public class ChatRoomInfoForListDto implements Serializable {
     private String latestMsg;
     @SerializedName("latestMsgTime")
     private String latestMsgTime;
+    @SerializedName("userCount")
+    private int userCount;
 
 
-    public ChatRoomInfoForListDto(String chattingRoomId, String chattingRoomName, String latestMsg, String latestMsgTime) {
+    public ChatRoomInfoForListDto(String chattingRoomId, String chattingRoomName, String latestMsg, String latestMsgTime, int userCount) {
         this.chattingRoomId = chattingRoomId;
         this.chattingRoomName = chattingRoomName;
         this.latestMsg = latestMsg;
         this.latestMsgTime = latestMsgTime;
+        this.userCount = userCount;
     }
 
     public String getChattingRoomId() {
@@ -57,6 +60,14 @@ public class ChatRoomInfoForListDto implements Serializable {
 
     public void setLatestMsgTime(String latestMsgTime) {
         this.latestMsgTime = latestMsgTime;
+    }
+
+    public int getUserCount() {
+        return userCount;
+    }
+
+    public void setUserCount(int userCount) {
+        this.userCount = userCount;
     }
 
     @Override

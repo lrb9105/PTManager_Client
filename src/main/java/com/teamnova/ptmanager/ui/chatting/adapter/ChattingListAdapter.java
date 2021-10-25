@@ -42,6 +42,7 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView chat_room_name;
         TextView latest_msg;
         TextView latest_msg_time;
+        TextView chat_user_count;
         LinearLayout layout_chat_room;
 
         public ChattingListViewHolder(View itemView) {
@@ -49,6 +50,7 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             chat_room_name = itemView.findViewById(R.id.chat_room_name);
             latest_msg = itemView.findViewById(R.id.latest_msg);
             latest_msg_time = itemView.findViewById(R.id.latest_msg_time);
+            chat_user_count = itemView.findViewById(R.id.chat_user_count);
             layout_chat_room = itemView.findViewById(R.id.layout_chat_room);
         }
     }
@@ -73,10 +75,17 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ((ChattingListViewHolder)holder).chat_room_name.setText(chatRoomInfo.getChattingRoomName());
 
         // 최신메시지
-        ((ChattingListViewHolder)holder).latest_msg.setText(chatRoomInfo.getLatestMsg());
+        if(chatRoomInfo.getLatestMsg() != null){
+            ((ChattingListViewHolder)holder).latest_msg.setText(chatRoomInfo.getLatestMsg());
+        }
 
         // 전송시간
-        ((ChattingListViewHolder)holder).latest_msg_time.setText(chatRoomInfo.getLatestMsgTime());
+        if(chatRoomInfo.getLatestMsgTime() != null) {
+            ((ChattingListViewHolder) holder).latest_msg_time.setText(chatRoomInfo.getLatestMsgTime());
+        }
+
+        // 유저수
+        ((ChattingListViewHolder)holder).chat_user_count.setText("" + chatRoomInfo.getUserCount());
 
         // 레이아웃 클릭
         ((ChattingListViewHolder)holder).layout_chat_room.setOnClickListener(new View.OnClickListener() {

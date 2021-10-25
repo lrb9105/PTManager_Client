@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -67,6 +68,8 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -119,6 +122,15 @@ public class ChattingActivity extends AppCompatActivity {
     // 서버에 새로 초대된 사용자들의 입장을 알려주는 메시지를 보낸다.
     private ActivityResultLauncher<Intent> startActivityResult;
 
+    // 마지막으로 저장된 인덱스
+    private int lastMsgIdx = 999998;
+
+    // 마지막으로 수신한 메시지 - 뒤로가기 클릭 시 채팅방 정보 갱신하기 위함
+    private ChatMsgInfo lastMsg;
+
+    // 채팅방에 처음입장 or 재입장여부를 알려줄 문자열(서버에서 읽음처리할 쿼리에서 사용 됨)
+    private String firstOrOld;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         binding = ActivityChattingRoomBinding.inflate(getLayoutInflater());
@@ -157,8 +169,8 @@ public class ChattingActivity extends AppCompatActivity {
                                     }
                                 }.start();
 
-                                chattingMsgListAdapter.addChatMsgInfo(new ChatMsgInfo("new", "new", "new", chatRoomId, enterMsg, GetDate.getTodayDateWithTime(),0,0));
-                                layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
+                                //chattingMsgListAdapter.addChatMsgInfo(new ChatMsgInfo("new", "new", "new", chatRoomId, enterMsg, GetDate.getTodayDateWithTime(),0,0));
+                                //layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
                             }
                         }
                     }
@@ -172,6 +184,13 @@ public class ChattingActivity extends AppCompatActivity {
 
     /** 초기화 */
     public void initialize(){
+        // 초대 버튼 트레이너인 경우에만 나오도록
+        if(TrainerHomeActivity.staticLoginUserInfo != null) { //트레이너 라면
+            binding.chatButtonInvite.setVisibility(View.VISIBLE);
+        } else{
+            binding.chatButtonInvite.setVisibility(View.GONE);
+        }
+
         retrofit= RetrofitInstance.getRetroClient();
 
         // 채팅방 매니저
@@ -183,7 +202,6 @@ public class ChattingActivity extends AppCompatActivity {
         // 채팅참여자 리스트
         chatMemberList = chattingRoomManager.getChatMemberList(getIntent(), chatRoomId);
 
-        // 채팅 참여자들의 프로필 비트맵 가져오기
         userProfileBitmapMap = new HashMap<>();
 
         for(int i = 0, ii = chatMemberList.size(); i < ii; i++){
@@ -201,7 +219,6 @@ public class ChattingActivity extends AppCompatActivity {
         }
 
         System.out.println("프로필 맵 사이즈: " + userProfileBitmapMap.size());
-
 
         // 뷰모델
         chattingMsgViewModel = new ViewModelProvider(this).get(ChattingMsgViewModel.class);
@@ -230,7 +247,7 @@ public class ChattingActivity extends AppCompatActivity {
             }
         } else { // 채팅 참여자리스트가 없다면 채팅방 리스트에서 기존에 생성되어있는 채팅방에서 접근한 것이다.
             // 사용자 정보 가져오기기
-           userInfo = (ChattingMemberDto) getIntent().getSerializableExtra("userInfo");
+            userInfo = (ChattingMemberDto) getIntent().getSerializableExtra("userInfo");
         }
 
         /** 리사이클러뷰 세팅 */
@@ -250,6 +267,43 @@ public class ChattingActivity extends AppCompatActivity {
 
             chattingMsgListAdapter = new ChattingMsgListAdapter(chatMsgList, this, null, userInfo.getUserId(), userProfileBitmapMap);
             layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
+
+            /** 채팅데이터가 있는 경우 안읽은 메시지 --해준다 */
+            // sp에 저장된 마지막 메시지 인덱스를 가져온다.
+            lastMsgIdx = getLastMsgIdx(chatRoomId);
+
+            // 맨처음 채팅방에 입장한 경우 이 값이 존재하지 않는다. 따라서 가져온 메시지의 첫번째 값을 넘겨준다.(임시용 임)
+            // 메시지 받았을 때 채팅방 리스트에 채팅방을 생성하는 코드를 구현하면 그때 받은 (메시지 idx -1)값을 sp에 넣어 줄 것이기 때문에 이 코드는 사용 안 할 거임
+            if(lastMsgIdx == 999999){
+                // 1. 메시리 리스트가 없나?
+                System.out.println("1. 메시지리스트 사이즈: " + chatMsgList.size());
+
+                if(chatMsgList.size() > 0){
+                    // 2. 메시리 리스트가 있다면 첫번째 리스트 값
+                    System.out.println("2. 메시리 리스트가 있다면 첫번째 리스트 값: " + chatMsgList.get(0).getMsgIdx());
+
+                    lastMsgIdx = chatMsgList.get(0).getMsgIdx();
+                }
+
+                // 해당 채팅방에 처음 입장!
+                firstOrOld = "first";
+
+                // 3. 메시지 리시트가 없음!
+                System.out.println("3. 메시지 리시트가 없음!");
+            } else {
+                // 해당 채팅방에 재입장!
+                firstOrOld = "old";
+            }
+
+            // 초기값이 아니면 즉 마지막 메시지의 인덱스가 존재한다면
+            if(lastMsgIdx != 999999) {
+
+                // 내 화면 먼저 --
+                chattingMsgListAdapter.updateNotReadUserCountMinus(lastMsgIdx);
+
+                /** 가장 마지막 메시지의 인덱스를 sp에 업데이트 해준다. */
+                saveMsgInfoToSharedPreference(chatMsgList.get(chatMsgList.size() - 1));
+            }
         } else{
             System.out.println("222");
             chattingMsgListAdapter = new ChattingMsgListAdapter(new ArrayList<>(), this, null, userInfo.getUserId(), userProfileBitmapMap);
@@ -301,6 +355,12 @@ public class ChattingActivity extends AppCompatActivity {
                         // 서버에 해당 회원 정보 삭제 요청
                         deleteMemberFromChatRoom(chatRoomId, userInfo.getUserId());
 
+                        // 나간 회원 지우기
+                        chatMemberList.remove(userInfo);
+
+                        // SharedPreference 데이터 지우기
+                        removeSpData(chatRoomId);
+
                         // 트레이너, 회원 여부에 따라 이동하는 액티비티가 달라져야 함
                         Intent intent = null;
 
@@ -310,7 +370,7 @@ public class ChattingActivity extends AppCompatActivity {
                             intent = new Intent(ChattingActivity.this, MemberHomeActivity.class);
                         }
                         // 채팅방 정보
-                        ChatRoomInfoForListDto exitedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), null, null);
+                        ChatRoomInfoForListDto exitedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), null, null,chatMemberList.size());
 
                         intent.putExtra("exitedChatRoomInfo", exitedChatRoomInfo);
 
@@ -347,6 +407,18 @@ public class ChattingActivity extends AppCompatActivity {
                 alertDialog.show();
             }
         });
+
+        binding.message.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                System.out.println("키보드 포커스!");
+                if(hasFocus){
+                    // 마지막으로 이동
+                    System.out.println("키보드 포커스!222");
+                    layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
+                }
+            }
+        });
     }
 
     /** 채팅방 정보를 세팅하라*/
@@ -366,7 +438,7 @@ public class ChattingActivity extends AppCompatActivity {
         recvThread = new RecvThread();
         recvThread.start();
 
-        // 작성완료
+        /** 메시지 송신*/
         binding.chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -381,17 +453,24 @@ public class ChattingActivity extends AppCompatActivity {
                             if(sendMsg != null && !sendMsg.equals("")){
 
                                 // 메인쓰레드에서만 ui변경 가능
-                                sendHandler.post(new UiUpdater(sendMsg));
+                                sendHandler.post(new UiUpdater(sendMsg, this));
 
-                                // 텍스트만 전송
-                                sendWriter.println(userInfo.getUserName() +":"+ userInfo.getUserId() + ":" + chatRoomId + ":" + sendMsg + ":" + GetDate.getTodayDateWithTime());
-                                sendWriter.flush();
+                                synchronized (this){
+                                    wait();
+                                    System.out.println("테스트22222");
 
-                                // 메시지 객체를 전송
-                                //objWriter.writeObject(new ChatMsgInfo(null, userInfo.getUserId(),chatRoomId, sendMsg));
-                                //objWriter.flush();
+                                    // 텍스트만 전송
+                                    sendWriter.println(userInfo.getUserName() +":"+ userInfo.getUserId() + ":" + chatRoomId + ":" + sendMsg + ":" + GetDate.getTodayDateWithTime());
+                                    sendWriter.flush();
 
+                                    lastMsg = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(), 0, 0);
 
+                                    System.out.println("보내는 메시지: " + userInfo.getUserName() +":"+ userInfo.getUserId() + ":" + chatRoomId + ":" + sendMsg + ":" + GetDate.getTodayDateWithTime());
+
+                                    // 메시지 객체를 전송
+                                    //objWriter.writeObject(new ChatMsgInfo(null, userInfo.getUserId(),chatRoomId, sendMsg));
+                                    //objWriter.flush();
+                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -412,12 +491,81 @@ public class ChattingActivity extends AppCompatActivity {
         chattingRoomManager.deleteMemberFromChatRoom(map);
     }
 
+    /** 메시지 수신 시 SharedPreference에 메시지 정보 저장*/
+    public void saveMsgInfoToSharedPreference(ChatMsgInfo msg){
+        SharedPreferences sp = getSharedPreferences("chat", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+
+        // 해당 채팅방 id로 메시지 인덱스를 저장해준다
+        editor.putInt(msg.getChattingRoomId(), msg.getMsgIdx());
+
+        editor.commit();
+
+        System.out.println("저장한 메시지 인덱스: " + sp.getInt(msg.getChattingRoomId(),999999));
+    }
+
+    /** 특정 채팅방의 마지막 메시지 idx를 가져와라*/
+    public int getLastMsgIdx(String chatRoomId){
+        SharedPreferences sp = getSharedPreferences("chat", Activity.MODE_PRIVATE);
+        int idx = sp.getInt(chatRoomId,999999);
+
+        System.out.println("1. 가져온 인덱스: " + idx);
+
+        return idx;
+    }
+
+    /** 채팅방에 입장했을 때 다른 채팅방의 안읽은사용자수 -- 해주기위해 내가 가지고 있는 마지막 인덱스를 보내준다
+     * 파라미터: 1) 마지막 메시지 인덱스
+     *          2) 채팅방에 처음으로 입장했는지 여부 처음입장: first 재입장: old 보내 줌
+     * */
+    public void sendToServerLastIdx(int lastIdx, String firstOrOld){
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    // 3. 서버로 마지막 메시지 인덱스 전송
+                    System.out.println("3. 서버로 인덱스 전송: " + "!@#$!@#lsatIdx:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + lastIdx + ":" + firstOrOld);
+
+                    sendWriter.println("!@#$!@#lsatIdx:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + lastIdx + ":" + firstOrOld);
+                    sendWriter.flush();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
+
     // 뒤로가기 버튼 클릭 시 수신쓰레드 종료, 서버에 종료신호 보내기
     @Override
     public void onBackPressed() {
         super.onBackPressed();
 
+        // 뒤로가기 시 새로 생성된 방 정보 보내기
+        Intent intent = null;
+
+        if(TrainerHomeActivity.staticLoginUserInfo != null) { //트레이너 라면
+            intent = new Intent(ChattingActivity.this, TrainerHomeActivity.class);
+        } else{
+            intent = new Intent(ChattingActivity.this, MemberHomeActivity.class);
+        }
+
+        ChatRoomInfoForListDto addedOrModifiedChatRoomInfo = null;
+
+        // 채팅방 정보
+        if(lastMsg != null){
+            addedOrModifiedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), lastMsg.getMsg(), lastMsg.getCreDatetime(),chatMemberList.size());
+        } else {
+            addedOrModifiedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), null, null,chatMemberList.size());
+        }
+
+        // 새로 생성 혹은 수정된 채팅방 정보 전송
+        intent.putExtra("addedOrModifiedChatRoomInfo", addedOrModifiedChatRoomInfo);
+
+        setResult(Activity.RESULT_OK, intent);
         exit();
+        finish();
     }
 
     /** 연결 종료 시 */
@@ -425,6 +573,17 @@ public class ChattingActivity extends AppCompatActivity {
         new ExpireThread().start();
 
         recvThread.interrupt();
+    }
+
+    /** 채팅방 나가면 shared도 지우기*/
+    public void removeSpData(String chatRoomId){
+        SharedPreferences sp = getSharedPreferences("chat", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+
+        // 나간 채팅방의 sp 정보를 삭제한다.
+        editor.remove(chatRoomId);
+
+        editor.commit();
     }
 
     /** 메시지를 화면에 업데이트 하는 쓰레드*/
@@ -454,29 +613,78 @@ public class ChattingActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            // 어댑터에 추가
-            chattingMsgListAdapter.addChatMsgInfo(msgInfo);
-            // 마지막 아이템으로 이동
-            layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
-            //binding.chatView.setText(binding.chatView.getText().toString() + msg+"\n");
+            // 상대방에게서 온 메시지
+            if(msgInfo.getMsg() != null){
+                try {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+                    SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+                    System.out.println("현재시간2222: " + sdf.format(timestamp));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // 어댑터에 추가
+                chattingMsgListAdapter.addChatMsgInfo(msgInfo);
+                // 마지막 아이템으로 이동
+                layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
+                //binding.chatView.setText(binding.chatView.getText().toString() + msg+"\n");
+            } else { // 내가 작성한 메시지
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+                SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+                System.out.println("현재시간3333: " + sdf.format(timestamp));
+                chattingMsgListAdapter.updateCntAndIdx(msgInfo.getNotReadUserCount(), msgInfo.getMsgIdx());
+            }
+        }
+    }
+
+    /** 안읽은 사용자 수를 업데이트 하는 쓰레드*/
+    class NotReadUserValueUpdater implements Runnable{
+        private int lastIdx;
+
+        public NotReadUserValueUpdater(int lastIdx) {
+            this.lastIdx = lastIdx;
+        }
+
+        @Override
+        public void run() {
+            // 안 읽은 사용자수 업데이트
+            chattingMsgListAdapter.updateNotReadUserCountMinus(lastIdx);
         }
     }
 
     /** 메시지 송신 시 화면 업데이트 하는 쓰레드*/
     class UiUpdater implements Runnable{
         private String sendMsg;
+        private Thread thread;
 
-        public UiUpdater(String sendMsg) {
+        public UiUpdater(String sendMsg, Thread thread) {
             this.sendMsg = sendMsg;
+            this.thread = thread;
         }
 
         @Override
         public void run() {
             // 리사이클러뷰에 뿌여주기
             // 처음에 뿌려줄 땐 읽지않은 사용자 수와 msgIdx를 0으로 초기화!
-            chattingMsgListAdapter.addChatMsgInfo(new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(),0,0));
-            layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
-            binding.message.setText("");
+            try {
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+                SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+                System.out.println("현재시간: " + sdf.format(timestamp));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            synchronized (thread){
+                System.out.println("테스트1111");
+                chattingMsgListAdapter.addChatMsgInfo(new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(),0,0));
+                layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
+                binding.message.setText("");
+
+                thread.notify();
+            }
         }
     }
 
@@ -495,6 +703,7 @@ public class ChattingActivity extends AppCompatActivity {
     }
 
 
+    /** 수신 쓰레드*/
     private class RecvThread extends Thread{
         Socket socket = null;
 
@@ -527,15 +736,21 @@ public class ChattingActivity extends AppCompatActivity {
                 /*objWriter.writeObject(new ChatMsgInfo(null, userInfo.getUserId(),chatRoomId, "!@#$chatRoomIdAndUserId:" + chatRoomId + ":" + userInfo.getUserId()));
                 objWriter.flush();*/
 
+                /** 마지막으로 저장된 메시지가 있다면 메시지 인덱스 보내기*/
+                if(lastMsgIdx != 999998){
+                    sendToServerLastIdx(lastMsgIdx, firstOrOld);
+                }
 
 
                 while(true){
                     // 텍스트 메시지 전송
                     String read = null;
 
-                    if(!socket.isClosed()){
+                    if(!socket.isClosed() && !input.ready()){
                         read = input.readLine();
                     }
+
+                    System.out.println("수신한 메시지:" + read);
 
                     // 객체 전송
                     //String read = null;
@@ -549,31 +764,87 @@ public class ChattingActivity extends AppCompatActivity {
 
                     // 채팅 문자열 - 추후에 객체로 변경하기
                     if(read!=null){
+                        // 안읽은 사용자 --
+                        if(read.contains("!@#$!@#lsatIdx:")){
+                            //5. 서버로부터 받은 마지막 메시지 인덱스
+                            System.out.println("5. 메시지 인덱스: " + read.split(":")[1]);
+
+                            // 새로 입장한 사용자가 이전에 가장 마지막으로 읽은 메시지 idx
+                            int preLastIdx = Integer.parseInt(read.split(":")[1]);
+                            System.out.println("preLastIdx: " + preLastIdx);
+                            // 안읽은 사용자수 값 업데이트
+                            mHandler.post(new NotReadUserValueUpdater(preLastIdx));
+
+                            // 아래 코드로 넘어가지 않도록
+                            continue;
+                        }
+
+                        ChatMsgInfo chatMsgInfo = null;
+
                         String[] msgArr = read.split(":");
 
                         // 내가보낸 메시지가 아니라면
-                        if(msgArr.length > 2){
+                       if(msgArr.length > 2){
                             String userName = msgArr[0];
                             String userId = msgArr[1];
                             String roomId = msgArr[2];
                             String msg = msgArr[3];
                             String creDatetime = GetDate.getTodayDateWithTime();
-                            int notReadUserCount = Integer.parseInt(msgArr[5]);
-                            int msgIdx = Integer.parseInt(msgArr[6]);
+                            // 뒤에서 두번째에 안읽은 사람수가 있음
+                            int notReadUserCount = Integer.parseInt(msgArr[msgArr.length-2]);
+                            int msgIdx = Integer.parseInt(msgArr[msgArr.length-1]);
 
                             // 1. 서버에서 메시지가 잘 넘어오는가
                             System.out.println("서버로부터 메시지: " + read);
+                            chatMsgInfo = new ChatMsgInfo(null, userId, userName, roomId, msg, creDatetime,notReadUserCount,msgIdx);
 
-                            // 메시지 객체 만들어서 업데이터에게 보내기
-                            mHandler.post(new MsgUpdater(new ChatMsgInfo(null, userId, userName, roomId, msg, creDatetime,notReadUserCount,msgIdx)));
-                        } else { // 내가보낸 메시지라면 읽지않은사용자수와 메시지 인덱스만 보내줌
+                            // 마지막 메시지 저장
+                            lastMsg = chatMsgInfo;
+
+                            // 내가 트레이너 이고 나간 사용자가 있을 때 그 사용자를 리스트에서 제거
+                           if(msg.contains("나갔습니다") && TrainerHomeActivity.staticLoginUserInfo != null){
+                               for(int i = 0; i < chatMemberList.size(); i++){
+                                   if(userId.equals(chatMemberList.get(i))){
+                                       chatMemberList.remove(i);
+                                   }
+                               }
+                           }
+
+                           // 메시지 객체 만들어서 업데이터에게 보내기
+                       } else { // 내가보낸 메시지라면 읽지않은사용자수와 메시지 인덱스만 보내줌
                             int notReadUserCount = Integer.parseInt(msgArr[0]);
                             int msgIdx = Integer.parseInt(msgArr[1]);
 
                             // 어댑터에서 가장 마지막에있는 메시지 업데이트!
-                            chattingMsgListAdapter.updateCntAndIdx(notReadUserCount, msgIdx);
-                        }
+                            // 리사이클러뷰의 업데이트는 main UI에서만 가능!!!!
+                           System.out.println("서버로부터 메시지222: " + read);
 
+                           chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, null, null,notReadUserCount,msgIdx);
+
+                           if(lastMsg != null){
+                               lastMsg.setNotReadUserCount(notReadUserCount);
+                               lastMsg.setMsgIdx(msgIdx);
+                           }
+                       }
+
+                        mHandler.post(new MsgUpdater(chatMsgInfo));
+
+                        /*String userName = msgArr[0];
+                        String userId = msgArr[1];
+                        String roomId = msgArr[2];
+                        String msg = msgArr[3];
+                        String creDatetime = GetDate.getTodayDateWithTime();
+                        int notReadUserCount = Integer.parseInt(msgArr[5]);
+                        int msgIdx = Integer.parseInt(msgArr[6]);
+
+                        // 1. 서버에서 메시지가 잘 넘어오는가
+                        System.out.println("서버로부터 메시지: " + read);
+                        chatMsgInfo = new ChatMsgInfo(null, userId, userName, roomId, msg, creDatetime,notReadUserCount,msgIdx);
+                        // 메시지 객체 만들어서 업데이터에게 보내기
+                        mHandler.post(new MsgUpdater(chatMsgInfo));*/
+
+                        // SharedPreference에 가장 마지막 메시지 인덱스 저장
+                        saveMsgInfoToSharedPreference(chatMsgInfo);
                     }
                 }
             } catch (IOException e) {

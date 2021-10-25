@@ -31,7 +31,10 @@
             android:padding="5dp"
             android:layout_weight="1"
             android:text="@string/chatting"
-            android:textSize="25dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/black"
+            android:textSize="20dp"
             app:layout_constraintStart_toEndOf="@+id/btn_back"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -55,6 +58,11 @@
             android:textSize="15dp" />
     </LinearLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </ScrollView>
     <LinearLayout
         android:id="@+id/layout_chatting_list"
         android:layout_width="match_parent"
@@ -75,6 +83,7 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/blue"
+        android:layout_marginTop="5dp"
         app:layout_constraintBottom_toTopOf="@id/layout_chatting_write"
         app:layout_constraintStart_toStartOf="parent"/>
 
@@ -83,6 +92,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">

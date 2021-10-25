@@ -55,10 +55,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="채팅방 이름"
-                        android:layout_weight="1"
-                        android:textSize="20sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/chat_user_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:inputType="number"
+                        android:textSize="18dp"
+                        android:textColor="@color/grey"
+                        android:layout_marginRight="15dp" />
 
                     <TextView
                         android:id="@+id/latest_msg_time"
@@ -83,6 +96,8 @@
                         android:layout_weight="1"
                         android:text="채팅 메시지"
                         android:textSize="18dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         app:layout_constraintTop_toBottomOf="@+id/view1"
                         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -95,6 +110,7 @@
                         android:textSize="18dp"
                         android:textColor="@color/red"
                         android:layout_marginRight="15dp"
+                        android:visibility="gone"
                         app:layout_constraintTop_toBottomOf="@+id/view1"
                         app:layout_constraintEnd_toEndOf="parent"/>
 
