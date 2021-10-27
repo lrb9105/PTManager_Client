@@ -11,6 +11,7 @@ import com.teamnova.ptmanager.ui.chatting.sync.SyncDeleteMember;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncGetChatMemberList;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncGetChatRoomInfo;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncGetChatRoomList;
+import com.teamnova.ptmanager.ui.chatting.sync.SyncGetCurrentServerTime;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncGetExistedChatRoomId;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncInsertChatRoomInfo;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncInsertMemberList;
@@ -190,5 +191,26 @@ public class ChattingRoomManager {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    /** 서버의 현재시간 가져오는 메소드*/
+    public long getCurrentServerTime(){
+        ChattingService service = retrofit.create(ChattingService.class);
+
+        // http request 객체 생성
+        Call<String> call = service.getCurrentServerTime();
+
+        // 서버에 데이터를 저장하는 동기 함수의 쓰레드
+        SyncGetCurrentServerTime t = new SyncGetCurrentServerTime(call);
+        t.start();
+
+        try {
+            // 쓰레드에서 데이터를 저장할 때 main쓰레드는 중지를 시켜야 하므로 join()사용
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return t.getServerTime();
     }
 }

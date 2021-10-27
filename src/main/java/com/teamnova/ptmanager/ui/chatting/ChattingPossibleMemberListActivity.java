@@ -24,6 +24,7 @@ import com.teamnova.ptmanager.manager.ChattingRoomManager;
 import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
+import com.teamnova.ptmanager.ui.home.member.MemberHomeActivity;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.schedule.lesson.LessonRegisterActivity;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
@@ -182,22 +183,24 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
                         Log.d("getCheck()가 null: ", member.getUserId());
                     }
                 }
-                Intent intent = new Intent(this, ChattingActivity.class);
+
+
+                Intent intent = null;
+
+                if(TrainerHomeActivity.staticLoginUserInfo != null) { //트레이너 라면
+                    intent = new Intent(this, TrainerHomeActivity.class);
+                } else{
+                    intent = new Intent(this, MemberHomeActivity.class);
+                }
 
                 // 새로운 방 생성 시
-                if(userId == null) {
-                    intent.putExtra("chatMemberList",chatMemberList);
-
-                    startActivity(intent);
-
-                } else { // 기존에 생성된 대화방에서 새로운 사용자 초대 시
+                if (userId != null) { // 기존에 생성된 대화방에서 새로운 사용자 초대 시
                     // 새로 생성된 초대자 리스트에서 첫번쨰는 트레이너 아이디 이므로 지워준다!
                     chatMemberList.remove(0);
-
-                    intent.putExtra("chatMemberList",chatMemberList);
-
-                    setResult(Activity.RESULT_OK, intent);
                 }
+
+                intent.putExtra("chatMemberList",chatMemberList);
+                setResult(Activity.RESULT_OK, intent);
 
 
                 finish();

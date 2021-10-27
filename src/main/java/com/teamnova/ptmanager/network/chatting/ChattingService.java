@@ -59,6 +59,11 @@ public interface ChattingService {
     //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
     Call<String> deleteMemberFromChatRoom(@Body HashMap hashMap);
 
+    /** 서버의 현재시간 가져오기*/
+    @GET("chattingroom/getCurrentServerTime.php")
+    Call<String> getCurrentServerTime();
+
+
 
     @FormUrlEncoded
     @POST("friend/addToFriend.php")

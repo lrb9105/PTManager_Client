@@ -19,7 +19,11 @@ import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 채팅방 리스트를 담는 리사이클러뷰의 아답터
@@ -29,12 +33,14 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Context context;
     private ActivityResultLauncher<Intent> startActivity;
     private FriendInfoDto memberInfo;
+    private long timeDiffer;
 
-    public ChattingListAdapter(ArrayList<ChatRoomInfoForListDto> chatRoomList, Context context, ActivityResultLauncher<Intent> startActivity, FriendInfoDto memberInfo){
+    public ChattingListAdapter(ArrayList<ChatRoomInfoForListDto> chatRoomList, Context context, ActivityResultLauncher<Intent> startActivity, FriendInfoDto memberInfo, long timeDiffer){
         this.chatRoomList = chatRoomList;
         this.context = context;
         this.startActivity = startActivity;
         this.memberInfo = memberInfo;
+        this.timeDiffer = timeDiffer;
     }
 
     // 채팅리스트 정보를 담을 뷰홀더
@@ -81,7 +87,7 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         // 전송시간
         if(chatRoomInfo.getLatestMsgTime() != null) {
-            ((ChattingListViewHolder) holder).latest_msg_time.setText(chatRoomInfo.getLatestMsgTime());
+            ((ChattingListViewHolder) holder).latest_msg_time.setText(computeTimeDifferToServer(chatRoomInfo.getLatestMsgTime(), timeDiffer));
         }
 
         // 유저수
@@ -149,5 +155,45 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         intent.putExtra("userInfo", chattingMemberDto);
 
         startActivity.launch(intent);
+    }
+
+    // String(datetime형태) to date
+    public Date makeDateFromDatetimeOfString(String datetime){
+        System.out.println("datetime:" + datetime);
+        datetime += ":00";
+
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date time = null;
+
+        try {
+            time = transFormat.parse(datetime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(time);
+
+        return time;
+    }
+
+    // 서버시간과의 차이 보정한 메시지 수신시간 리턴
+    public String computeTimeDifferToServer(String datetime, long timeDiffer){
+        Date currentTimeOfDate = makeDateFromDatetimeOfString(datetime);
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        int timeDifferSec = (int)(timeDiffer/1000);
+
+        System.out.println("currentTimeOfDate: " + currentTimeOfDate);
+        System.out.println("timeDifferSec: " + timeDifferSec);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(currentTimeOfDate);
+        cal.add(Calendar.SECOND, timeDifferSec);
+
+        System.out.println("메시지 수신시간:" + datetime);
+
+        System.out.println("보정시간; "+ sdFormat.format(cal.getTime()));
+
+        return sdFormat.format(cal.getTime());
     }
 }

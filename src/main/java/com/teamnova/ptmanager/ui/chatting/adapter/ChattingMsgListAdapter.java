@@ -21,7 +21,11 @@ import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
 import com.teamnova.ptmanager.util.GetDate;
 
 import java.sql.SQLOutput;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -35,6 +39,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private ActivityResultLauncher<Intent> startActivity;
     private String userID;
     private HashMap<String, String> userProfileMap;
+    private long timeDiffer;
 
     public ChattingMsgListAdapter(ArrayList<ChatMsgInfo> chattingMsgList, Context context, ActivityResultLauncher<Intent> startActivity, String userId, HashMap<String, String> userProfileMap){
         this.chattingMsgList = chattingMsgList;
@@ -42,6 +47,15 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         this.startActivity = startActivity;
         this.userID = userId;
         this.userProfileMap = userProfileMap;
+    }
+
+    public ChattingMsgListAdapter(ArrayList<ChatMsgInfo> chattingMsgList, Context context, ActivityResultLauncher<Intent> startActivity, String userId, HashMap<String, String> userProfileMap, long timeDiffer){
+        this.chattingMsgList = chattingMsgList;
+        this.context = context;
+        this.startActivity = startActivity;
+        this.userID = userId;
+        this.userProfileMap = userProfileMap;
+        this.timeDiffer = timeDiffer;
     }
 
 
@@ -194,8 +208,9 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
 
             ((MyMsgViewHolder)holder).editText_MyMsg.setText(chattingDto.getMsg());
-            ((MyMsgViewHolder)holder).textViewMyTime.setText(getTime(chattingDto.getCreDatetime()));
-
+            ((MyMsgViewHolder)holder).textViewMyTime.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+            
+                    
             // 리사이클러뷰는 뷰홀더를 재활용하기 때문에 처음에 무조건 GONE을 해주고 데이터가 있는경우에만 VISIBLE을 해줘야 한다.
             // 이렇게 하지 않으면 안읽은사람 = 0인데도 기존 뷰홀더가 사용하던 값을 가지고 올 수 있다.
             ((MyMsgViewHolder)holder).not_read_user_count.setVisibility(View.GONE);
@@ -215,7 +230,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
             ((OpponentMsgViewHolderViewHolder)holder).textView_oppo_nickName.setText(chattingDto.getChattingMemberName());
             ((OpponentMsgViewHolderViewHolder)holder).editText_OpponentMsg.setText(chattingDto.getMsg());
-            ((OpponentMsgViewHolderViewHolder)holder).textView_oppo_time.setText(getTime(chattingDto.getCreDatetime()));
+            ((OpponentMsgViewHolderViewHolder)holder).textView_oppo_time.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
 
             ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setVisibility(View.GONE);
 
@@ -233,8 +248,8 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((MyMsgViewHolderWithDay)holder).user_profile);
             }
             ((MyMsgViewHolderWithDay)holder).editText_MyMsg.setText(chattingDto.getMsg());
-            ((MyMsgViewHolderWithDay)holder).textViewMyTime.setText(getTime(chattingDto.getCreDatetime()));
-            ((MyMsgViewHolderWithDay)holder).textView_date.setText(getDate(chattingDto.getCreDatetime()));
+            ((MyMsgViewHolderWithDay)holder).textViewMyTime.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+            ((MyMsgViewHolderWithDay)holder).textView_date.setText(getDate(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
 
             ((MyMsgViewHolderWithDay)holder).not_read_user_count.setVisibility(View.GONE);
 
@@ -253,9 +268,9 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
             ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_oppo_nickName.setText(chattingDto.getChattingMemberName());
             ((OpponentMsgViewHolderViewHolderWithDay)holder).editText_OpponentMsg.setText(chattingDto.getMsg());
-            ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_oppo_time.setText(getTime(chattingDto.getCreDatetime()));
-            ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_date.setText(getDate(chattingDto.getCreDatetime()));
-
+            ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_oppo_time.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+            ((OpponentMsgViewHolderViewHolderWithDay)holder).textView_date.setText(getDate(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+            
             ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setVisibility(View.GONE);
 
             if(chattingDto.getNotReadUserCount() <= 0){
@@ -327,6 +342,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 날짜(요일) 반환
     public String getDate(String creDatetime){
+        System.out.println("11");
         String date1 = creDatetime.split(" ")[0].replace("-","");
 
         String date2 = GetDate.getDateWithYMD(date1);
@@ -338,6 +354,10 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 시간 반환
     public String getTime(String creDatetime){
+        System.out.println("22");
+
+        System.out.println("creDatetime: "  + creDatetime);
+
         String[] dateArr = creDatetime.split(" ")[1].split(":");
 
         String time = dateArr[0] + ":" + dateArr[1];
@@ -384,14 +404,54 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     // 내가 작성한 메시지 업데이트
-    public void updateCntAndIdx(int notReadUserCount, int msgIdx){
+    public void updateCntAndIdx(int notReadUserCount, int msgIdx, String creDatetime){
         System.out.println("updateCntAndIdx 실행");
+
+        System.out.println("수신시간: " + creDatetime);
 
         // 가장 마지막에 등록된 메시지 - 내가 작성한 메시지 업데이트
         int position = chattingMsgList.size() - 1;
 
         chattingMsgList.get(position).setNotReadUserCount(notReadUserCount);
         chattingMsgList.get(position).setMsgIdx(msgIdx);
+        chattingMsgList.get(position).setCreDatetime(creDatetime);
+
         notifyItemChanged(position);
+    }
+
+    // String(datetime형태) to date
+    public Date makeDateFromDatetimeOfString(String datetime){
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date time = null;
+
+        try {
+            time = transFormat.parse(datetime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return time;
+    }
+
+    // 서버시간과의 차이 보정한 메시지 수신시간 리턴
+    public String computeTimeDifferToServer(String datetime, long timeDiffer){
+        Date currentTimeOfDate = makeDateFromDatetimeOfString(datetime);
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        int timeDifferSec = (int)(timeDiffer/1000);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(currentTimeOfDate);
+        cal.add(Calendar.SECOND, timeDifferSec);
+
+        System.out.println("메시지 수신시간:" + datetime);
+
+        System.out.println("보정시간; "+ sdFormat.format(cal.getTime()));
+
+        return sdFormat.format(cal.getTime());
+    }
+
+    public void setTimeDiffer(long timeDiffer) {
+        this.timeDiffer = timeDiffer;
     }
 }

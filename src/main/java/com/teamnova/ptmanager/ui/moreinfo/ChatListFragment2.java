@@ -37,7 +37,11 @@ import com.teamnova.ptmanager.ui.login.findpw.FindPw3Activity;
 import com.teamnova.ptmanager.viewmodel.chatting.ChattingViewModel;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 채팅방 리스트 프래그먼트
@@ -55,6 +59,9 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
     // 채팅방 나가기 시 채팅방 리스트에서 채팅방을 삭제하기 위한 정보를 가지고 있는 객체
     // 채팅방 만들기 시 채팅방 리스트에 채팅방을 추가하기 위한 정보를 가지고 있는 객체
     private ActivityResultLauncher<Intent> startActivityResult;
+
+    // 회원선택 리스트에서 다시 이 화면으로 돌아와 다시 바로 채팅방화면으로 이동하기 위한 객체
+    private ActivityResultLauncher<Intent> startActivityResult2;
 
     // 채팅방 매니져
     private ChattingRoomManager chattingRoomManager;
@@ -90,11 +97,14 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                 new ActivityResultCallback<ActivityResult>() {
                     @Override public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
-                            System.out.println("");
+                            System.out.println("2. 뒤로가기 클릭 시 여기로 들어 옴");
+
                             // 방을 나간 채팅방 정보
                             ChatRoomInfoForListDto exitedChatRoomInfo = (ChatRoomInfoForListDto)result.getData().getSerializableExtra("exitedChatRoomInfo");
                             // 새로 생성 혹은 수정된 방 정보
                             ChatRoomInfoForListDto addedOrModifiedChatRoomInfo = (ChatRoomInfoForListDto)result.getData().getSerializableExtra("addedOrModifiedChatRoomInfo");
+
+                            System.out.println("3. 수정 시 addedOrModifiedChatRoomInfo값 있어야 함:" + addedOrModifiedChatRoomInfo);
 
                             // 방 나가기
                             if(exitedChatRoomInfo != null){
@@ -111,6 +121,7 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                                 boolean isModified = false;
 
                                 for(int i = 0; i < list.size(); i++){
+                                    System.out.println("4. 수정 시 여기 들어와야 함");
                                     // 이미 리스트에 존재하는 채팅방이라면 내용 수정 -> 포지션 0으로 옮기기
                                     if(list.get(i).getChattingRoomId().equals(addedOrModifiedChatRoomInfo.getChattingRoomId())){
                                         isModified = true;
@@ -118,13 +129,21 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                                         // 새로운 리스트 생성
                                         list.remove(i);
                                         list.add(0, addedOrModifiedChatRoomInfo);
+                                        System.out.println("5. 수정 시 여기 들어와야 함");
+
                                         break;
+                                    } else{
+                                        System.out.println("6. 수정 시 여기 들어오면 안 됨");
                                     }
                                 }
 
+                                System.out.println("isModified: " + isModified);
+
                                 // 추가라면
                                 if(!isModified){
+                                    System.out.println("여기 드러옴");
                                     list.add(0, addedOrModifiedChatRoomInfo);
+                                    linearLayoutManager.scrollToPosition(0);
                                 }
 
                                 chattingViewModel.getChattingList().setValue(list);
@@ -133,9 +152,38 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                     }
                 });
 
+        startActivityResult2 = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // 새로 초대한 인원 정보를 가져온다!
+                            ArrayList<ChattingMemberDto> chatMemberList = (ArrayList<ChattingMemberDto>)result.getData().getSerializableExtra("chatMemberList");
+                            Intent intent = new Intent(requireActivity(), ChattingActivity.class);
+                            intent.putExtra("chatMemberList",chatMemberList);
+
+                            startActivityResult.launch(intent);
+                        }
+                    }
+                });
+
         super.onCreate(savedInstanceState);
 
         Log.d("홈 프래그먼트의 onCreate", "얍얍");
+
+        // 채팅방 매니저
+        chattingRoomManager = new ChattingRoomManager();
+
+        // 서버시간 - 클라이언트 시간
+        long serverTime = chattingRoomManager.getCurrentServerTime();
+        long clientTime = System.currentTimeMillis();
+
+        long timeDifference = clientTime - serverTime;
+
+        System.out.println("serverTime: " + serverTime);
+        System.out.println("clientTime: " + clientTime);
+        System.out.println("timeDifference: " + timeDifference);
+
 
         // 부모 액티비티의 라이프사이클을 갖는 VIEWMODEL 생성
         friendViewModel = new ViewModelProvider(requireActivity()).get(FriendViewModel.class);
@@ -144,7 +192,7 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
         // 가져온 채팅방리스트정보 observe
         chattingViewModel.getChattingList().observe(requireActivity(), chatRoomList -> {
             // 리사이클러뷰에 세팅
-            chattingListAdapter = new ChattingListAdapter(chatRoomList, requireActivity(), startActivityResult, memberInfo);
+            chattingListAdapter = new ChattingListAdapter(chatRoomList, requireActivity(), startActivityResult, memberInfo, timeDifference);
             recyclerView.setAdapter(chattingListAdapter);
         });
 
@@ -218,7 +266,7 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
 
                 intent.putExtra("chattingMemberDto",ChattingMemberDto.makeChatMemberInfo(TrainerHomeActivity.staticLoginUserInfo));
 
-                startActivityResult.launch(intent);
+                startActivityResult2.launch(intent);
                 break;
             default:
                 break;
