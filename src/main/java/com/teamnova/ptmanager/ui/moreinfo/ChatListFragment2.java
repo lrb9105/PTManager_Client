@@ -34,6 +34,7 @@ import com.teamnova.ptmanager.ui.home.member.MemberHomeActivity;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.login.LoginActivity;
 import com.teamnova.ptmanager.ui.login.findpw.FindPw3Activity;
+import com.teamnova.ptmanager.util.GetDate;
 import com.teamnova.ptmanager.viewmodel.chatting.ChattingViewModel;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
 
@@ -42,6 +43,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import static com.teamnova.ptmanager.ui.chatting.ChattingActivity.timeDifference;
 
 /**
  * 채팅방 리스트 프래그먼트
@@ -70,6 +73,8 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
     private RecyclerView recyclerView;
     private ChattingListAdapter chattingListAdapter;
     private LinearLayoutManager linearLayoutManager;
+    // 보정해야 하는지 여부 - 처음 조회시만 보정해야 한다!
+    private boolean shouldCompensate = false;
 
     public ChatListFragment2() {
         // Required empty public constructor
@@ -119,14 +124,26 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                                 ArrayList<ChatRoomInfoForListDto> list = chattingViewModel.getChattingList().getValue();
                                 // 리스트에서 넘어온 채팅방 정보 객체와 동일한 아이디를 갖는 객체가 있는지 확인
                                 boolean isModified = false;
+                                boolean isNotModifiedAndAdded = false;
 
                                 for(int i = 0; i < list.size(); i++){
                                     System.out.println("4. 수정 시 여기 들어와야 함");
-                                    // 이미 리스트에 존재하는 채팅방이라면 내용 수정 -> 포지션 0으로 옮기기
+                                    // 이미 리스트에 존재하는 채팅방이고 내용이 수정되었다면 -> 포지션 0으로 옮기기
                                     if(list.get(i).getChattingRoomId().equals(addedOrModifiedChatRoomInfo.getChattingRoomId())){
+                                        // 메시지가 동일하다면 변경안 된 것
+                                        if(list.get(i).getLatestMsg().equals(addedOrModifiedChatRoomInfo.getLatestMsg())) {
+                                            isNotModifiedAndAdded = true;
+                                            break;
+                                        }
+
                                         isModified = true;
+                                        // 채팅방 수정시에는 시간보정 할 필요 없음
+                                        shouldCompensate = false;
                                         // 수정된 값으로 변경하기 - 이전 리스트 삭제
                                         // 새로운 리스트 생성
+                                        // 채팅방에서 가져온 메시지의 시간은 이미 보정이 완료된 상태이다. 따라서 역으로 한번더 보정을 해줘야 한다.
+                                        //addedOrModifiedChatRoomInfo.setLatestMsgTime(GetDate.computeTimeDifferToServer(addedOrModifiedChatRoomInfo.getLatestMsgTime(), -timeDifference));
+
                                         list.remove(i);
                                         list.add(0, addedOrModifiedChatRoomInfo);
                                         System.out.println("5. 수정 시 여기 들어와야 함");
@@ -139,9 +156,12 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
 
                                 System.out.println("isModified: " + isModified);
 
-                                // 추가라면
-                                if(!isModified){
+                                // 추가되었다면
+                                if(!isModified && !isNotModifiedAndAdded) {
                                     System.out.println("여기 드러옴");
+                                    // 채팅방 새로 생성시에는 시간보정 할 필요 없음
+                                    shouldCompensate = false;
+
                                     list.add(0, addedOrModifiedChatRoomInfo);
                                     linearLayoutManager.scrollToPosition(0);
                                 }
@@ -192,7 +212,7 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
         // 가져온 채팅방리스트정보 observe
         chattingViewModel.getChattingList().observe(requireActivity(), chatRoomList -> {
             // 리사이클러뷰에 세팅
-            chattingListAdapter = new ChattingListAdapter(chatRoomList, requireActivity(), startActivityResult, memberInfo, timeDifference);
+            chattingListAdapter = new ChattingListAdapter(chatRoomList, requireActivity(), startActivityResult, memberInfo, timeDifference,shouldCompensate);
             recyclerView.setAdapter(chattingListAdapter);
         });
 
@@ -255,6 +275,8 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
 
     /** 사용자가 포함된 채팅방리스트를 가져와라*/
     private ArrayList<ChatRoomInfoForListDto> getChatRoomList(String userId){
+        // 처음 조회시에는 보정을 해야한다!
+        shouldCompensate = true;
         return chattingRoomManager.getChatRoomList(userId);
     }
 

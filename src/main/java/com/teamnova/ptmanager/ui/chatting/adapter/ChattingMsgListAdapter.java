@@ -201,11 +201,11 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             /** 프로필, 메시지, 시간 세팅 */
 
             // 프로필 id가 null이라면
-            if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
+            /*if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
                 ((MyMsgViewHolder)holder).user_profile.setImageDrawable(context.getDrawable(R.drawable.profile_boy));
             } else{
                 Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((MyMsgViewHolder)holder).user_profile);
-            }
+            }*/
 
             ((MyMsgViewHolder)holder).editText_MyMsg.setText(chattingDto.getMsg());
             ((MyMsgViewHolder)holder).textViewMyTime.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
@@ -242,11 +242,12 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 ((OpponentMsgViewHolderViewHolder)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
             }
         } else if(holder instanceof MyMsgViewHolderWithDay){ //내가 작성했고 날짜를 보여줘야 하는 경우
-            if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
+            /*if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
                 ((MyMsgViewHolderWithDay)holder).user_profile.setImageDrawable(context.getDrawable(R.drawable.profile_boy));
             } else{
                 Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((MyMsgViewHolderWithDay)holder).user_profile);
-            }
+            }*/
+
             ((MyMsgViewHolderWithDay)holder).editText_MyMsg.setText(chattingDto.getMsg());
             ((MyMsgViewHolderWithDay)holder).textViewMyTime.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
             ((MyMsgViewHolderWithDay)holder).textView_date.setText(getDate(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
@@ -323,7 +324,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 채팅 메시지 추가
     public void addChatMsgInfo(ChatMsgInfo chatMsgInfo){
-        System.out.println("addChatMsgInfo 실행");
+        //System.out.println("addChatMsgInfo 실행");
         // 3. 리사에 잘 넘어와서 이 메소드가 호출 되는가?
         System.out.println();
         int size = getItemCount();
@@ -354,9 +355,9 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 시간 반환
     public String getTime(String creDatetime){
-        System.out.println("22");
+        //System.out.println("22");
 
-        System.out.println("creDatetime: "  + creDatetime);
+        //System.out.println("creDatetime: "  + creDatetime);
 
         String[] dateArr = creDatetime.split(" ")[1].split(":");
 
@@ -446,12 +447,15 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         System.out.println("메시지 수신시간:" + datetime);
 
-        System.out.println("보정시간; "+ sdFormat.format(cal.getTime()));
+        //System.out.println("보정시간; "+ sdFormat.format(cal.getTime()));
+
+        //System.out.println("userID: " + userID);
 
         return sdFormat.format(cal.getTime());
     }
 
     public void setTimeDiffer(long timeDiffer) {
         this.timeDiffer = timeDiffer;
+        System.out.println("timeDiffer111112222: " + timeDiffer);
     }
 }

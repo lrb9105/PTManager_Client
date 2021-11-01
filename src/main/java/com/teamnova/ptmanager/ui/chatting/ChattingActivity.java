@@ -4,26 +4,39 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -56,12 +69,17 @@ import com.teamnova.ptmanager.ui.home.member.Event;
 import com.teamnova.ptmanager.ui.home.member.MemberHomeActivity;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.record.fitness.FitnessRegisterActivity;
+import com.teamnova.ptmanager.ui.register.SelectProfileActivity;
 import com.teamnova.ptmanager.util.DialogUtil;
 import com.teamnova.ptmanager.util.GetDate;
 import com.teamnova.ptmanager.viewmodel.chatting.ChattingMsgViewModel;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -76,6 +94,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 
@@ -134,7 +155,10 @@ public class ChattingActivity extends AppCompatActivity {
     private String firstOrOld;
 
     // 클라이언트시간 - 서버시간
-    private long timeDifference;
+    public static long timeDifference;
+
+    // 촬영한 사진을 저장할 경로
+    private String mCurrentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -436,6 +460,31 @@ public class ChattingActivity extends AppCompatActivity {
                 }
             }
         });
+
+        /** 사진선택 버튼 클릭 시 직접촬역 혹은 갤러리에서 사진선택 다이얼로그 출력*/
+        binding.btnSelectImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ChattingActivity.this);
+
+                builder.setTitle("이미지 전송");
+
+                builder.setItems(R.array.photoOrImageOrRemove, new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int pos)
+                    {
+                        if(pos == 0){ //직접촬영
+                            //dispatchTakePictureIntent();
+                        } else { //갤러리에서 가져오기
+                            //doTakeMultiAlbumAction();
+                        }
+                    }
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
+        });
     }
 
     /** 채팅방 정보를 세팅하라*/
@@ -482,7 +531,7 @@ public class ChattingActivity extends AppCompatActivity {
                                 // 반드시 synchronized키워드를 정지할 쓰레드와 실행할 쓰레드를 동기화시켜야 한다!
                                 synchronized (this){
                                     wait();
-                                    System.out.println("테스트22222");
+                                    System.out.println("SendThread 실행");
 
                                     // 텍스트만 전송
                                     sendWriter.println(userInfo.getUserName() +":"+ userInfo.getUserId() + ":" + chatRoomId + ":" + sendMsg + ":" + GetDate.getTodayDateWithTime());
@@ -490,9 +539,9 @@ public class ChattingActivity extends AppCompatActivity {
 
                                     // lastMsg 변수에는 마지막으로 수신한 메시지를 넣어줘야 한다. 메시지 송신 후 아무런 메시지를 받지 않고 뒤로가기를 하면
                                     // 해당 메시지가 가장 마지막 메시지 이므로 lastMsg변수에 값을 넣어준다.
-                                    lastMsg = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(), 0, 0);
+                                    lastMsg = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(), 0, 0, null);
 
-                                    System.out.println("보내는 메시지: " + userInfo.getUserName() +":"+ userInfo.getUserId() + ":" + chatRoomId + ":" + sendMsg + ":" + GetDate.getTodayDateWithTime());
+                                    //System.out.println("보내는 메시지: " + userInfo.getUserName() +":"+ userInfo.getUserId() + ":" + chatRoomId + ":" + sendMsg + ":" + GetDate.getTodayDateWithTime());
 
                                     // 메시지 객체를 전송
                                     //objWriter.writeObject(new ChatMsgInfo(null, userInfo.getUserId(),chatRoomId, sendMsg));
@@ -641,7 +690,7 @@ public class ChattingActivity extends AppCompatActivity {
 
         public MsgUpdater(ChatMsgInfo msgInfo) {
             // 2. msgInfo가 잘 만들어 졌는가?
-            System.out.println("msgInfo: " + msgInfo);
+            //System.out.println("msgInfo: " + msgInfo);
 
             this.msgInfo = msgInfo;
         }
@@ -654,7 +703,7 @@ public class ChattingActivity extends AppCompatActivity {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
                     SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
-                    System.out.println("현재시간2222: " + sdf.format(timestamp));
+                    //System.out.println("현재시간2222: " + sdf.format(timestamp));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -664,16 +713,16 @@ public class ChattingActivity extends AppCompatActivity {
                 // 마지막 아이템으로 이동
                 layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
 
-                System.out.println("메시지 수신시간1: " + msgInfo.getCreDatetime());
+                System.out.println("서버로부터 상대방으로부터 메시지 수신시간: " + msgInfo.getCreDatetime());
 
                 //binding.chatView.setText(binding.chatView.getText().toString() + msg+"\n");
             } else { // 내가 작성한 메시지
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
                 SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
-                System.out.println("현재시간3333: " + sdf.format(timestamp));
+                //System.out.println("현재시간3333: " + sdf.format(timestamp));
 
-                System.out.println("메시지 수신시간2: " + msgInfo.getCreDatetime());
+                System.out.println("서버로부터 내가보낸 메시지 수신시간: " + msgInfo.getCreDatetime());
 
                 chattingMsgListAdapter.updateCntAndIdx(msgInfo.getNotReadUserCount(), msgInfo.getMsgIdx(), msgInfo.getCreDatetime());
             }
@@ -729,7 +778,7 @@ public class ChattingActivity extends AppCompatActivity {
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
                 SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
-                System.out.println("현재시간: " + sdf.format(timestamp));
+                //System.out.println("현재시간: " + sdf.format(timestamp));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -737,8 +786,8 @@ public class ChattingActivity extends AppCompatActivity {
             // 리사이클러뷰에 뿌여주기
             // 처음에 뿌려줄 땐 읽지않은 사용자 수와 msgIdx를 0으로 초기화! => 추후에 서버에서 읽지않은 사용자수와 msgIdx값을 받아와서 업데이트 해줘야한다!
             synchronized (thread){
-                System.out.println("테스트1111");
-                chattingMsgListAdapter.addChatMsgInfo(new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(),0,0));
+                System.out.println("MainThread 실행");
+                chattingMsgListAdapter.addChatMsgInfo(new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(),0,0, null));
                 layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
                 binding.message.setText("");
 
@@ -813,7 +862,7 @@ public class ChattingActivity extends AppCompatActivity {
                         }
                     }
 
-                    System.out.println("수신한 메시지:" + read);
+                    //System.out.println("수신한 메시지:" + read);
 
                     // 객체 전송
                     //String read = null;
@@ -874,19 +923,41 @@ public class ChattingActivity extends AppCompatActivity {
                         String[] msgArr = read.split(":");
 
                         // 내가보낸 메시지가 아니라면
+                        // 텍스트msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx:savePath;
+                        // 파일 포함msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx;
                        if(msgArr.length > 5){
                             String userName = msgArr[0];
                             String userId = msgArr[1];
                             String roomId = msgArr[2];
                             String msg = msgArr[3];
                             String creDatetime = msgArr[msgArr.length - 5] + ":" + msgArr[msgArr.length - 4]  + ":" + msgArr[msgArr.length - 3];
+                            int notReadUserCountPos = 0;
+                            int msgIdxPos = 0;
+                            int savePathPos = 0;
+                           String savePath = null;
+
+                            // 텍스트 메시지
+                            if(msgArr.length == 7){
+                                notReadUserCountPos = msgArr.length-2;
+                                msgIdxPos = msgArr.length-1;
+                            } else { // 파일포함 메시지
+                                notReadUserCountPos = msgArr.length-3;
+                                msgIdxPos = msgArr.length-2;
+                                savePathPos = msgArr.length-1;
+                            }
+
                             // 뒤에서 두번째에 안읽은 사람수가 있음
-                            int notReadUserCount = Integer.parseInt(msgArr[msgArr.length-2]);
-                            int msgIdx = Integer.parseInt(msgArr[msgArr.length-1]);
+                            int notReadUserCount = Integer.parseInt(msgArr[notReadUserCountPos]);
+                            int msgIdx = Integer.parseInt(msgArr[msgIdxPos]);
+
+                            // 파일이 존재한다면 저장경로 위치 != 0
+                           if(savePathPos != 0){
+                               savePath = msgArr[savePathPos];
+                           }
 
                             // 1. 서버에서 메시지가 잘 넘어오는가
                             System.out.println("서버로부터 메시지: " + read);
-                            chatMsgInfo = new ChatMsgInfo(null, userId, userName, roomId, msg, creDatetime,notReadUserCount,msgIdx);
+                            chatMsgInfo = new ChatMsgInfo(null, userId, userName, roomId, msg, creDatetime,notReadUserCount,msgIdx,savePath);
 
                             // 마지막 메시지 저장
                             lastMsg = chatMsgInfo;
@@ -910,9 +981,9 @@ public class ChattingActivity extends AppCompatActivity {
 
                             // 어댑터에서 가장 마지막에있는 메시지 업데이트!
                             // 리사이클러뷰의 업데이트는 main UI에서만 가능!!!!
-                           System.out.println("서버로부터 메시지222: " + read);
+                           //System.out.println("서버로부터 메시지222: " + read);
 
-                           chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, null, creDateTime,notReadUserCount,msgIdx);
+                           chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, null, creDateTime,notReadUserCount,msgIdx,null);
 
                            if(lastMsg != null){
                                lastMsg.setNotReadUserCount(notReadUserCount);
@@ -967,5 +1038,133 @@ public class ChattingActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+    // 직접촬영
+    /*private void dispatchTakePictureIntent() {
+        // 특정 권한에 대한 허용을 했는지 여부
+        int permissionCheck = ContextCompat.checkSelfPermission(SelectProfileActivity.this, Manifest.permission.CAMERA);
+
+        if(permissionCheck == PackageManager.PERMISSION_DENIED){ //카메라 권한 없음
+            ActivityCompat.requestPermissions(SelectProfileActivity.this,new String[]{Manifest.permission.CAMERA},0);
+        }else{ //카메라 권한 있음
+            // 카메라 앱 액티비티를 여는 인텐트 생성
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+            if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException ex) { }
+                if(photoFile != null) {
+                    Uri photoURI = FileProvider.getUriForFile(this, "com.teamnova.ptmanager.fileprovider", photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }
+            }
+        }
+    }
+
+    private void doTakeMultiAlbumAction(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        // 프로필 사진 고를 땐 여러장 못고르도록.
+        //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+        startActivityForResult(intent,REQUEST_ALBUM_PICK);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // 직접 촬영
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            if (resultCode == RESULT_OK) {
+                profileImgFile = new File(mCurrentPhotoPath);
+
+                Bitmap bitmap;
+
+                if (Build.VERSION.SDK_INT > 27) {
+                    ImageDecoder.Source source = ImageDecoder.createSource(getContentResolver(), Uri.fromFile(profileImgFile));
+
+                    try {
+                        bitmap = ImageDecoder.decodeBitmap(source);
+
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        // 사진을 압축
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), byteArrayOutputStream.toByteArray());
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+                        uploadFile = MultipartBody.Part.createFormData("profileImg", "JPEG_" + timeStamp + "_.jpg" ,requestBody);
+
+                        if (bitmap != null) {
+                            binding.userProfile.setImageBitmap(bitmap);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(profileImgFile));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        } else if(requestCode == REQUEST_ALBUM_PICK && resultCode == RESULT_OK){
+            ClipData clipData = data.getClipData();
+
+            // 선택한 사진이 한장이라면 clipData존재 X
+            if(clipData == null){
+                try {
+                    // 선택한 이미지에서 비트맵 생성
+                    InputStream in = getContentResolver().openInputStream(data.getData());
+                    img = BitmapFactory.decodeStream(in);
+
+                    // bitmap to file
+
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    // 사진을 압축
+                    img.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream);
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), byteArrayOutputStream.toByteArray());
+
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+                    uploadFile = MultipartBody.Part.createFormData("profileImg", "JPEG_" + timeStamp + "_.jpg" ,requestBody);
+
+                    // 이미지 표시
+                    binding.userProfile.setImageBitmap(img);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                InputStream in = null;
+                ArrayList<Bitmap> imgList = new ArrayList<>();
+
+                for(int i = 0; i < clipData.getItemCount(); i++){
+                    Uri uri =  clipData.getItemAt(i).getUri();
+                    try {
+                        in = getContentResolver().openInputStream(uri);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    img = BitmapFactory.decodeStream(in);
+                    imgList.add(img);
+                    binding.userProfile.setImageBitmap(img);
+                }
+            }
+        }
+    }*/
+
+    // 촬영한 사진을 저장할 파일을 생성한다.
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile( imageFileName, ".jpg", storageDir );
+        mCurrentPhotoPath = image.getAbsolutePath();
+
+        return image;
     }
 }

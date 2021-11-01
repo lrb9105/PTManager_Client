@@ -160,4 +160,44 @@ public class GetDate {
         }
         return calDateDays;
     }
+
+    // String(datetime형태) to date
+    public static Date makeDateFromDatetimeOfString(String datetime){
+        System.out.println("datetime:" + datetime);
+        datetime += ":00";
+
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date time = null;
+
+        try {
+            time = transFormat.parse(datetime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(time);
+
+        return time;
+    }
+
+    // 서버시간과의 차이 보정한 메시지 수신시간 리턴
+    public static String computeTimeDifferToServer(String datetime, long timeDiffer){
+        Date currentTimeOfDate = makeDateFromDatetimeOfString(datetime);
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        int timeDifferSec = (int)(timeDiffer/1000);
+
+        System.out.println("currentTimeOfDate: " + currentTimeOfDate);
+        System.out.println("timeDifferSec: " + timeDifferSec);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(currentTimeOfDate);
+        cal.add(Calendar.SECOND, timeDifferSec);
+
+        System.out.println("메시지 수신시간:" + datetime);
+
+        System.out.println("보정시간; "+ sdFormat.format(cal.getTime()));
+
+        return sdFormat.format(cal.getTime());
+    }
 }

@@ -299,4 +299,58 @@
     <string name="action_settings">Settings</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="title_activity_big_image_ex">BigImageExActivity</string>
+
+
+    <string name="main_fresco">fresco loader</string>
+    <string name="main_glide">glide loader</string>
+    <string name="main_long">long image</string>
+    <string name="main_scale">scale type</string>
+    <string name="main_callback">image loader callback</string>
+    <string name="main_custom_ssiv">Custom SSIV</string>
+    <string name="main_recycler">Recycler</string>
+    <string name="main_types">image types</string>
+    <string name="main_shared_trans_glide">shared elem. transition glide</string>
+    <string name="main_shared_trans_fresco">shared elem. transition fresco</string>
+
+    <string name="bttn_load">Load</string>
+
+    <string name="radio_use_glide">Use Glide</string>
+    <string name="radio_use_fresco">Use Fresco</string>
+
+    <string name="check_use_view_factory">Use view factory</string>
+
+    <string name="header_image_loader">Image Loader:</string>
+    <string name="header_image_type">Image Type:</string>
+    <string name="header_first_activity">First Activity:</string>
+    <string name="header_second_activity">Second Activity:</string>
+
+    <string name="transition_name">shared_transition_element_view</string>
+
+    <string name="content_desc_thumb">Thumbnail Image</string>
+    <string name="content_desc_source">Source Image</string>
+
+    <string name="long_click_actions">Actions:</string>
+    <string name="scan_qr_code">recognize qr code</string>
+    <string name="save_image">save to gallery</string>
+
+    <string name="scale_center_crop">centerCrop</string>
+    <string name="scale_center_inside">centerInside</string>
+    <string name="scale_custom">custom</string>
+    <string name="scale_start">start</string>
+    <string-array name="init_scale_type">
+        <item>@string/scale_center_crop</item>
+        <item>@string/scale_center_inside</item>
+        <item>@string/scale_custom</item>
+        <item>@string/scale_start</item>
+    </string-array>
+
+    <string name="size_small">small</string>
+    <string name="size_medium">medium</string>
+    <string name="size_big">big</string>
+    <string-array name="image_size">
+        <item>@string/size_small</item>
+        <item>@string/size_medium</item>
+        <item>@string/size_big</item>
+    </string-array>
 </resources>

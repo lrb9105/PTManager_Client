@@ -22,8 +22,10 @@ public class ChatMsgInfo implements Serializable {
     private int notReadUserCount;
     @SerializedName("msgIdx")
     private int msgIdx;
+    @SerializedName("savePath")
+    private String savePath;
 
-    public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime, int notReadUserCount, int msgIdx) {
+    public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime, int notReadUserCount, int msgIdx, String savePath) {
         this.chattingMsgId = chattingMsgId;
         this.chattingMemberId = chattingMemberId;
         this.chattingMemberName = chattingMemberName;
@@ -32,6 +34,7 @@ public class ChatMsgInfo implements Serializable {
         this.creDatetime = creDatetime;
         this.notReadUserCount = notReadUserCount;
         this.msgIdx = msgIdx;
+        this.savePath = savePath;
     }
 
     public String getChattingMsgId() {
@@ -96,5 +99,13 @@ public class ChatMsgInfo implements Serializable {
 
     public void setMsgIdx(int msgIdx) {
         this.msgIdx = msgIdx;
+    }
+
+    public String getSavePath() {
+        return savePath;
+    }
+
+    public void setSavePath(String savePath) {
+        this.savePath = savePath;
     }
 }
