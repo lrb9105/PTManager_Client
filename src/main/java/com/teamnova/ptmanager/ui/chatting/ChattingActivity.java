@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -169,6 +170,14 @@ public class ChattingActivity extends AppCompatActivity {
     // 사진 파일
     private File photoFile;
 
+    // 페이징 시 게시물 수
+    private int limit = 10;
+    // 가져올 페이지
+    private int pageNo = 1;
+
+    // 메시지리스트를 담을 리스트
+    private ArrayList<ChatMsgInfo> chatMsgList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         binding = ActivityChattingRoomBinding.inflate(getLayoutInflater());
@@ -304,11 +313,18 @@ public class ChattingActivity extends AppCompatActivity {
             System.out.println("chatRoomId: " + chatRoomId);
             System.out.println("userInfo.getUserId(): " + userInfo.getUserId());
 
-            ArrayList<ChatMsgInfo> chatMsgList = chattingMsgViewModel.getMsgListInfo(chatRoomId, userInfo.getUserId());
+            // 빈 ArrayList 생성
+            chatMsgList = new ArrayList<>();
 
-            System.out.println("메시지 사이즈: " + chatMsgList.size());
-
+            // 빈 ArrayList 넘겨 줌 => 페이징해서 가져온 데이터를 하나하나 add해줄 것임!
             chattingMsgListAdapter = new ChattingMsgListAdapter(chatMsgList, this, null, userInfo.getUserId(), userProfileBitmapMap);
+
+            // 리사이클러뷰에 아답터를 넘겨 줌
+            recyclerView.setAdapter(chattingMsgListAdapter);
+
+            getDataList();
+
+            // 맨처음 데이터를 가져올 땐 제일 마지막으로 포커싱해야 함
             layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
 
             /** 채팅데이터가 있는 경우 안읽은 메시지 --해준다 */
@@ -344,15 +360,20 @@ public class ChattingActivity extends AppCompatActivity {
                 // 내 화면 먼저 --
                 chattingMsgListAdapter.updateNotReadUserCountMinus(lastMsgIdx);
 
-                /** 가장 마지막 메시지의 인덱스를 sp에 업데이트 해준다. */
-                saveMsgInfoToSharedPreference(chatMsgList.get(chatMsgList.size() - 1));
+                /** 가장 마지막 메시지의 인덱스를 sp에 업데이트 해준다.
+                 *  서버에서 가져온 메시지 리스트 중 첫번째 메시지의 인덱스가 가장 마지막 인덱스이다.
+                 * */
+                saveMsgInfoToSharedPreference(chatMsgList.get(0));
             }
 
             // 조회한 가장 마지막 메시지 저장
             lastMsg = chatMsgList.get(chatMsgList.size() - 1);
         } else{
-            System.out.println("222");
-            chattingMsgListAdapter = new ChattingMsgListAdapter(new ArrayList<>(), this, null, userInfo.getUserId(), userProfileBitmapMap);
+            // 아답터를 생성한다.
+            chattingMsgListAdapter = new ChattingMsgListAdapter(chatMsgList, this, null, userInfo.getUserId(), userProfileBitmapMap);
+
+            // 아답터를 세팅한다.
+            recyclerView.setAdapter(chattingMsgListAdapter);
         }
 
         // 채팅방 아이디
@@ -365,7 +386,49 @@ public class ChattingActivity extends AppCompatActivity {
         chattingMsgListAdapter.setTimeDiffer(this.timeDifference);
 
         // 리사이클러뷰 업데이트
-        recyclerView.setAdapter(chattingMsgListAdapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                // 리사의 맨위에 도달했다면 데이터 가져오기
+                if(!recyclerView.canScrollVertically(-1)){
+                    // 리사이클러뷰에서 눈에
+                    int firstVisibleItemPos = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+
+                    System.out.println("firstVisibleItemPos" + firstVisibleItemPos);
+
+                    // 페이지의 끝에 도달했다면 데이터 가져오기!
+                    if(firstVisibleItemPos == 0){
+                        // 페이지 넘버를 올려 줌
+                        pageNo++;
+                        getDataList();
+                        System.out.println("들어옴!");
+                    }
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                System.out.println("dx" + dx);
+                System.out.println("dy" + dy);
+
+                /*// 현재 보이는 것 중 마지막 아이템의 위치값
+                int firstVisibleItemPos = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+
+                System.out.println("firstVisibleItemPos" + firstVisibleItemPos);
+
+                // 페이지의 끝에 도달했다면 데이터 가져오기!
+                if(firstVisibleItemPos == 0){
+                    // 페이지 넘버를 올려 줌
+                    pageNo++;
+                    getDataList();
+                    System.out.println("들어옴!");
+                }*/
+
+            }
+        });
 
         /** 채팅방 정보를 세팅하라 */
         setChatRoomInfo();
@@ -932,14 +995,14 @@ public class ChattingActivity extends AppCompatActivity {
                         // 텍스트msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx:savePath;
                         // 파일 포함msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx;
                        if(msgArr.length > 10){
-                            String userName = msgArr[0];
-                            String userId = msgArr[1];
-                            String roomId = msgArr[2];
-                            String msg = msgArr[3];
-                            String creDatetime = msgArr[msgArr.length - 5] + ":" + msgArr[msgArr.length - 4]  + ":" + msgArr[msgArr.length - 3];
-                            int notReadUserCountPos = 0;
-                            int msgIdxPos = 0;
-                            int savePathPos = 0;
+                           String userName = msgArr[0];
+                           String userId = msgArr[1];
+                           String roomId = msgArr[2];
+                           String msg = msgArr[3];
+                           String creDatetime = msgArr[msgArr.length - 5] + ":" + msgArr[msgArr.length - 4]  + ":" + msgArr[msgArr.length - 3];
+                           int notReadUserCountPos = 0;
+                           int msgIdxPos = 0;
+                           int savePathPos = 0;
                            String savePath = null;
 
                             // 텍스트 메시지
@@ -947,6 +1010,7 @@ public class ChattingActivity extends AppCompatActivity {
                                 notReadUserCountPos = msgArr.length-2;
                                 msgIdxPos = msgArr.length-1;
                             } else { // 파일포함 메시지
+                                System.out.println();
                                 creDatetime = msgArr[msgArr.length - 3] + ":" + msgArr[msgArr.length - 2]  + ":" + msgArr[msgArr.length - 1];
                                 notReadUserCountPos = msgArr.length-4;
                                 msgIdxPos = msgArr.length-6;
@@ -977,20 +1041,28 @@ public class ChattingActivity extends AppCompatActivity {
                                    }
                                }
                            }
+                       } else { 
+                           // 내가보낸 메시지
+                           // 텍스트: 읽지않은사용자수, 메시지 인덱스, 서버 수신시간
+                           // 파일: 읽지않은사용자수, 메시지 인덱스, 서버 수신시간, 저장경로
+                           boolean isText = (msgArr.length == 5);
 
-                           // 메시지 객체 만들어서 업데이터에게 보내기
-                       } else { // 내가보낸 메시지라면 읽지않은사용자수와 메시지 인덱스, 서버 수신시간만 보내줌
-                            int notReadUserCount = Integer.parseInt(msgArr[0]);
-                            int msgIdx = Integer.parseInt(msgArr[1]);
+                           int notReadUserCount = Integer.parseInt(msgArr[0]);
+                           int msgIdx = Integer.parseInt(msgArr[1]);
+                           String savePath = null;
 
                            System.out.println("");
-                            String creDateTime = msgArr[2] + ":" + msgArr[3] + ":" + msgArr[4];
+                           String creDateTime = msgArr[2] + ":" + msgArr[3] + ":" + msgArr[4];
 
-                            // 어댑터에서 가장 마지막에있는 메시지 업데이트!
-                            // 리사이클러뷰의 업데이트는 main UI에서만 가능!!!!
+                           // 어댑터에서 가장 마지막에있는 메시지 업데이트!
+                           // 리사이클러뷰의 업데이트는 main UI에서만 가능!!!!
                            //System.out.println("서버로부터 메시지222: " + read);
+                           // 텍스트 메시지라면
+                           if(!isText) {
+                               savePath = msgArr[5];
+                           }
 
-                           chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, null, creDateTime,notReadUserCount,msgIdx,msgArr[5]);
+                           chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, null, creDateTime,notReadUserCount,msgIdx, savePath);
 
                            if(lastMsg != null){
                                lastMsg.setNotReadUserCount(notReadUserCount);
@@ -1303,6 +1375,32 @@ public class ChattingActivity extends AppCompatActivity {
                     ChatMsgInfo chatMsgInfo = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, "사진", GetDate.getTodayDateWithTime(), 0, msgIdx, savePathList.get(i));
                     lastMsg = chatMsgInfo;
                 }
+            }
+        }
+    }
+
+    public void getDataList(){
+        // pageNo에 해당하는 데이터 리스트 가져 옴
+        ArrayList<ChatMsgInfo> tempChatMsgList = chattingMsgViewModel.getMsgListInfo(chatRoomId, userInfo.getUserId(), limit, pageNo);
+
+        if(pageNo == 1){
+            for(int i = (tempChatMsgList.size() - 1); i >= 0; i--) {
+                chatMsgList.add(tempChatMsgList.get(i));
+            }
+        } else{
+            // msgIdx가 높은순으로 정렬되어있다.
+            // 그런데 가져온 데이터를 역순으로 넣어야 한다. 따라서 계속 0번째에 넣어준다.
+
+            for(int i = 0; i < tempChatMsgList.size(); i++) {
+                chatMsgList.add(0, tempChatMsgList.get(i));
+            }
+
+            // 서버에서 가져온 데이터가 있다면
+            if(tempChatMsgList != null){
+                layoutManager.scrollToPosition(limit);
+
+                // 페이징해서 가져온 값을 세팅했다고 알려 줌
+                chattingMsgListAdapter.notifyDataSetChanged();
             }
         }
     }

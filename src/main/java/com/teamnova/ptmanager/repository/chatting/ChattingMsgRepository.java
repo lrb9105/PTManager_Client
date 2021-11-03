@@ -21,8 +21,8 @@ public class ChattingMsgRepository {
     }
 
     // 메시지 리스트 가져오기
-    public ArrayList<ChatMsgInfo> getMsgListInfo(String roomId, String userId){
-        return chattingMsgApiClient.getMsgListInfo(roomId, userId);
+    public ArrayList<ChatMsgInfo> getMsgListInfo(String roomId, String userId, int limit, int pageNo){
+        return chattingMsgApiClient.getMsgListInfo(roomId, userId, limit, pageNo);
     }
 
 }

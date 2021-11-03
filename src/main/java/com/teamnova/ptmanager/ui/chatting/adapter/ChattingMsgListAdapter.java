@@ -553,13 +553,13 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if(chattingMsgList.get(position).getMsg().contains("입장했습니다.") || chattingMsgList.get(position).getMsg().contains("나갔습니다.")){
             viewType = 8;
         } else if(isPhotoExist && isMyChat && (position == 0 || isDateShowed)){ // 내가 작성한 사진이고 날짜를 보여줘야 할 때
-            viewType = 4;
-        } else if(isPhotoExist && !isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성한 사진이고 날짜를 보여줘야 할 때
-            viewType = 5;
-        } else if(isPhotoExist && isMyChat){ // 내가 작성한 사진이고 날짜를 보여줄 필요가 없을 때
             viewType = 6;
-        } else if(isPhotoExist && !isMyChat){ // 상대방이 작성한 사진이고 날짜를 보여줄 필요가 없을 때
+        } else if(isPhotoExist && !isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성한 사진이고 날짜를 보여줘야 할 때
             viewType = 7;
+        } else if(isPhotoExist && isMyChat){ // 내가 작성한 사진이고 날짜를 보여줄 필요가 없을 때
+            viewType = 4;
+        } else if(isPhotoExist && !isMyChat){ // 상대방이 작성한 사진이고 날짜를 보여줄 필요가 없을 때
+            viewType = 5;
         } else if(isMyChat && (position == 0 || isDateShowed)){ // 내가 작성했고 날짜를 보여줘야 할 때
             viewType = 2;
         } else if(!isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성했고 날짜를 보여줘야 할 때
@@ -689,6 +689,9 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 서버시간과의 차이 보정한 메시지 수신시간 리턴
     public String computeTimeDifferToServer(String datetime, long timeDiffer){
+        System.out.println("datetime:" + datetime);
+        System.out.println("timeDiffer:" + timeDiffer);
+
         Date currentTimeOfDate = makeDateFromDatetimeOfString(datetime);
         SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

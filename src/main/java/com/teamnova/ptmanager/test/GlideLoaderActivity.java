@@ -1,5 +1,6 @@
 package com.teamnova.ptmanager.test;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -22,7 +23,7 @@ import com.google.firebase.installations.Utils;
 import com.teamnova.ptmanager.R;
 
 public class GlideLoaderActivity extends AppCompatActivity {
-
+    private BigImageView bigImageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +36,7 @@ public class GlideLoaderActivity extends AppCompatActivity {
 
         System.out.println("url2: " + url);
 
-        BigImageView bigImageView = findViewById(R.id.mBigImage);
+        bigImageView = findViewById(R.id.mBigImage);
         bigImageView.setProgressIndicator(new ProgressPieIndicator());
         bigImageView.setImageViewFactory(new GlideImageViewFactory());
         bigImageView.showImage(
@@ -64,22 +65,18 @@ public class GlideLoaderActivity extends AppCompatActivity {
                     }
                 });
 
+                System.out.println("11aaaa");
+
                 // should be called on worker/IO thread
                 if (ActivityCompat.checkSelfPermission(GlideLoaderActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+                    ActivityCompat.requestPermissions(GlideLoaderActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
                     return;
+                } else{
+                    // 권한이 있다면 사진저장 실행
+                    bigImageView.saveImageIntoGallery();
                 }
-
-                bigImageView.saveImageIntoGallery();
             }
         });
-
     }
 
     @Override
@@ -92,5 +89,22 @@ public class GlideLoaderActivity extends AppCompatActivity {
         //Log.w(Utils.TAG, "fixLeakCanary696: " + (end - start));
 
         BigImageViewer.imageLoader().cancelAll();
+    }
+
+    // 권한 허락했을 때
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 1000:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    if (ActivityCompat.checkSelfPermission(GlideLoaderActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+
+                    bigImageView.saveImageIntoGallery();
+                }
+                break;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

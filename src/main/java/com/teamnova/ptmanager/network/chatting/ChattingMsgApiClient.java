@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 
+/** 채팅방에서 메시지 목록을 가져오는 객체*/
 public class ChattingMsgApiClient {
     // api 서버와 통신을 하기위한 통신객체
     private Retrofit retrofit;
@@ -19,13 +20,13 @@ public class ChattingMsgApiClient {
         retrofit = RetrofitInstance.getRetroClient();
     }
 
-    // 친구목록 가져오기
-    public ArrayList<ChatMsgInfo> getMsgListInfo(String roomId, String userId){
+    // 메시지 리스트 가져오기
+    public ArrayList<ChatMsgInfo> getMsgListInfo(String roomId, String userId, int limit, int pageNo){
         // 웹서비스 구현체 생성
         ChattingService service = retrofit.create(ChattingService.class);
 
         // http request 객체 생성
-        Call<ArrayList<ChatMsgInfo>> call = service.getMsgListInfo(roomId, userId);
+        Call<ArrayList<ChatMsgInfo>> call = service.getMsgListInfo(roomId, userId, limit, pageNo);
 
         // 서버에서 데이터를 가져오는 동기 함수의 쓰레드
         SyncGetMsgListInfo t = new SyncGetMsgListInfo(call);

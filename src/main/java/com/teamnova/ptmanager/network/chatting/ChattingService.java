@@ -37,7 +37,7 @@ public interface ChattingService {
     /** 특정 채팅방의 메시지 리스트가져오기*/
     @GET("chatting/getMsgListInfo.php")
     //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
-    Call<ArrayList<ChatMsgInfo>> getMsgListInfo(@Query("chattingRoomId") String roomId, @Query("userId") String userId);
+    Call<ArrayList<ChatMsgInfo>> getMsgListInfo(@Query("chattingRoomId") String roomId, @Query("userId") String userId, @Query("limit") int limit, @Query("pageNo") int pageNO);
 
 
     /** 채팅방 정보 저장하기*/
