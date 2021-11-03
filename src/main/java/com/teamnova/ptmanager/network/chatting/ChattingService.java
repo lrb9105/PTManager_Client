@@ -9,14 +9,18 @@ import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface ChattingService {
@@ -62,6 +66,11 @@ public interface ChattingService {
     /** 서버의 현재시간 가져오기*/
     @GET("chattingroom/getCurrentServerTime.php")
     Call<String> getCurrentServerTime();
+
+    /** 사진정보 저장*/
+    @Multipart
+    @POST("chattingroom/insertFileList.php")
+    Call<ArrayList<String>> insertFileList(@Part("userId") RequestBody userId, @Part("chatRoomId") RequestBody chatRoomId, @Part ArrayList<MultipartBody.Part> msgFileList);
 
 
 

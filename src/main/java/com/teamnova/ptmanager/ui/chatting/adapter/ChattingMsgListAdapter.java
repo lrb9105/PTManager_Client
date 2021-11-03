@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.model.chatting.ChatMsgInfo;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
+import com.teamnova.ptmanager.test.GlideLoaderActivity;
 import com.teamnova.ptmanager.util.GetDate;
 
 import java.sql.SQLOutput;
@@ -153,6 +155,99 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
+    /** 이미지 뷰홀더*/
+    // 내가 작성한 이미지를 보여주는 뷰홀더
+    public class MyMsgViewHolderWithPhoto extends RecyclerView.ViewHolder {
+        ConstraintLayout layout_my_chatBox;
+        TextView textView_my_nickName;
+        ImageView img_myMsg;
+        TextView textViewMyTime;
+        CircleImageView user_profile;
+        TextView not_read_user_count;
+
+        public MyMsgViewHolderWithPhoto(View itemView) {
+            super(itemView);
+            //layout_opponent_chatBox = itemView.findViewById(R.id.layout_opponent_chatBox);
+            layout_my_chatBox = itemView.findViewById(R.id.layout_my_chatBox);
+            textView_my_nickName = itemView.findViewById(R.id.textView_my_nickName);
+            img_myMsg = itemView.findViewById(R.id.img_MyMsg);
+            textViewMyTime = itemView.findViewById(R.id.textViewMyTime);
+            user_profile = itemView.findViewById(R.id.user_profile);
+            not_read_user_count = itemView.findViewById(R.id.not_read_user_count);
+        }
+    }
+
+    // 상대방이 작성한 이미지를 보여주는 뷰홀더
+    public class OpponentMsgViewHolderViewHolderWithPhoto extends RecyclerView.ViewHolder {
+        // each data item is just a string in this case
+        ConstraintLayout layout_opponent_chatBox;
+        TextView textView_oppo_nickName;
+        ImageView img_OpponentMsg;
+        TextView textView_oppo_time;
+        CircleImageView user_profile;
+        TextView not_read_user_count;
+
+        public OpponentMsgViewHolderViewHolderWithPhoto(View itemView) {
+            super(itemView);
+
+            layout_opponent_chatBox = itemView.findViewById(R.id.layout_opponent_chatBox);
+            textView_oppo_nickName = itemView.findViewById(R.id.textView_oppo_nickName);
+            img_OpponentMsg = itemView.findViewById(R.id.img_OpponentMsg);
+            textView_oppo_time = itemView.findViewById(R.id.textView_oppo_time);
+            user_profile = itemView.findViewById(R.id.user_profile);
+            not_read_user_count = itemView.findViewById(R.id.not_read_user_count);
+        }
+    }
+
+    // 내가 작성한 이미지와 날짜를 보여주는 뷰홀더
+    public class MyMsgViewHolderWithDayAndPhoto extends RecyclerView.ViewHolder {
+        ConstraintLayout layout_my_chatBox;
+        TextView textView_date;
+        TextView textView_my_nickName;
+        ImageView img_myMsg;
+        TextView textViewMyTime;
+        CircleImageView user_profile;
+        TextView not_read_user_count;
+
+        public MyMsgViewHolderWithDayAndPhoto(View itemView) {
+            super(itemView);
+            layout_my_chatBox = itemView.findViewById(R.id.layout_my_chatBox);
+
+            textView_date = itemView.findViewById(R.id.textView_date);
+            textView_my_nickName = itemView.findViewById(R.id.textView_my_nickName);
+            img_myMsg = itemView.findViewById(R.id.img_MyMsg);
+            textViewMyTime = itemView.findViewById(R.id.textViewMyTime);
+            user_profile = itemView.findViewById(R.id.user_profile);
+            not_read_user_count = itemView.findViewById(R.id.not_read_user_count);
+        }
+    }
+
+
+    // 상대방이 작성한 이미지와 날짜를 보여주는 뷰홀더
+    public class OpponentMsgViewHolderViewHolderWithDayAndPhoto extends RecyclerView.ViewHolder {
+        // each data item is just a string in this case
+        ConstraintLayout layout_opponent_chatBox;
+        TextView textView_date;
+        TextView textView_oppo_nickName;
+        ImageView img_OpponentMsg;
+        TextView textView_oppo_time;
+        CircleImageView user_profile;
+        TextView not_read_user_count;
+
+        public OpponentMsgViewHolderViewHolderWithDayAndPhoto(View itemView) {
+            super(itemView);
+
+            layout_opponent_chatBox = itemView.findViewById(R.id.layout_opponent_chatBox);
+
+            textView_date = itemView.findViewById(R.id.textView_date);
+            textView_oppo_nickName = itemView.findViewById(R.id.textView_oppo_nickName);
+            img_OpponentMsg = itemView.findViewById(R.id.img_OpponentMsg);
+            textView_oppo_time = itemView.findViewById(R.id.textView_oppo_time);
+            user_profile = itemView.findViewById(R.id.user_profile);
+            not_read_user_count = itemView.findViewById(R.id.not_read_user_count);
+        }
+    }
+
     // 참여자가 입장하고 나갈 때 출력되는 메시지를 보여주는 viewHolder
     public class EnterAndExitViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
@@ -174,6 +269,12 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         View itemViewOppoWithDate = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chatting_chatbox_oppo_with_date, parent, false);
         View itemEnterOrExit = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_enter_and_exit, parent, false);
 
+        // 이미지를 출력하는 뷰홀더
+        View itemViewMyWithPhoto = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chatting_chatbox_me_with_photo, parent, false);
+        View itemViewOppoWithPhoto = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chatting_chatbox_oppo_with_photo, parent, false);
+        View itemViewMyWithDateAndPhoto = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chatting_chatbox_me_with_date_and_photo, parent, false);
+        View itemViewOppoWithDateAndPhoto = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chatting_chatbox_oppo_with_date_and_photo, parent, false);
+
         if(viewType == 0){ // 내가 작성한 채팅
             ChattingMsgListAdapter.MyMsgViewHolder vh = new ChattingMsgListAdapter.MyMsgViewHolder(itemViewMy);
             return vh;
@@ -183,12 +284,24 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         } else if(viewType == 2){ // 내가 작성했고 날짜 보여줘야 할 때
             ChattingMsgListAdapter.MyMsgViewHolderWithDay vh3 = new ChattingMsgListAdapter.MyMsgViewHolderWithDay(itemViewMyWithDate);
             return vh3;
-        } else if(viewType == 3){ // 상대방이 작성했고 날짜 보여줘야 할 때
+        } else if(viewType == 3) { // 상대방이 작성했고 날짜 보여줘야 할 때
             ChattingMsgListAdapter.OpponentMsgViewHolderViewHolderWithDay vh4 = new ChattingMsgListAdapter.OpponentMsgViewHolderViewHolderWithDay(itemViewOppoWithDate);
             return vh4;
+        }else if(viewType == 4){ // 내가 작성한 이미지
+                ChattingMsgListAdapter.MyMsgViewHolderWithPhoto vh5 = new ChattingMsgListAdapter.MyMsgViewHolderWithPhoto(itemViewMyWithPhoto);
+                return vh5;
+        } else if(viewType == 5){ // 상대방이 작성한 이미지
+            ChattingMsgListAdapter.OpponentMsgViewHolderViewHolderWithPhoto vh6 = new ChattingMsgListAdapter.OpponentMsgViewHolderViewHolderWithPhoto(itemViewOppoWithPhoto);
+            return vh6;
+        } else if(viewType == 6){ // 내가 작성한 이미지와 날짜 보여줘야 할 때
+            ChattingMsgListAdapter.MyMsgViewHolderWithDayAndPhoto vh7 = new ChattingMsgListAdapter.MyMsgViewHolderWithDayAndPhoto(itemViewMyWithDateAndPhoto);
+            return vh7;
+        } else if(viewType == 7){ // 상대방이 작성한 이미지와 날짜 보여줘야 할 때
+            ChattingMsgListAdapter.OpponentMsgViewHolderViewHolderWithDayAndPhoto vh8 = new ChattingMsgListAdapter.OpponentMsgViewHolderViewHolderWithDayAndPhoto(itemViewOppoWithDateAndPhoto);
+            return vh8;
         } else { // 들어오거나 나깠을 때
-            ChattingMsgListAdapter.EnterAndExitViewHolder vh5 = new ChattingMsgListAdapter.EnterAndExitViewHolder(itemEnterOrExit);
-            return vh5;
+            ChattingMsgListAdapter.EnterAndExitViewHolder vh9 = new ChattingMsgListAdapter.EnterAndExitViewHolder(itemEnterOrExit);
+            return vh9;
         }
     }
 
@@ -281,6 +394,134 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
                 ((OpponentMsgViewHolderViewHolderWithDay)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
             }
+        } if(holder instanceof MyMsgViewHolderWithPhoto){ // 내가 작성한 사진인 경우
+            // 내가 전송한 이미지를 출력하는 경우 비트맵에 있는 데이터를 가져온다.
+            if(chattingDto.getSaveImgBitmap() != null){
+                ((MyMsgViewHolderWithPhoto)holder).img_myMsg.setImageBitmap(chattingDto.getSaveImgBitmap());
+            } else { // 조회한 데이터인 경우 글라이드로 뿌려준다.
+                Glide.with(context).load("http://15.165.144.216" +  chattingDto.getSavePath()).into(((MyMsgViewHolderWithPhoto)holder).img_myMsg);
+            }
+
+            ((MyMsgViewHolderWithPhoto)holder).textViewMyTime.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+
+            // 리사이클러뷰는 뷰홀더를 재활용하기 때문에 처음에 무조건 GONE을 해주고 데이터가 있는경우에만 VISIBLE을 해줘야 한다.
+            // 이렇게 하지 않으면 안읽은사람 = 0인데도 기존 뷰홀더가 사용하던 값을 가지고 올 수 있다.
+            ((MyMsgViewHolderWithPhoto)holder).not_read_user_count.setVisibility(View.GONE);
+
+            if(chattingDto.getNotReadUserCount() <= 0){
+                ((MyMsgViewHolderWithPhoto)holder).not_read_user_count.setVisibility(View.GONE);
+            } else {
+                ((MyMsgViewHolderWithPhoto)holder).not_read_user_count.setVisibility(View.VISIBLE);
+
+                ((MyMsgViewHolderWithPhoto)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
+            }
+
+            // 클릭 시 다운로드 화면으로 이동
+            ((MyMsgViewHolderWithPhoto)holder).img_myMsg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, GlideLoaderActivity.class);
+
+                    intent.putExtra("url", "http://15.165.144.216" +  chattingDto.getSavePath());
+                    System.out.println("url1: " + "http://15.165.144.216" + chattingDto.getSavePath());
+                    context.startActivity(intent);
+                }
+            });
+        } else if(holder instanceof OpponentMsgViewHolderViewHolderWithPhoto){ //상대방이 작성한 사진인 경우
+            if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
+                ((OpponentMsgViewHolderViewHolderWithPhoto)holder).user_profile.setImageDrawable(context.getDrawable(R.drawable.profile_boy));
+            } else{
+                Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((OpponentMsgViewHolderViewHolderWithPhoto)holder).user_profile);
+            }
+
+            ((OpponentMsgViewHolderViewHolderWithPhoto)holder).textView_oppo_nickName.setText(chattingDto.getChattingMemberName());
+            Glide.with(context).load("http://15.165.144.216" +  chattingDto.getSavePath()).into(((OpponentMsgViewHolderViewHolderWithPhoto)holder).img_OpponentMsg);
+            ((OpponentMsgViewHolderViewHolderWithPhoto)holder).textView_oppo_time.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+
+            ((OpponentMsgViewHolderViewHolderWithPhoto)holder).not_read_user_count.setVisibility(View.GONE);
+
+            if(chattingDto.getNotReadUserCount() <= 0){
+                ((OpponentMsgViewHolderViewHolderWithPhoto)holder).not_read_user_count.setVisibility(View.GONE);
+            } else {
+                ((OpponentMsgViewHolderViewHolderWithPhoto)holder).not_read_user_count.setVisibility(View.VISIBLE);
+
+                ((OpponentMsgViewHolderViewHolderWithPhoto)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
+            }
+
+            // 클릭 시 다운로드 화면으로 이동
+            ((OpponentMsgViewHolderViewHolderWithPhoto)holder).img_OpponentMsg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, GlideLoaderActivity.class);
+                    intent.putExtra("url", "http://15.165.144.216" +  chattingDto.getSavePath());
+                    System.out.println("url1: " + "http://15.165.144.216" + chattingDto.getSavePath());
+                    context.startActivity(intent);
+                }
+            });
+        } else if(holder instanceof MyMsgViewHolderWithDayAndPhoto){ //내가 작성한 사진이고 날짜를 보여줘야 하는 경우
+            // 내가 전송한 이미지를 출력하는 경우 비트맵에 있는 데이터를 가져온다.
+            if(chattingDto.getSaveImgBitmap() != null){
+                ((MyMsgViewHolderWithDayAndPhoto)holder).img_myMsg.setImageBitmap(chattingDto.getSaveImgBitmap());
+            } else { // 조회한 데이터인 경우 글라이드로 뿌려준다.
+                Glide.with(context).load("http://15.165.144.216" +  chattingDto.getSavePath()).into(((MyMsgViewHolderWithDayAndPhoto)holder).img_myMsg);
+            }
+
+            ((MyMsgViewHolderWithDayAndPhoto)holder).textViewMyTime.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+            ((MyMsgViewHolderWithDayAndPhoto)holder).textView_date.setText(getDate(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+
+            ((MyMsgViewHolderWithDayAndPhoto)holder).not_read_user_count.setVisibility(View.GONE);
+
+            if(chattingDto.getNotReadUserCount() <= 0){
+                ((MyMsgViewHolderWithDayAndPhoto)holder).not_read_user_count.setVisibility(View.GONE);
+            } else {
+                ((MyMsgViewHolderWithDayAndPhoto)holder).not_read_user_count.setVisibility(View.VISIBLE);
+
+                ((MyMsgViewHolderWithDayAndPhoto)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
+            }
+
+            // 클릭 시 다운로드 화면으로 이동
+            ((MyMsgViewHolderWithDayAndPhoto)holder).img_myMsg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, GlideLoaderActivity.class);
+
+                    intent.putExtra("url", "http://15.165.144.216" +  chattingDto.getSavePath());
+                    System.out.println("url1: " + "http://15.165.144.216" + chattingDto.getSavePath());
+                    context.startActivity(intent);
+                }
+            });
+        } else if(holder instanceof OpponentMsgViewHolderViewHolderWithDayAndPhoto){ //상대방이 작성한 사진이고 날짜를 보여줘야 하는 경우
+            if(userProfileMap.get(chattingDto.getChattingMemberId()) == null) {
+                ((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).user_profile.setImageDrawable(context.getDrawable(R.drawable.profile_boy));
+            } else{
+                Glide.with(context).load("http://15.165.144.216" +  userProfileMap.get(chattingDto.getChattingMemberId())).into(((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).user_profile);
+            }
+            ((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).textView_oppo_nickName.setText(chattingDto.getChattingMemberName());
+            Glide.with(context).load("http://15.165.144.216" +  chattingDto.getSavePath()).into(((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).img_OpponentMsg);
+            ((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).textView_oppo_time.setText(getTime(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+            ((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).textView_date.setText(getDate(computeTimeDifferToServer(chattingDto.getCreDatetime(), timeDiffer)));
+
+            ((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).not_read_user_count.setVisibility(View.GONE);
+
+            if(chattingDto.getNotReadUserCount() <= 0){
+                ((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).not_read_user_count.setVisibility(View.GONE);
+            } else {
+                ((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).not_read_user_count.setVisibility(View.VISIBLE);
+
+                ((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).not_read_user_count.setText("" + chattingDto.getNotReadUserCount());
+            }
+
+            // 클릭 시 다운로드 화면으로 이동
+            ((OpponentMsgViewHolderViewHolderWithDayAndPhoto)holder).img_OpponentMsg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, GlideLoaderActivity.class);
+
+                    intent.putExtra("url", "http://15.165.144.216" +  chattingDto.getSavePath());
+                    System.out.println("url1: " + "http://15.165.144.216" + chattingDto.getSavePath());
+                    context.startActivity(intent);
+                }
+            });
         } else if(holder instanceof EnterAndExitViewHolder){ //나가거나 들어온 경우
             ((EnterAndExitViewHolder)holder).textView_enter_or_exit.setText(chattingDto.getMsg());
         }
@@ -299,6 +540,9 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         boolean isMyChat = chattingMsgList.get(position).getChattingMemberId() != null? chattingMsgList.get(position).getChattingMemberId().equals(userID) : false;
         boolean isDateShowed = false;
 
+        // 사진정보가 있을 때 getSaveImgBitmap: 내가 전송한 사진을 바로 출력할 때, getSavePath: 상대방이 보냈거나 db에서 조회한 사진을 출력할 때
+        boolean isPhotoExist = chattingMsgList.get(position).getSaveImgBitmap() != null || (chattingMsgList.get(position).getSavePath() != null && !chattingMsgList.get(position).getSavePath().equals(""));
+
         if(position != 0){
             // 이전 채팅과 현재 채팅의 날짜가 다르다면
             if(!chattingMsgList.get(position).getCreDatetime().split(" ")[0].equals(chattingMsgList.get(position - 1).getCreDatetime().split(" ")[0])) {
@@ -307,7 +551,15 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
 
         if(chattingMsgList.get(position).getMsg().contains("입장했습니다.") || chattingMsgList.get(position).getMsg().contains("나갔습니다.")){
+            viewType = 8;
+        } else if(isPhotoExist && isMyChat && (position == 0 || isDateShowed)){ // 내가 작성한 사진이고 날짜를 보여줘야 할 때
             viewType = 4;
+        } else if(isPhotoExist && !isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성한 사진이고 날짜를 보여줘야 할 때
+            viewType = 5;
+        } else if(isPhotoExist && isMyChat){ // 내가 작성한 사진이고 날짜를 보여줄 필요가 없을 때
+            viewType = 6;
+        } else if(isPhotoExist && !isMyChat){ // 상대방이 작성한 사진이고 날짜를 보여줄 필요가 없을 때
+            viewType = 7;
         } else if(isMyChat && (position == 0 || isDateShowed)){ // 내가 작성했고 날짜를 보여줘야 할 때
             viewType = 2;
         } else if(!isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성했고 날짜를 보여줘야 할 때
@@ -405,7 +657,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     // 내가 작성한 메시지 업데이트
-    public void updateCntAndIdx(int notReadUserCount, int msgIdx, String creDatetime){
+    public void updateCntAndIdx(int notReadUserCount, int msgIdx, String creDatetime, String savePath){
         System.out.println("updateCntAndIdx 실행");
 
         System.out.println("수신시간: " + creDatetime);
@@ -416,6 +668,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         chattingMsgList.get(position).setNotReadUserCount(notReadUserCount);
         chattingMsgList.get(position).setMsgIdx(msgIdx);
         chattingMsgList.get(position).setCreDatetime(creDatetime);
+        chattingMsgList.get(position).setSavePath(savePath);
 
         notifyItemChanged(position);
     }

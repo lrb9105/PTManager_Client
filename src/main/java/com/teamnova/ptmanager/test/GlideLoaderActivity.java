@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,17 +31,16 @@ public class GlideLoaderActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_glide_loader);
 
-        findViewById(R.id.mBtnLoad).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BigImageView bigImageView = findViewById(R.id.mBigImage);
-                bigImageView.setProgressIndicator(new ProgressPieIndicator());
-                bigImageView.setImageViewFactory(new GlideImageViewFactory());
-                bigImageView.showImage(
-                        Uri.parse("http://15.165.144.216//img/profile/20210611043455_JPEG_20210611_133453_.jpg")
-                );
-            }
-        });
+        String url = getIntent().getStringExtra("url");
+
+        System.out.println("url2: " + url);
+
+        BigImageView bigImageView = findViewById(R.id.mBigImage);
+        bigImageView.setProgressIndicator(new ProgressPieIndicator());
+        bigImageView.setImageViewFactory(new GlideImageViewFactory());
+        bigImageView.showImage(
+                Uri.parse(url)
+        );
 
         findViewById(R.id.download).setOnClickListener(new View.OnClickListener() {
             @Override

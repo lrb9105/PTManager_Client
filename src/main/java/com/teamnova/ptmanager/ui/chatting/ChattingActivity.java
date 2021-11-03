@@ -56,6 +56,7 @@ import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.network.RetrofitInstance;
 import com.teamnova.ptmanager.network.changehistory.eyebody.EyeBodyService;
 import com.teamnova.ptmanager.network.chatting.ChattingService;
+import com.teamnova.ptmanager.network.record.meal.MealService;
 import com.teamnova.ptmanager.network.schedule.lesson.LessonService;
 import com.teamnova.ptmanager.ui.changehistory.eyebody.EyeBodyChangeHistoryActivity;
 import com.teamnova.ptmanager.ui.changehistory.eyebody.EyeBodyEnLargeActivity;
@@ -87,6 +88,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -159,6 +161,13 @@ public class ChattingActivity extends AppCompatActivity {
 
     // 촬영한 사진을 저장할 경로
     private String mCurrentPhotoPath;
+
+    /** 식사사진 정보를 가져올 때 사용할 상수 */
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_ALBUM_PICK = 2;
+
+    // 사진 파일
+    private File photoFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -474,9 +483,9 @@ public class ChattingActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int pos)
                     {
                         if(pos == 0){ //직접촬영
-                            //dispatchTakePictureIntent();
+                            dispatchTakePictureIntent();
                         } else { //갤러리에서 가져오기
-                            //doTakeMultiAlbumAction();
+                            doTakeMultiAlbumAction();
                         }
                     }
                 });
@@ -539,13 +548,10 @@ public class ChattingActivity extends AppCompatActivity {
 
                                     // lastMsg 변수에는 마지막으로 수신한 메시지를 넣어줘야 한다. 메시지 송신 후 아무런 메시지를 받지 않고 뒤로가기를 하면
                                     // 해당 메시지가 가장 마지막 메시지 이므로 lastMsg변수에 값을 넣어준다.
-                                    lastMsg = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(), 0, 0, null);
+                                    lastMsg = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(), 0, 0, "");
 
                                     //System.out.println("보내는 메시지: " + userInfo.getUserName() +":"+ userInfo.getUserId() + ":" + chatRoomId + ":" + sendMsg + ":" + GetDate.getTodayDateWithTime());
 
-                                    // 메시지 객체를 전송
-                                    //objWriter.writeObject(new ChatMsgInfo(null, userInfo.getUserId(),chatRoomId, sendMsg));
-                                    //objWriter.flush();
                                 }
                             }
                         } catch (Exception e) {
@@ -724,7 +730,7 @@ public class ChattingActivity extends AppCompatActivity {
 
                 System.out.println("서버로부터 내가보낸 메시지 수신시간: " + msgInfo.getCreDatetime());
 
-                chattingMsgListAdapter.updateCntAndIdx(msgInfo.getNotReadUserCount(), msgInfo.getMsgIdx(), msgInfo.getCreDatetime());
+                chattingMsgListAdapter.updateCntAndIdx(msgInfo.getNotReadUserCount(), msgInfo.getMsgIdx(), msgInfo.getCreDatetime(), msgInfo.getSavePath());
             }
         }
     }
@@ -787,7 +793,7 @@ public class ChattingActivity extends AppCompatActivity {
             // 처음에 뿌려줄 땐 읽지않은 사용자 수와 msgIdx를 0으로 초기화! => 추후에 서버에서 읽지않은 사용자수와 msgIdx값을 받아와서 업데이트 해줘야한다!
             synchronized (thread){
                 System.out.println("MainThread 실행");
-                chattingMsgListAdapter.addChatMsgInfo(new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(),0,0, null));
+                chattingMsgListAdapter.addChatMsgInfo(new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(),0,0, ""));
                 layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
                 binding.message.setText("");
 
@@ -925,7 +931,7 @@ public class ChattingActivity extends AppCompatActivity {
                         // 내가보낸 메시지가 아니라면
                         // 텍스트msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx:savePath;
                         // 파일 포함msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx;
-                       if(msgArr.length > 5){
+                       if(msgArr.length > 10){
                             String userName = msgArr[0];
                             String userId = msgArr[1];
                             String roomId = msgArr[2];
@@ -937,13 +943,14 @@ public class ChattingActivity extends AppCompatActivity {
                            String savePath = null;
 
                             // 텍스트 메시지
-                            if(msgArr.length == 7){
+                            if(msgArr.length == 12){
                                 notReadUserCountPos = msgArr.length-2;
                                 msgIdxPos = msgArr.length-1;
                             } else { // 파일포함 메시지
-                                notReadUserCountPos = msgArr.length-3;
-                                msgIdxPos = msgArr.length-2;
-                                savePathPos = msgArr.length-1;
+                                creDatetime = msgArr[msgArr.length - 3] + ":" + msgArr[msgArr.length - 2]  + ":" + msgArr[msgArr.length - 1];
+                                notReadUserCountPos = msgArr.length-4;
+                                msgIdxPos = msgArr.length-6;
+                                savePathPos = msgArr.length-5;
                             }
 
                             // 뒤에서 두번째에 안읽은 사람수가 있음
@@ -983,7 +990,7 @@ public class ChattingActivity extends AppCompatActivity {
                             // 리사이클러뷰의 업데이트는 main UI에서만 가능!!!!
                            //System.out.println("서버로부터 메시지222: " + read);
 
-                           chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, null, creDateTime,notReadUserCount,msgIdx,null);
+                           chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, null, creDateTime,notReadUserCount,msgIdx,msgArr[5]);
 
                            if(lastMsg != null){
                                lastMsg.setNotReadUserCount(notReadUserCount);
@@ -1039,13 +1046,14 @@ public class ChattingActivity extends AppCompatActivity {
             }
         }
     }
+
     // 직접촬영
-    /*private void dispatchTakePictureIntent() {
+    private void dispatchTakePictureIntent() {
         // 특정 권한에 대한 허용을 했는지 여부
-        int permissionCheck = ContextCompat.checkSelfPermission(SelectProfileActivity.this, Manifest.permission.CAMERA);
+        int permissionCheck = ContextCompat.checkSelfPermission(ChattingActivity.this, Manifest.permission.CAMERA);
 
         if(permissionCheck == PackageManager.PERMISSION_DENIED){ //카메라 권한 없음
-            ActivityCompat.requestPermissions(SelectProfileActivity.this,new String[]{Manifest.permission.CAMERA},0);
+            ActivityCompat.requestPermissions(ChattingActivity.this,new String[]{Manifest.permission.CAMERA},0);
         }else{ //카메라 권한 있음
             // 카메라 앱 액티비티를 여는 인텐트 생성
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -1068,7 +1076,7 @@ public class ChattingActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         // 프로필 사진 고를 땐 여러장 못고르도록.
-        //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
         startActivityForResult(intent,REQUEST_ALBUM_PICK);
     }
 
@@ -1079,33 +1087,48 @@ public class ChattingActivity extends AppCompatActivity {
         // 직접 촬영
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             if (resultCode == RESULT_OK) {
-                profileImgFile = new File(mCurrentPhotoPath);
+                photoFile = new File(mCurrentPhotoPath);
 
                 Bitmap bitmap;
 
+                // api 레벨이 27 이상이면
                 if (Build.VERSION.SDK_INT > 27) {
-                    ImageDecoder.Source source = ImageDecoder.createSource(getContentResolver(), Uri.fromFile(profileImgFile));
+                    ImageDecoder.Source source = ImageDecoder.createSource(getContentResolver(), Uri.fromFile(photoFile));
 
                     try {
                         bitmap = ImageDecoder.decodeBitmap(source);
 
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
                         // 사진을 압축
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
                         RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), byteArrayOutputStream.toByteArray());
                         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
-                        uploadFile = MultipartBody.Part.createFormData("profileImg", "JPEG_" + timeStamp + "_.jpg" ,requestBody);
+                        // 리사이클러뷰에 뿌리기 위한 비트맵
+                        Bitmap bitmapImg = BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.toByteArray().length ) ;
 
-                        if (bitmap != null) {
-                            binding.userProfile.setImageBitmap(bitmap);
-                        }
+                        // 서버로 전송하기 위한 MultipartBody.Part 객체 생성
+                        MultipartBody.Part uploadFile = MultipartBody.Part.createFormData("msgFile[]", "JPEG_" + timeStamp + "_.jpg" ,requestBody);
+
+                        // 내 리사이클러뷰에 뿌려주기
+                        // ChatMsgInfo 객체 만들기
+                        ChatMsgInfo msgInfo = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, "사진", GetDate.getTodayDateWithTime(), 0, 0, bitmapImg);
+
+                        chattingMsgListAdapter.addChatMsgInfo(msgInfo);
+
+                        ArrayList<MultipartBody.Part> list = new ArrayList<>();
+                        list.add(uploadFile);
+
+                        // 서버로 전송하기
+                        transferFileToServer(userInfo.getUserId(), chatRoomId, list);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else {
                     try {
-                        MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(profileImgFile));
+                        MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(photoFile));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -1120,27 +1143,39 @@ public class ChattingActivity extends AppCompatActivity {
                 try {
                     // 선택한 이미지에서 비트맵 생성
                     InputStream in = getContentResolver().openInputStream(data.getData());
-                    img = BitmapFactory.decodeStream(in);
-
-                    // bitmap to file
+                    Bitmap img = BitmapFactory.decodeStream(in);
 
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     // 사진을 압축
-                    img.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream);
+                    img.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
                     RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), byteArrayOutputStream.toByteArray());
+
+                    // 리사이클러뷰에 뿌리기 위한 비트맵
+                    Bitmap bitmapImg = BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.toByteArray().length ) ;
 
                     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
-                    uploadFile = MultipartBody.Part.createFormData("profileImg", "JPEG_" + timeStamp + "_.jpg" ,requestBody);
+                    // 서버로 전송하기 위한 MultipartBody.Part 객체 생성
+                    MultipartBody.Part uploadFile = MultipartBody.Part.createFormData("msgFile[]", "JPEG_" + timeStamp + "_.jpg" ,requestBody);
 
-                    // 이미지 표시
-                    binding.userProfile.setImageBitmap(img);
+                    // 내 리사이클러뷰에 뿌려주기
+                    ChatMsgInfo msgInfo = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, "사진", GetDate.getTodayDateWithTime(), 0, 0, bitmapImg);
+
+                    chattingMsgListAdapter.addChatMsgInfo(msgInfo);
+
+                    ArrayList<MultipartBody.Part> list = new ArrayList<>();
+                    list.add(uploadFile);
+
+                    // 서버로 전송하기
+                    transferFileToServer(userInfo.getUserId(), chatRoomId, list);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
                 InputStream in = null;
                 ArrayList<Bitmap> imgList = new ArrayList<>();
+                ArrayList<MultipartBody.Part> multiPartList = new ArrayList<>();
 
                 for(int i = 0; i < clipData.getItemCount(); i++){
                     Uri uri =  clipData.getItemAt(i).getUri();
@@ -1149,13 +1184,36 @@ public class ChattingActivity extends AppCompatActivity {
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    img = BitmapFactory.decodeStream(in);
+                    Bitmap img = BitmapFactory.decodeStream(in);
                     imgList.add(img);
-                    binding.userProfile.setImageBitmap(img);
+
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    // 사진을 압축
+                    img.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), byteArrayOutputStream.toByteArray());
+
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+                    // 리사이클러뷰에 뿌리기 위한 비트맵
+                    Bitmap bitmapImg = BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.toByteArray().length ) ;
+
+                    // 서버로 전송하기 위한 MultipartBody.Part 객체 생성
+                    MultipartBody.Part uploadFile = MultipartBody.Part.createFormData("msgFile[]", "JPEG_" + timeStamp + "_.jpg" ,requestBody);
+
+                    // 내 리사이클러뷰에 뿌려주기
+                    ChatMsgInfo msgInfo = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, "사진", GetDate.getTodayDateWithTime(), 0, 0, bitmapImg);
+
+                    chattingMsgListAdapter.addChatMsgInfo(msgInfo);
+
+                    // 리스트에 추가
+                    multiPartList.add(uploadFile);
                 }
+
+                // 서버로 전송하기
+                transferFileToServer(userInfo.getUserId(), chatRoomId, multiPartList);
             }
         }
-    }*/
+    }
 
     // 촬영한 사진을 저장할 파일을 생성한다.
     private File createImageFile() throws IOException {
@@ -1166,5 +1224,86 @@ public class ChattingActivity extends AppCompatActivity {
         mCurrentPhotoPath = image.getAbsolutePath();
 
         return image;
+    }
+
+    // 서버로 파일을 전송한다.
+    public void transferFileToServer(String userId, String chatRoomId, ArrayList<MultipartBody.Part> list) {
+        RequestBody userIdReq = RequestBody.create(MediaType.parse("text/plain"), userId);
+        RequestBody chatRoomIdReq = RequestBody.create(MediaType.parse("text/plain"), chatRoomId);
+
+        /** 서버로 파일리스트 전송*/
+        //식사기록 삭제
+        Retrofit retrofit= RetrofitInstance.getRetroClient();
+        ChattingService service = retrofit.create(ChattingService.class);
+
+        // http request 객체 생성
+        Call<ArrayList<String>> call = service.insertFileList(userIdReq, chatRoomIdReq, list);
+
+        new InsertFileInfo().execute(call);
+    }
+
+    /** 파일정보를 저장하는 AsyncTask*/
+    public class InsertFileInfo extends AsyncTask<Call, Void, String> {
+        private retrofit2.Response<ArrayList<String>> response;
+        private ArrayList<String> savePathList;
+
+        public InsertFileInfo() {
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d("onPreExecute", "11");
+        }
+
+        @Override
+        protected String doInBackground(Call[] params) {
+            try {
+                Call<ArrayList<String>> call = params[0];
+                response = call.execute();
+
+                System.out.println("사진리스트 저장결과: " + response.body().toString());
+
+                savePathList = response.body();
+
+                return response.body().toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            /** 파일 메시지 리스트를 저장하면 저장경로 리스트를 가져온다.*/
+            if (!savePathList.get(0).toUpperCase().contains("FAIL")) {
+                // 마지막 값은 메시지 idx이기 때문에 size - 1만큼 반복한다.
+                int repeatSize = savePathList.size() - 1;
+
+                // 맨 마지막 값은 msgIdx
+                int msgIdx = Integer.parseInt(savePathList.get(savePathList.size() - 1));
+
+                for(int i = 0; i < repeatSize; i++){
+                    // 사진 전송
+                    int finalI = i;
+
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            try {
+                                sendWriter.println(userInfo.getUserName() +":"+ userInfo.getUserId() + ":" + chatRoomId + ":" + "사진" + ":" + GetDate.getTodayDateWithTime() + ":" + msgIdx + ":" +savePathList.get(finalI));
+                                sendWriter.flush();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.start();
+
+                    ChatMsgInfo chatMsgInfo = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, "사진", GetDate.getTodayDateWithTime(), 0, msgIdx, savePathList.get(i));
+                    lastMsg = chatMsgInfo;
+                }
+            }
+        }
     }
 }

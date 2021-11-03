@@ -1,5 +1,7 @@
 package com.teamnova.ptmanager.model.chatting;
 
+import android.graphics.Bitmap;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -24,6 +26,7 @@ public class ChatMsgInfo implements Serializable {
     private int msgIdx;
     @SerializedName("savePath")
     private String savePath;
+    private Bitmap saveImgBitmap;
 
     public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime, int notReadUserCount, int msgIdx, String savePath) {
         this.chattingMsgId = chattingMsgId;
@@ -35,6 +38,18 @@ public class ChatMsgInfo implements Serializable {
         this.notReadUserCount = notReadUserCount;
         this.msgIdx = msgIdx;
         this.savePath = savePath;
+    }
+
+    public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime, int notReadUserCount, int msgIdx, Bitmap saveImgBitmap) {
+        this.chattingMsgId = chattingMsgId;
+        this.chattingMemberId = chattingMemberId;
+        this.chattingMemberName = chattingMemberName;
+        this.chattingRoomId = chattingRoomId;
+        this.msg = msg;
+        this.creDatetime = creDatetime;
+        this.notReadUserCount = notReadUserCount;
+        this.msgIdx = msgIdx;
+        this.saveImgBitmap = saveImgBitmap;
     }
 
     public String getChattingMsgId() {
@@ -107,5 +122,13 @@ public class ChatMsgInfo implements Serializable {
 
     public void setSavePath(String savePath) {
         this.savePath = savePath;
+    }
+
+    public Bitmap getSaveImgBitmap() {
+        return saveImgBitmap;
+    }
+
+    public void setSaveImgBitmap(Bitmap saveImgBitmap) {
+        this.saveImgBitmap = saveImgBitmap;
     }
 }
