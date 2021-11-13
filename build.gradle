@@ -126,12 +126,12 @@ dependencies {
 
     // FCM
     // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:28.4.1')
+    //implementation platform('com.google.firebase:firebase-bom:28.4.1')
 
     // Declare the dependencies for the Firebase Cloud Messaging and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-analytics'
+    //implementation 'com.google.firebase:firebase-messaging'
+    //implementation 'com.google.firebase:firebase-analytics'
 
     // 이미지 확대 및 다운로드 화면에서 사용
     implementation 'com.github.piasy:BigImageViewer:1.8.1'

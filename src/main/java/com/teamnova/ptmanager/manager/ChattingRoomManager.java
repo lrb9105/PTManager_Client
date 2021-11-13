@@ -1,6 +1,7 @@
 package com.teamnova.ptmanager.manager;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoDto;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
@@ -153,6 +154,7 @@ public class ChattingRoomManager {
     public void insertMemberList(ArrayList<ChattingMemberDto> chatMemberList, String chatRoomId){
         ChattingService service = retrofit.create(ChattingService.class);
 
+        Log.e("채팅방에서 사용자 초대 9. 초대된 사용자들 정보를 저장한다.", "" + chatMemberList.size() + ", 채팅방 아이디: " + chatRoomId);
 
         // http request 객체 생성
         // HashMap될까?
@@ -161,7 +163,12 @@ public class ChattingRoomManager {
         hashMap.put("roomId", chatRoomId);
         hashMap.put("chatMemberList", chatMemberList);
 
+        Log.e("채팅방에서 사용자 초대 10. HashMap애 초대한 인원 정보를 넣는다..", "채팅방아이디: " + hashMap.get("roomId"));
+
         Call<String> call = service.insertMemberList(hashMap);
+
+        Log.e("채팅방에서 사용자 초대 11. call 생성", "채팅방아이디: " + call);
+
 
         // 서버에 데이터를 저장하는 동기 함수의 쓰레드
         SyncInsertMemberList t = new SyncInsertMemberList(call);

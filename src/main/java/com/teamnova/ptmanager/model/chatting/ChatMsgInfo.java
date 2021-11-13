@@ -26,9 +26,13 @@ public class ChatMsgInfo implements Serializable {
     private int msgIdx;
     @SerializedName("savePath")
     private String savePath;
+    @SerializedName("isDateVisible")
+    private String isDateVisible;
+    @SerializedName("isDbSelect")
+    private String isDbSelect;
     private Bitmap saveImgBitmap;
 
-    public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime, int notReadUserCount, int msgIdx, String savePath) {
+    public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime, int notReadUserCount, int msgIdx, String savePath,String isDateVisible, String isDbSelect) {
         this.chattingMsgId = chattingMsgId;
         this.chattingMemberId = chattingMemberId;
         this.chattingMemberName = chattingMemberName;
@@ -38,9 +42,11 @@ public class ChatMsgInfo implements Serializable {
         this.notReadUserCount = notReadUserCount;
         this.msgIdx = msgIdx;
         this.savePath = savePath;
+        this.isDateVisible = isDateVisible;
+        this.isDbSelect = isDbSelect;
     }
 
-    public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime, int notReadUserCount, int msgIdx, Bitmap saveImgBitmap) {
+    public ChatMsgInfo(String chattingMsgId, String chattingMemberId, String chattingMemberName, String chattingRoomId, String msg, String creDatetime, int notReadUserCount, int msgIdx, Bitmap saveImgBitmap, String isDbSelect) {
         this.chattingMsgId = chattingMsgId;
         this.chattingMemberId = chattingMemberId;
         this.chattingMemberName = chattingMemberName;
@@ -50,6 +56,7 @@ public class ChatMsgInfo implements Serializable {
         this.notReadUserCount = notReadUserCount;
         this.msgIdx = msgIdx;
         this.saveImgBitmap = saveImgBitmap;
+        this.isDbSelect = isDbSelect;
     }
 
     public String getChattingMsgId() {
@@ -130,5 +137,21 @@ public class ChatMsgInfo implements Serializable {
 
     public void setSaveImgBitmap(Bitmap saveImgBitmap) {
         this.saveImgBitmap = saveImgBitmap;
+    }
+
+    public String getIsDbSelect() {
+        return isDbSelect;
+    }
+
+    public void setIsDbSelect(String isDbSelect) {
+        this.isDbSelect = isDbSelect;
+    }
+
+    public String getIsDateVisible() {
+        return isDateVisible;
+    }
+
+    public void setIsDateVisible(String isDateVisible) {
+        this.isDateVisible = isDateVisible;
     }
 }

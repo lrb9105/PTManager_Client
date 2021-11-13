@@ -14,20 +14,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.installations.FirebaseInstallations;
-import com.google.firebase.installations.InstallationTokenResult;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-import com.teamnova.ptmanager.MainActivity;
+
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.ui.changehistory.inbody.InBodyModifyActivity;
 import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.splash.SplashActivity;
 
 /** 알림과 메시지를 전송하는 서비스 */
+/*
 public class ChattingNotificationService extends FirebaseMessagingService {
     // TrainerHomeAct or MemberHomeAct의 running 여부
     // 타입(트레이너, 회원)에 따라 onCreate에서 true, onDestroy에서 false로 변경한다.
@@ -61,7 +55,9 @@ public class ChattingNotificationService extends FirebaseMessagingService {
 
         Intent intent = new Intent(this, ChattingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 */
+/* Request code *//*
+, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -76,7 +72,9 @@ public class ChattingNotificationService extends FirebaseMessagingService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(0 */
+/* ID of notification *//*
+, notificationBuilder.build());
     }
 
 
@@ -106,4 +104,4 @@ public class ChattingNotificationService extends FirebaseMessagingService {
 
         return token[0];
     }
-}
+}*/

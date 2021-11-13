@@ -155,10 +155,7 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
             case R.id.btn_select_member: // 회원 선택 완료
                 // 회원 목록
                 ArrayList<FriendInfoDto> memberList = lectureRegisteredMemberListAdapter.getMemberList();
-                // Intent로 전송하기 위한 리스트
-                ArrayList<FriendInfoDto> memberListForIntent = new ArrayList<>();
-
-                Log.d("사이즈:", "" + memberList.size());
+                Log.e("채팅방에서 사용자 초대 3.모든 회원리스트 memberList.size()", "" + memberList.size());
 
                 /** 채팅참여자 정보 생성 */
                 ArrayList<ChattingMemberDto> chatMemberList = new ArrayList<>();
@@ -167,20 +164,21 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
                 UserInfoDto trainerInfo = TrainerHomeActivity.staticLoginUserInfo;
 
                 chatMemberList.add(ChattingMemberDto.makeChatMemberInfo(trainerInfo));
+                Log.e("채팅방에서 사용자 초대 4.채팅에 참여할 멤버리스트 chatMemberList.add", "" + chatMemberList.size());
 
+                // 모든 회원 수만큼 반복한다.
                 for(FriendInfoDto member : memberList){
-                    Log.d("값:", "" + member.getUserName());
-                    // 체크되었다면 리스트에 추가
+                    // 체크되어 있다면 리스트에 추가
                     if(member.getCheck() != null){
                         if(member.getCheck().equals("1")){
-                            Log.d("체크된 멤버id: ", member.getUserId() + " - " + member.getCheck());
                             chatMemberList.add(ChattingMemberDto.makeChatMemberInfo(member));
+                            Log.e("채팅방에서 사용자 초대 5.채팅에 참여자 추가", "" + chatMemberList.size());
 
-                        } else{
+                        }/* else{
                             Log.d("체크값이 0: ", member.getUserId() + " - " + member.getCheck());
-                        }
+                        }*/
                     } else{
-                        Log.d("getCheck()가 null: ", member.getUserId());
+                        //Log.d("getCheck()가 null: ", member.getUserId());
                     }
                 }
 
@@ -194,18 +192,20 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
                 }
 
                 // 새로운 방 생성 시
+                // 해당 화면은 초대 및 방생성에서 같이 사용됨 이때 userId null이 아니라면 새로운 회원을 초대한 것이다.
+                // 리스트의 첫번째는 내 아이디(트레이너 아이디)가 들어있으므로 이를 지워준다.
                 if (userId != null) { // 기존에 생성된 대화방에서 새로운 사용자 초대 시
                     // 새로 생성된 초대자 리스트에서 첫번쨰는 트레이너 아이디 이므로 지워준다!
                     chatMemberList.remove(0);
+                    Log.e("채팅방에서 사용자 초대 6.chatMemberList.remove(0)", "" + chatMemberList.size());
+
                 }
 
                 intent.putExtra("chatMemberList",chatMemberList);
                 setResult(Activity.RESULT_OK, intent);
-
+                Log.e("채팅방에서 사용자 초대 7.다시 ChattingActivity로 이동", "true");
 
                 finish();
-
-
                 break;
             case R.id.btn_back: // 뒤로가기
                 onBackPressed();

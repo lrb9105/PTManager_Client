@@ -19,7 +19,6 @@ import com.github.piasy.biv.loader.glide.GlideImageLoader;
 import com.github.piasy.biv.view.BigImageView;
 import com.github.piasy.biv.view.GlideImageViewFactory;
 import com.github.piasy.biv.view.ImageSaveCallback;
-import com.google.firebase.installations.Utils;
 import com.teamnova.ptmanager.R;
 
 public class GlideLoaderActivity extends AppCompatActivity {

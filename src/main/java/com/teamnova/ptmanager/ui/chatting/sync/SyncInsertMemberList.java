@@ -1,5 +1,7 @@
 package com.teamnova.ptmanager.ui.chatting.sync;
 
+import android.util.Log;
+
 import java.io.IOException;
 
 import retrofit2.Call;
@@ -11,15 +13,15 @@ public class SyncInsertMemberList extends Thread{
 
     public SyncInsertMemberList(Call<String> call){
         this.call = call;
+        Log.e("채팅방에서 사용자 초대 12.  SyncInsertMemberList 생성", "true");
+
     }
 
     @Override
     public void run() {
         try {
             Response response = call.execute();
-
-            System.out.println("새로운 사용자 초대 후 저장!: " + response.body());
-
+            Log.e("채팅방에서 사용자 초대 13. 새로운 사용자 초대 후 저장 완료!", (String) response.body());
         } catch (IOException e) {
             e.printStackTrace();
         }

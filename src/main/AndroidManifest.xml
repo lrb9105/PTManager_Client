@@ -42,13 +42,14 @@
             </intent-filter>-->
         </activity>
 
-        <service
+<!--        <service
             android:name=".service.chatting.ChattingNotificationService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
+        </service>-->
+
 
         <activity android:name=".test.ProfileExActivity" />
         <activity
@@ -147,6 +148,8 @@
         <activity android:name=".ui.member.MemberAddActivity" />
         <activity android:name=".ui.home.member.DayViewActivity" />
         <activity android:name=".ui.record.meal.MealRegisterActivity" />
+
+        <service android:name=".service.chatting.ChattingMsgService"/>
     </application>
 
 </manifest>

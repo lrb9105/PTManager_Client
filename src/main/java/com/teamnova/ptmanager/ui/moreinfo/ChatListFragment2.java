@@ -211,9 +211,15 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
 
         // 가져온 채팅방리스트정보 observe
         chattingViewModel.getChattingList().observe(requireActivity(), chatRoomList -> {
+            Log.e("채팅방리스트에서 정보 변경 - 13. observe: chatRoomList", "" + chatRoomList);
+
             // 리사이클러뷰에 세팅
             chattingListAdapter = new ChattingListAdapter(chatRoomList, requireActivity(), startActivityResult, memberInfo, timeDifference,shouldCompensate);
+            Log.e("채팅방리스트에서 정보 변경 - 14.  new ChattingListAdapter", "" + true);
+
             recyclerView.setAdapter(chattingListAdapter);
+            Log.e("채팅방리스트에서 정보 변경 - 15.  setAdapter", "" + true);
+
         });
 
         // 로그인한 회원 정보 observe

@@ -12,7 +12,6 @@ import com.teamnova.ptmanager.model.chatting.ChatMsgInfo;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
 import com.teamnova.ptmanager.repository.changehistory.eyebody.EyeBodyRepository;
 import com.teamnova.ptmanager.repository.chatting.ChattingRepository;
-import com.teamnova.ptmanager.service.chatting.ChattingNotificationService;
 
 import java.util.ArrayList;
 
@@ -49,6 +48,6 @@ public class ChattingViewModel extends ViewModel {
         super.onCleared();
 
         // 액티비티가 완전히 종료된경우(앱이 종료) isActRunning값을 false로 변경한다.
-        ChattingNotificationService.isActRunning = false;
+        //ChattingNotificationService.isActRunning = false;
     }
 }

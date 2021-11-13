@@ -539,6 +539,7 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         int viewType = 0;
         boolean isMyChat = chattingMsgList.get(position).getChattingMemberId() != null? chattingMsgList.get(position).getChattingMemberId().equals(userID) : false;
         boolean isDateShowed = false;
+        boolean isDateVisible = chattingMsgList.get(position).getIsDateVisible() != null && chattingMsgList.get(position).getIsDateVisible().equals("Y");
 
         // 사진정보가 있을 때 getSaveImgBitmap: 내가 전송한 사진을 바로 출력할 때, getSavePath: 상대방이 보냈거나 db에서 조회한 사진을 출력할 때
         boolean isPhotoExist = chattingMsgList.get(position).getSaveImgBitmap() != null || (chattingMsgList.get(position).getSavePath() != null && !chattingMsgList.get(position).getSavePath().equals(""));
@@ -550,24 +551,46 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
         }
 
-        if(chattingMsgList.get(position).getMsg().contains("입장했습니다.") || chattingMsgList.get(position).getMsg().contains("나갔습니다.")){
-            viewType = 8;
-        } else if(isPhotoExist && isMyChat && (position == 0 || isDateShowed)){ // 내가 작성한 사진이고 날짜를 보여줘야 할 때
-            viewType = 6;
-        } else if(isPhotoExist && !isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성한 사진이고 날짜를 보여줘야 할 때
-            viewType = 7;
-        } else if(isPhotoExist && isMyChat){ // 내가 작성한 사진이고 날짜를 보여줄 필요가 없을 때
-            viewType = 4;
-        } else if(isPhotoExist && !isMyChat){ // 상대방이 작성한 사진이고 날짜를 보여줄 필요가 없을 때
-            viewType = 5;
-        } else if(isMyChat && (position == 0 || isDateShowed)){ // 내가 작성했고 날짜를 보여줘야 할 때
-            viewType = 2;
-        } else if(!isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성했고 날짜를 보여줘야 할 때
-            viewType = 3;
-        } else if(isMyChat){ // 내가 작성했고 날짜를 보여줄 필요가 없을 때
-            viewType = 0;
-        } else if(!isMyChat){ // 상대방이 작성했고 날짜를 보여줄 필요가 없을 때
-            viewType = 1;
+        if(chattingMsgList.get(position).getIsDbSelect().equals("Y")){
+            if(chattingMsgList.get(position).getMsg().contains("입장했습니다.") || chattingMsgList.get(position).getMsg().contains("나갔습니다.")){
+                viewType = 8;
+            } else if((isDateVisible) && isPhotoExist && isMyChat) { // db에서 조회했고 내가 작성한 사진이고 날짜를 보여줘야 할 때
+                viewType = 6;
+            } else if((isDateVisible) && isPhotoExist) { // db에서 조회했고 상대방이 작성한 사진이고 날짜를 보여줘야 할 때
+                viewType = 7;
+            } else if(isPhotoExist && isMyChat){ // 내가 작성한 사진이고 날짜를 보여줄 필요가 없을 때
+                viewType = 4;
+            } else if(isPhotoExist){ // 상대방이 작성한 사진이고 날짜를 보여줄 필요가 없을 때
+                viewType = 5;
+            } else if((isDateVisible) && isMyChat) { // db에서 조회했고 내가 작성한 메시지고 날짜를 보여줘야 할 때
+                viewType = 2;
+            } else if((isDateVisible)) { // db에서 조회했고 상대방이 작성한 메시지고 날짜를 보여줘야 할 때
+                viewType = 3;
+            } else if(isMyChat){ // 내가 작성했고 날짜를 보여줄 필요가 없을 때
+                viewType = 0;
+            } else if(!isMyChat){ // 상대방이 작성했고 날짜를 보여줄 필요가 없을 때
+                viewType = 1;
+            }
+        } else{
+            if(chattingMsgList.get(position).getMsg().contains("입장했습니다.") || chattingMsgList.get(position).getMsg().contains("나갔습니다.")){
+                viewType = 8;
+            } else if(isPhotoExist && isMyChat && (position == 0 || isDateShowed)){ // 내가 작성한 사진이고 날짜를 보여줘야 할 때
+                viewType = 6;
+            } else if(isPhotoExist && !isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성한 사진이고 날짜를 보여줘야 할 때
+                viewType = 7;
+            } else if(isPhotoExist && isMyChat){ // 내가 작성한 사진이고 날짜를 보여줄 필요가 없을 때
+                viewType = 4;
+            } else if(isPhotoExist){ // 상대방이 작성한 사진이고 날짜를 보여줄 필요가 없을 때
+                viewType = 5;
+            } else if(isMyChat && (position == 0 || isDateShowed)){ // 내가 작성했고 날짜를 보여줘야 할 때
+                viewType = 2;
+            } else if(!isMyChat && (position == 0 || isDateShowed)){ // 상대방이 작성했고 날짜를 보여줘야 할 때
+                viewType = 3;
+            } else if(isMyChat){ // 내가 작성했고 날짜를 보여줄 필요가 없을 때
+                viewType = 0;
+            } else if(!isMyChat){ // 상대방이 작성했고 날짜를 보여줄 필요가 없을 때
+                viewType = 1;
+            }
         }
 
         return viewType;
@@ -576,16 +599,18 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 채팅 메시지 추가
     public void addChatMsgInfo(ChatMsgInfo chatMsgInfo){
+        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 11. 리사에 추가 ", "" + chatMsgInfo.getMsg());
+
         //System.out.println("addChatMsgInfo 실행");
         // 3. 리사에 잘 넘어와서 이 메소드가 호출 되는가?
-        System.out.println();
         int size = getItemCount();
+        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 12.리사 사이즈: ", "" + size);
 
         chattingMsgList.add(size,chatMsgInfo);
+        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 13.리사에 추가 후 사이즈: ", "" + size);
 
         notifyItemInserted(size);
-
-
+        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 14.리사에 추가 및 notify 후 사이즈:  ", "" + size);
     }
 
     // 채팅메시지 리스트 반환
@@ -689,9 +714,6 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 서버시간과의 차이 보정한 메시지 수신시간 리턴
     public String computeTimeDifferToServer(String datetime, long timeDiffer){
-        System.out.println("datetime:" + datetime);
-        System.out.println("timeDiffer:" + timeDiffer);
-
         Date currentTimeOfDate = makeDateFromDatetimeOfString(datetime);
         SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -700,8 +722,6 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         Calendar cal = Calendar.getInstance();
         cal.setTime(currentTimeOfDate);
         cal.add(Calendar.SECOND, timeDifferSec);
-
-        System.out.println("메시지 수신시간:" + datetime);
 
         //System.out.println("보정시간; "+ sdFormat.format(cal.getTime()));
 

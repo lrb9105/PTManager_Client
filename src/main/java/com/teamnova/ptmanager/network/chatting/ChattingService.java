@@ -34,6 +34,11 @@ public interface ChattingService {
     //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);
     Call<ArrayList<ChatRoomInfoForListDto>> getChattingRoomList(@Query("userId") String userId);
 
+    /** 채팅방 리스트 정보 가져오기*/
+    @GET("chattingroom/getChatRoomInfoWithUserId.php")
+    Call<ChatRoomInfoForListDto> getChatRoomInfoWithUserId(@Query("chattingRoomId") String chattingRoomId, @Query("userId") String userId);
+
+
     /** 특정 채팅방의 메시지 리스트가져오기*/
     @GET("chatting/getMsgListInfo.php")
     //Call<String> getChatRoomInfo(@Query("chattingRoomId") String chattingRoomId);

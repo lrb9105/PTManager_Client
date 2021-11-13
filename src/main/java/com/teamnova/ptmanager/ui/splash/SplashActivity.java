@@ -11,10 +11,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.installations.FirebaseInstallations;
-import com.google.firebase.installations.InstallationTokenResult;
 import com.teamnova.ptmanager.MainActivity;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.ActivityLoginBinding;
@@ -55,7 +51,7 @@ public class SplashActivity extends AppCompatActivity {
      * */
     public void initialize(){
         // 새로운 토큰 생성
-        FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+        /*FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<InstallationTokenResult> task) {
                 if(!task.isSuccessful()){
@@ -69,7 +65,7 @@ public class SplashActivity extends AppCompatActivity {
 
                 System.out.println("token: " + token);
             }
-        });
+        });*/
 
         /** 초기화 */
         // ViewModel 참조객체를 생성하는 부분
