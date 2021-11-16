@@ -20,14 +20,26 @@ public class ChatRoomInfoForListDto implements Serializable {
     private String latestMsgTime;
     @SerializedName("userCount")
     private int userCount;
+    @SerializedName("msgIdx")
+    private int msgIdx;
+    private int notReadMsgCount;
 
 
-    public ChatRoomInfoForListDto(String chattingRoomId, String chattingRoomName, String latestMsg, String latestMsgTime, int userCount) {
+    /*public ChatRoomInfoForListDto(String chattingRoomId, String chattingRoomName, String latestMsg, String latestMsgTime, int userCount) {
         this.chattingRoomId = chattingRoomId;
         this.chattingRoomName = chattingRoomName;
         this.latestMsg = latestMsg;
         this.latestMsgTime = latestMsgTime;
         this.userCount = userCount;
+    }*/
+
+    public ChatRoomInfoForListDto(String chattingRoomId, String chattingRoomName, String latestMsg, String latestMsgTime, int userCount, int msgIdx) {
+        this.chattingRoomId = chattingRoomId;
+        this.chattingRoomName = chattingRoomName;
+        this.latestMsg = latestMsg;
+        this.latestMsgTime = latestMsgTime;
+        this.userCount = userCount;
+        this.msgIdx = msgIdx;
     }
 
     public String getChattingRoomId() {
@@ -68,6 +80,22 @@ public class ChatRoomInfoForListDto implements Serializable {
 
     public void setUserCount(int userCount) {
         this.userCount = userCount;
+    }
+
+    public int getNotReadMsgCount() {
+        return notReadMsgCount;
+    }
+
+    public int getMsgIdx() {
+        return msgIdx;
+    }
+
+    public void setMsgIdx(int msgIdx) {
+        this.msgIdx = msgIdx;
+    }
+
+    public void setNotReadMsgCount(int notReadMsgCount) {
+        this.notReadMsgCount = notReadMsgCount;
     }
 
     @Override

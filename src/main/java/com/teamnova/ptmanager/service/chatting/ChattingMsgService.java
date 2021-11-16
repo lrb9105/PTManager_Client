@@ -1,11 +1,13 @@
 package com.teamnova.ptmanager.service.chatting;
 
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -26,8 +28,10 @@ import androidx.core.app.NotificationManagerCompat;
 import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.manager.ChattingRoomManager;
 import com.teamnova.ptmanager.model.chatting.ChatMsgInfo;
+import com.teamnova.ptmanager.model.chatting.ChatRoomInfoDto;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
 import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
+import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
 import com.teamnova.ptmanager.network.RetrofitInstance;
 import com.teamnova.ptmanager.network.chatting.ChattingService;
 import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
@@ -82,7 +86,7 @@ public class ChattingMsgService extends Service {
     private Handler mHandler;
     // 메시지 송신 시(송신은 다른 쓰레드에서 진행) 메인 쓰레드의 ui를 변경하기 위해 데이터를 전달하는 핸들러
     private Handler sendHandler;
-    private String ip = "192.168.0.11";
+    private String ip = "192.168.13.128";
     private int port = 8888;
     // 채팅방 아이디
     private String chatRoomId;
@@ -220,9 +224,23 @@ public class ChattingMsgService extends Service {
 
                     Log.e("HomeAct에서 Socket 연결 8. 서비스에서 mActivityMessengerList에 HOME ACT와 연결된 메신저 넣기", "" + mActivityMessengerList.get(0));
 
+                    // 이 사용자의 채팅방리스트 가져오기
+                    chatRoomList = (ArrayList<ChatRoomInfoForListDto>) msg.getData().getSerializable("userIncludedChatRoomList");
+                    Log.e("HomeAct에서 Socket 연결 8-2. 채팅방 리스트 가져 옴", "" + chatRoomList.size());
+
+                    // 사용자가 속해있는 채팅방 중 채팅방아이디만 파싱하여 리스트를 만든다.
+                    ArrayList<String> chatRoomIdList = new ChattingRoomManager().getChatRoomIdListFromChatRoomList(chatRoomList);
+                    Log.e("HomeAct에서 Socket 연결 8-3. 사용자가 속해있는 채팅방 리스트의 채팅방 아이디 리스트 생성. 사이즈", "" + chatRoomIdList.size());
+
+                    // 사용자기 속해있는 채팅방 리스트 문자열로 생성(채팅방 아이디 ":"로 구분)
+                    String chatRoomIdListStr = new ChattingRoomManager().getChatRoomIdListStrFromChatRoomList(chatRoomIdList);
+                    Log.e("HomeAct에서 Socket 연결 8-4. 사용자기 속해있는 채팅방 리스트 문자열로 생성(채팅방 아이디 \":\"로 구분)", "" + chatRoomIdListStr);
+
+                    // 사용자 정보 가져오기
+                    userInfo = (ChattingMemberDto) msg.getData().getSerializable("userInfo");
 
                     // 소켓 연결
-                    recvThread = new RecvThread();
+                    recvThread = new RecvThread(chatRoomIdListStr);
                     Log.e("HomeAct에서 Socket 연결 9. 수신쓰레드 생성", recvThread.toString());
 
                     recvThread.start();
@@ -230,10 +248,6 @@ public class ChattingMsgService extends Service {
                     // 채널 생성
                     createNotificationChannel();
                     Log.e("HomeAct에서 Socket 연결 13-1. notification 채널 생성", "true");
-
-                    // 이 사용자의 채팅방리스트 가져오기
-                    chatRoomList = new ChattingRoomManager().getChatRoomList(msg.getData().getString("userId"));
-                    Log.e("HomeAct에서 Socket 연결 13-2. 채팅방 리스트 가져 옴", "" + chatRoomList.size());
 
                     break;
                 // 채팅 액티비티와 연결
@@ -272,30 +286,24 @@ public class ChattingMsgService extends Service {
                     /** 채팅방id 전송
                      * */
                     // 텍스트 메시지를 전송하기 위해 필요한 객체
-                    try{
+                    /*try{
                         sendWriter = new PrintWriter(socket.getOutputStream());
                         Log.e("ChatAct와 소켓 연결 18. sendWriter 생성","" + sendWriter);
 
                     }catch (IOException e){
                         e.printStackTrace();
-                    }
+                    }*/
+                    Log.e("ChatAct와 소켓 연결 (삭제)18. sendWriter 생성","" + "삭제");
 
                     new Thread() {
                         @Override
                         public void run() {
                             super.run();
                             try {
-                                //채팅방 정보 보내기
-                                sendWriter.println("!@#$chatRoomIdAndUserId:" + chatRoomId + ":" + userInfo.getUserId());
-                                Log.e("ChatAct와 소켓 연결 19. 채팅방 입장정보 보내기",chatRoomId + ":" + userInfo.getUserId());
-
-                                sendWriter.flush();
-
-
                                 // 마지막으로 저장된 메시지가 있다면 메시지 인덱스 보내기
                                 if(lastMsgIdx != 999998){
                                     sendWriter.println("!@#$!@#lsatIdx:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + lastMsgIdx + ":" + firstOrOld);
-                                    //sendToServerLastIdx(lastMsgIdx, firstOrOld);
+                                    Log.e("ChatAct와 소켓 연결 19. lastMsgIdx 전송","!@#$!@#lsatIdx:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + lastMsgIdx + ":" + firstOrOld);
                                     sendWriter.flush();
                                 }
 
@@ -313,9 +321,12 @@ public class ChattingMsgService extends Service {
                     isChatActivityActive = false;
                     Log.e("채팅방 나갈 때 서비스와의 연결 제거 4-1. isChatActivityActive false로 변경", "" + isChatActivityActive);
 
+                    String chatRoomId = msg.getData().getString("chatRoomId");
+                    Log.e("채팅방 나갈 때 서비스와의 연결 제거 4-2. chatRoomId", "" + chatRoomId);
+
                     // 메신저 제거!
                     mActivityMessengerList.remove(1);
-                    Log.e("채팅방 나갈 때 서비스와의 연결 제거 4-2. 메신저 제거!", "" + mActivityMessengerList.size());
+                    Log.e("채팅방 나갈 때 서비스와의 연결 제거 4-3. 메신저 제거!", "" + mActivityMessengerList.size());
 
                     // 채팅방에서 뒤로가기 시 해당 채팅방과의 연결을 끊어줌
                     new Thread() {
@@ -323,7 +334,7 @@ public class ChattingMsgService extends Service {
                         public void run() {
                             super.run();
                             try {
-                                sendWriter.println("!@#$connectionExpire:");
+                                sendWriter.println("!@#$connectionExpire:" + chatRoomId);
                                 Log.e("채팅방 나갈 때 서비스와의 연결 제거 5. 서버로 채팅방과의 연결해제 하라는 메시지 전송", "" + "!@#$connectionExpire:");
 
                                 sendWriter.flush();
@@ -376,6 +387,12 @@ public class ChattingMsgService extends Service {
 
     /** 수신 쓰레드*/
     private class RecvThread extends Thread{
+        private String chatRoomIdListStr;
+
+        public RecvThread(String chatRoomIdListStr){
+            this.chatRoomIdListStr = chatRoomIdListStr;
+        }
+
         @Override
         public void run() {
             try {
@@ -391,15 +408,14 @@ public class ChattingMsgService extends Service {
                 input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 Log.e("HomeAct에서 Socket 연결 12. 메시지 수신을 위한한 input 생성", input.toString());
 
-                /* sendWriter = new PrintWriter(socket.getOutputStream());
-                sendWriter.println("!@#$chatRoomIdAndUserId:" + chatRoomId + ":" + userInfo.getUserId());
+                sendWriter = new PrintWriter(socket.getOutputStream());
+                Log.e("HomeAct에서 Socket 연결 13. 소켓통신을 담당할 sendWriter 생성", sendWriter.toString());
+
+                sendWriter.println("!@#$chatRoomIdListAndUserId:" + chatRoomIdListStr + ":" + userInfo.getUserId());
+                Log.e("HomeAct에서 Socket 연결 14. 소켓에 사용자가 속해있는 채팅방 리스트 전송", "!@#$chatRoomIdList:" + chatRoomIdListStr);
+
                 sendWriter.flush();
 
-
-                // 마지막으로 저장된 메시지가 있다면 메시지 인덱스 보내기
-                if(lastMsgIdx != 999998){
-                    sendToServerLastIdx(lastMsgIdx, firstOrOld);
-                }*/
 
                 // 메시지 수신하는 쓰레드
                 while(true){
@@ -450,38 +466,105 @@ public class ChattingMsgService extends Service {
 
                         Bundle bundle = msg.getData();
                         bundle.putString("message", read);
-
                         Log.e("메시지 전송 2. 서버로부터 받은 메시지", read);
 
-                        if(read.contains("allMsg!@#:")){
+                        String[] textFromServer = read.split(":");
+                        Log.e("메시지 전송 2. 서버로부터 받은 메시지 split(\":\")", textFromServer.toString());
+
+                        Log.e("메시지 전송 3-1. 채팅방 액트활성화 여부: ", "" + isChatActivityActive);
+
+                        // 채팅방 아이디
+                        String chatRoomIdFromMsg = null;
+                        // 메시지
+                        String msgFromServer = null;
+                        // 사용자 id
+                        String userId = null;
+                        // 메시지 idx
+                        int msgIdx = 999999;
+
+                        // 다른 사람이 전송한  메시지
+                        if(textFromServer.length > 10){
+                            chatRoomIdFromMsg = textFromServer[2];
+                            Log.e("메시지 전송 3-2. (상대방에게)서버로부터 받은 메시지의 ChatRoomId",chatRoomIdFromMsg);
+                            msgFromServer = textFromServer[3];
+                            Log.e("메시지 전송 3-3. (상대방에게)서버로부터 받은 메시지 내용",msgFromServer);
+                            userId = textFromServer[1];
+                            Log.e("메시지 전송 3-3. (상대방에게)서버로부터 받은 메시지 userId",userId);
+
+                            // 텍스트
+                            if(textFromServer.length  == 12){
+                                msgIdx = Integer.parseInt(textFromServer[11]);
+                                Log.e("메시지 전송 3-4. (상대방에게-텍스트)서버로부터 받은 메시지 msgIdx","" + msgIdx);
+                            } else { // 이미지
+                                msgIdx = Integer.parseInt(textFromServer[7]);
+                                Log.e("메시지 전송 3-4. (상대방에게-이미지)서버로부터 받은 메시지 msgIdx","" + msgIdx);
+                            }
+                        }
+
+                        // 내가 전송한 텍스트 메시지
+                        if(textFromServer.length == 7){
+                            chatRoomIdFromMsg = textFromServer[5];
+                            Log.e("메시지 전송 3-3. (나에게-텍스트)서버로부터 받은 메시지의 ChatRoomId",chatRoomIdFromMsg);
+                            msgFromServer = textFromServer[6];
+                            Log.e("메시지 전송 3-3. (나에게-텍스트)서버로부터 받은 메시지 내용",msgFromServer);
+                            msgIdx = Integer.parseInt(textFromServer[1]);
+                            Log.e("메시지 전송 3-4. (나에게-텍스트)서버로부터 받은 메시지 msgIdx","" + msgIdx);
+                        }
+
+                        // 내가 전송한 이미지 메시지
+                        if(textFromServer.length == 8){
+                            chatRoomIdFromMsg = textFromServer[6];
+                            Log.e("메시지 전송 3-3. (나에게-이미지)서버로부터 받은 메시지의 ChatRoomId",chatRoomIdFromMsg);
+                            msgFromServer = textFromServer[7];
+                            Log.e("메시지 전송 3-3. (나에게-이미지)서버로부터 받은 메시지 내용",msgFromServer);
+                            msgIdx = Integer.parseInt(textFromServer[1]);
+                            Log.e("메시지 전송 3-4. (나에게-이미지)서버로부터 받은 메시지 msgIdx","" + msgIdx);
+                        }
+
+                        // 기존 채팅방에 사용자가 새로 추가되었고 그게 나라면 내 서비스의 채팅방 리스트에 새로 추가된 방 정보를 추가해준다.
+                        if(msgFromServer.contains("입장했습니다.") && userId.equals(userInfo.getUserId())){
+                            // 채팅방 정보 가져오기
+                            ChatRoomInfoDto chatRoomInfoDto = new ChattingRoomManager().getChatRoomInfo(chatRoomIdFromMsg);
+                            Log.e("채팅방에 초대되어 서비스 채팅방리스트에 추가. 1. 채팅방 정보 서버로부터 가져오기 채팅방아이디",chatRoomInfoDto.getChattingRoomId());
+
+                            ChatRoomInfoForListDto newChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), null, null,chatRoomInfoDto.getChattingMemberList().size(),-1);
+                            Log.e("채팅방에 초대되어 서비스 채팅방리스트에 추가. 2. 채팅방 정보 채팅방 리스트에 넣기 위한 객체로 변환",newChatRoomInfo.toString());
+
+                            Log.e("채팅방에 초대되어 서비스 채팅방리스트에 추가. 3-1. 채팅방 리스트 사이즈 - 추가 전", "" + chatRoomList.size());
+                            chatRoomList.add(newChatRoomInfo);
+                            Log.e("채팅방에 초대되어 서비스 채팅방리스트에 추가. 3-2. 채팅방 리스트 사이즈 - 추가 후", "" + chatRoomList.size());
+
+                        }
+
+                        if(isChatActivityActive && chatRoomIdFromMsg.equals(chatRoomId)){
+                            Log.e("채팅용 메시지 전송 4-1. 채팅방이 활성화되어있고 동일한 채팅방에서 메시지 전송 시", "true");
                             try{
-                                mActivityMessengerList.get(0).send(msg);
-                                Log.e("알림용 메시지 전송 3-1. 서버로부터 받은 알림용 메시지 HomeAct로 전송 HomeAct의 메신저",mActivityMessengerList.get(0).toString());
+                                Message tempMsg = new Message();
+                                tempMsg.copyFrom(msg);
+                                mActivityMessengerList.get(1).send(tempMsg);
+
+                                // 여기서 msgIdx를 저장해버리면 되지 않나?
+                                // 입장 헀습니다와 나갔습니다를 제외한 메시지만 저장
+                                if(!msgFromServer.contains("입장했습니다.") && msgFromServer.contains("나갔습니다.")){
+                                    ChatMsgInfo chatMsgInfo = new ChatMsgInfo(chatRoomIdFromMsg, msgIdx);
+                                    saveMsgInfoToSharedPreference(chatMsgInfo);
+                                    Log.e("채팅용 메시지 전송 4-2. sp에 msgIdx 저장!", "true");
+                                }
+
+                                Log.e("채팅용 메시지 전송 4-3. 서버로부터 받은 채팅용 메시지 ChatAct로 전송 ChatAct의 메신저",mActivityMessengerList.get(1).toString());
 
                             }catch (RemoteException e){
                                 e.printStackTrace();
                             }
                         } else {
-                            try{
-                                mActivityMessengerList.get(1).send(msg);
-                                Log.e("채팅용 메시지 전송 3-2. 서버로부터 받은 채팅용 메시지 ChatAct로 전송 ChatAct의 메신저",mActivityMessengerList.get(1).toString());
-
-                            }catch (RemoteException e){
-                                e.printStackTrace();
-                            }
-                        }
-
-                        Log.e("메시지 전송 4. 채팅방 액트활성화 여부: ", "" + isChatActivityActive);
-
-                        // 채팅 액티비티가 비활성화 상태라면 알림을 보낸다.
-                        if(!isChatActivityActive){
+                            // 채팅방이 비활성화 되어있거나 현재 활성화된 채팅방과 메시지의 채팅방 아이디가 다르다면 notification 전송
                             // 채팅방의 사이즈 만큼 반복 한다.
-                            Log.e("메시지 전송 5-1. 채팅방 아이디: ", "" + read.split(":")[3]);
+                            Log.e("알림 전송 5. 채팅방 아이디와 chatRoomId가 달라야함 다른지 여부","" + chatRoomIdFromMsg.equals(chatRoomId));
 
                             for (int i = 0; i < chatRoomList.size(); i++){
                                 // msg가 채팅방 아이디와 동일하다면 즉, 내 채팅방 리스트에 존재하는 채팅방이라면 알림을 보낸다.
-                                if(chatRoomList.get(i).getChattingRoomId().equals(read.split(":")[3])){
-                                    Log.e("메시지 전송 5-2. 알림 보내기: ", "" + read.split(":")[3]);
+                                if(chatRoomList.get(i).getChattingRoomId().equals(chatRoomIdFromMsg)){
+                                    Log.e("메시지 전송 5-2. 알림 보내기: ", "" + chatRoomIdFromMsg);
 
                                     Intent intent = new Intent(ChattingMsgService.this, ChattingActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -492,8 +575,8 @@ public class ChattingMsgService extends Service {
 
                                     NotificationCompat.Builder builder = new NotificationCompat.Builder(ChattingMsgService.this, "1")
                                             .setSmallIcon(R.mipmap.ic_launcher)
-                                            .setContentTitle(read.split(":")[1])
-                                            .setContentText(read.split(":")[4])
+                                            .setContentTitle(read.split(":")[0]) // 상대방이 보낸 메시지만 알림이 오므로 무조건 0번쨰 인덱스의 값이 이름!
+                                            .setContentText(msgFromServer)
                                             .setSound(defaultSoundUri)
                                             .setContentIntent(pendingIntent)
                                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -507,6 +590,18 @@ public class ChattingMsgService extends Service {
                                     break;
                                 }
                             }
+                        }
+
+                        // 알림용 메시지는 메시지가 입장했습니다, 나갔습니다가 포함된 메시지가 아니라면 모두 전송
+                        try{
+                            if(!msgFromServer.contains("입장했습니다.") && !msgFromServer.contains("나갔습니다.")){
+                                Message tempMsg = new Message();
+                                tempMsg.copyFrom(msg);
+                                mActivityMessengerList.get(0).send(tempMsg);
+                                Log.e("알림용 메시지 전송 4-1. 서버로부터 받은 알림용 메시지 HomeAct로 전송 HomeAct의 메신저",mActivityMessengerList.get(0).toString());
+                            }
+                        }catch (RemoteException e){
+                            e.printStackTrace();
                         }
                     } else{
                         // null이 들어오면 반복문 나가기
@@ -638,7 +733,7 @@ public class ChattingMsgService extends Service {
                     // 맨 뒤의 ","는 지워준다.
                     savePathListStr = savePathListStr.substring(0, savePathListStr.length() - 1);
 
-                    System.out.println("서버로부터 받은 저장경로 배열로 만듬: " + savePathListStr);
+                    System.out.println("서버로부터 받은 저장경로 문자열로 만듬: " + savePathListStr);
 
                     // 서버로 사진 경로 전송
                     String finalSavePathListStr = savePathListStr;
@@ -688,5 +783,16 @@ public class ChattingMsgService extends Service {
         new ExpireThread().start();
 
         recvThread.interrupt();
+    }
+
+    public void saveMsgInfoToSharedPreference(ChatMsgInfo msg){
+        SharedPreferences sp = getSharedPreferences("chat", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+
+        // 해당 채팅방 id로 메시지 인덱스를 저장해준다
+        editor.putInt(msg.getChattingRoomId(), msg.getMsgIdx());
+
+        editor.commit();
+        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 18. SP에 저장, 저장한 인덱스: ", "" + sp.getInt(msg.getChattingRoomId(),999999));
     }
 }

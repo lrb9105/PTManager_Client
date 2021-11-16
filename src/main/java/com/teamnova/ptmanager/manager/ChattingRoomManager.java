@@ -1,8 +1,11 @@
 package com.teamnova.ptmanager.manager;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.teamnova.ptmanager.model.chatting.ChatMsgInfo;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoDto;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
 import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
@@ -219,5 +222,81 @@ public class ChattingRoomManager {
         }
 
         return t.getServerTime();
+    }
+
+    /** 채팅방리스트에서 채팅방아이디만 추출하여 리스트 생성 */
+    public ArrayList<String> getChatRoomIdListFromChatRoomList(ArrayList<ChatRoomInfoForListDto> userIncludedChatRoomList){
+        ArrayList<String> chatRoomIdList = new ArrayList<>();
+        Log.e("채팅방리스트에서 채팅방아이디만 추출하여 리스트 생성 1. chatRoomIdList 생성",chatRoomIdList.toString());
+
+        // userIncludedChatRoomList 사이즈만큼 반복
+        for (int i = 0; i < userIncludedChatRoomList.size(); i++){
+            String chatRoomId = userIncludedChatRoomList.get(i).getChattingRoomId();
+            Log.e("채팅방리스트에서 채팅방아이디만 추출하여 리스트 생성 " + i + "번째 2. chatRoomId 추출",chatRoomIdList.toString());
+            chatRoomIdList.add(chatRoomId);
+            Log.e("채팅방리스트에서 채팅방아이디만 추출하여 리스트 생성 3. chatRoomId 리스트에 저장 리스트 사이즈: ","" + chatRoomIdList.size());
+        }
+        
+        return chatRoomIdList;
+    }
+    /** 채팅방아이디 리스트에서 채팅방아이디 추출하여 ":"로 구분된 문자열 생성 생성 */
+    public String getChatRoomIdListStrFromChatRoomList(ArrayList<String> chatRoomIdList){
+        String chatRoomIdListStr = "";
+        Log.e("채팅방아이디 리스트에서 채팅방아이디만 추출하여 \"로\"구분된 문자열 생성 1. chatRoomIdListStr 생성", "생성");
+
+        // userIncludedChatRoomList 사이즈만큼 반복
+        for (int i = 0; i < chatRoomIdList.size(); i++){
+            String chatRoomId = chatRoomIdList.get(i);
+            Log.e("채팅방아이디 리스트에서 채팅방아이디만 추출하여 \"로\"구분된 문자열 생성 2. chatRoomId 추출", chatRoomId);
+
+            chatRoomIdListStr += ":" + chatRoomId;
+            Log.e("채팅방아이디 리스트에서 채팅방아이디만 추출하여 \"로\"구분된 문자열 생성 3. chatRoomId 문자열에 추가: ","" + chatRoomIdListStr);
+        }
+
+        chatRoomIdListStr = chatRoomIdListStr.substring(1);
+
+        return chatRoomIdListStr;
+    }
+
+    /** 안읽은 메시지 카운트 반환
+     * 입력: 서버로부터 수신한 메시지객체, SharedPreference
+     * 출력: sendedMsgIdx - lastMsgIdx(서버로부터 받은 메시지에 저장되어있는 idx - 채팅방에서 마지막으로 수신한 msgIdx)
+     * = 안읽은 메시지 카운트
+     * */
+    public int getNotReadMsgCount(ChatMsgInfo msgInfo, SharedPreferences sp){
+        // 읽지않은 메시지 갯수
+        int notReadMsgCount = 0;
+        // 채팅방 id
+        String chatRoomId = msgInfo.getChattingRoomId();
+        Log.e("안읽은 메시지 카운트 반환 - getNotReadMsgCount 1. chatRoomId",chatRoomId);
+
+        // SP에 저장된 마지막으로 읽은 메시지의 idx
+        int lastMsgIdx = 0;
+
+        // 1. SharedPreference(SP)에서 chatRoomId에 해당하는 마지막으로 수신한 메시지 idx 가져오기
+        lastMsgIdx = sp.getInt(chatRoomId,999999);
+        Log.e("안읽은 메시지 카운트 반환 - getNotReadMsgCount 2. lastMsgIdx","" + lastMsgIdx);
+
+        // 2. lastMsgIdx가 존재하지 않는다면 현재 msgIdx - 1값을 SP에 넣어준다.
+        if(lastMsgIdx == 999999){
+            SharedPreferences.Editor editor = sp.edit();
+            Log.e("안읽은 메시지 카운트 반환 - 2-1. editor 가져오기", editor.toString());
+
+            // 해당 채팅방 id로 메시지 인덱스를 저장해준다
+            editor.putInt(msgInfo.getChattingRoomId(), msgInfo.getMsgIdx() - 1);
+            editor.commit();
+
+            Log.e("안읽은 메시지 카운트 반환 - 2-2. sp에 데이터 넣기", "" + sp.getInt(msgInfo.getChattingRoomId(),999999));
+
+            lastMsgIdx = msgInfo.getMsgIdx() - 1;
+            Log.e("안읽은 메시지 카운트 반환 - 2-3. lastMsgIdx에 현재 msgIdx - 1값 넣어주기", "" + lastMsgIdx);
+        }
+
+        // 3. 읽지않은 메시지 갯수 계산
+        notReadMsgCount = msgInfo.calculateNotReadMsgCount(lastMsgIdx);
+        Log.e("안읽은 메시지 카운트 반환 - getNotReadMsgCount 3. notReadMsgCount","" + notReadMsgCount);
+
+        // 3. 읽지않은 메시지 갯수 반환
+        return notReadMsgCount;
     }
 }

@@ -1,6 +1,7 @@
 package com.teamnova.ptmanager.model.chatting;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -57,6 +58,11 @@ public class ChatMsgInfo implements Serializable {
         this.msgIdx = msgIdx;
         this.saveImgBitmap = saveImgBitmap;
         this.isDbSelect = isDbSelect;
+    }
+
+    public ChatMsgInfo(String chattingRoomId, int msgIdx) {
+        this.chattingRoomId = chattingRoomId;
+        this.msgIdx = msgIdx;
     }
 
     public String getChattingMsgId() {
@@ -153,5 +159,15 @@ public class ChatMsgInfo implements Serializable {
 
     public void setIsDateVisible(String isDateVisible) {
         this.isDateVisible = isDateVisible;
+    }
+
+    /** 읽지 않은 메시지 갯수 계산 - 채팅방리스트에서 사용!
+     * 입력: 특정 채팅방의 마지막 인덱스
+     * 출력: 해당 메시지 객체의 인덱스 - 특정 채팅방의 마지막 인덱스
+     * */
+    public int calculateNotReadMsgCount(int lastMsgIdx){
+        Log.e("읽지 않은 메시지 갯수 계산 1. 해당 메시지 객체의 인덱스 - 특정 채팅방의 마지막 인덱스","" + (this.msgIdx - lastMsgIdx));
+
+        return this.msgIdx - lastMsgIdx;
     }
 }

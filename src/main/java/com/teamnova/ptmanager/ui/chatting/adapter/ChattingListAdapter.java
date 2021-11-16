@@ -2,6 +2,7 @@ package com.teamnova.ptmanager.ui.chatting.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView latest_msg;
         TextView latest_msg_time;
         TextView chat_user_count;
+        TextView not_read_msg_count;
         LinearLayout layout_chat_room;
 
         public ChattingListViewHolder(View itemView) {
@@ -59,6 +61,7 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             latest_msg = itemView.findViewById(R.id.latest_msg);
             latest_msg_time = itemView.findViewById(R.id.latest_msg_time);
             chat_user_count = itemView.findViewById(R.id.chat_user_count);
+            not_read_msg_count = itemView.findViewById(R.id.not_read_msg_count);
             layout_chat_room = itemView.findViewById(R.id.layout_chat_room);
         }
     }
@@ -97,6 +100,17 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
 
+        // 읽지 않은 msg수가 0보다 크다면 세팅해준다.
+        Log.e("채팅방정보 세팅 1. chatRoomInfo.getNotReadMsgCount()", "" + chatRoomInfo.getNotReadMsgCount());
+
+        if(chatRoomInfo.getNotReadMsgCount() > 0){
+            ((ChattingListViewHolder) holder).not_read_msg_count.setVisibility(View.VISIBLE);
+            ((ChattingListViewHolder) holder).not_read_msg_count.setText("" + chatRoomInfo.getNotReadMsgCount());
+            Log.e("채팅방정보 세팅 2-1. ((ChattingListViewHolder) holder).not_read_msg_count.setText", "" + chatRoomInfo.getNotReadMsgCount());
+        } else {
+            ((ChattingListViewHolder) holder).not_read_msg_count.setVisibility(View.GONE);
+        }
+
         // 유저수
         ((ChattingListViewHolder)holder).chat_user_count.setText("" + chatRoomInfo.getUserCount());
 
@@ -106,6 +120,8 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             public void onClick(View v) {
                 // 채팅방화면으로 이동
                 enterChatRoom(chatRoomInfo.getChattingRoomId(), makeChatMemberInfo(memberInfo));
+                // 읽지않은 메시지 수 없애줌!
+                ((ChattingListViewHolder) holder).not_read_msg_count.setVisibility(View.GONE);
             }
         });
     }

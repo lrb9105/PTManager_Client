@@ -22,6 +22,7 @@ import com.teamnova.ptmanager.R;
 import com.teamnova.ptmanager.databinding.FragmentChattingListBinding;
 import com.teamnova.ptmanager.databinding.FragmentMoreinfoBinding;
 import com.teamnova.ptmanager.manager.ChattingRoomManager;
+import com.teamnova.ptmanager.model.chatting.ChatMsgInfo;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoDto;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
 import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
@@ -121,7 +122,7 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                                 chattingViewModel.getChattingList().setValue(c);
                             } else if(addedOrModifiedChatRoomInfo != null) { // 방 생성 or 방 수정
                                 // 채팅뷰모델의 채팅리스트 객체 업데이트
-                                ArrayList<ChatRoomInfoForListDto> list = chattingViewModel.getChattingList().getValue();
+                                /*ArrayList<ChatRoomInfoForListDto> list = chattingViewModel.getChattingList().getValue();
                                 // 리스트에서 넘어온 채팅방 정보 객체와 동일한 아이디를 갖는 객체가 있는지 확인
                                 boolean isModified = false;
                                 boolean isNotModifiedAndAdded = false;
@@ -129,10 +130,14 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                                 for(int i = 0; i < list.size(); i++){
                                     System.out.println("4. 수정 시 여기 들어와야 함");
                                     // 이미 리스트에 존재하는 채팅방이고 내용이 수정되었다면 -> 포지션 0으로 옮기기
+                                    Log.e("가져온 메시지 인덱스","" + addedOrModifiedChatRoomInfo.getMsgIdx());
                                     if(list.get(i).getChattingRoomId().equals(addedOrModifiedChatRoomInfo.getChattingRoomId())){
-                                        // 메시지가 동일하다면 변경안 된 것
-                                        if(list.get(i).getLatestMsg().equals(addedOrModifiedChatRoomInfo.getLatestMsg())) {
-                                            isNotModifiedAndAdded = true;
+                                        // 메시지 idx가 동일하다면 변경안 된 것
+                                        Log.e("기존 메시지 인덱스","" + list.get(i).getMsgIdx());
+
+                                        // msgIdx가 다를때만 수정!
+                                        if(list.get(i).getMsgIdx() == addedOrModifiedChatRoomInfo.getMsgIdx()) {
+                                            // 같다면 읽지않은 메시지수만 변경해준다.
                                             break;
                                         }
 
@@ -146,6 +151,9 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
 
                                         list.remove(i);
                                         list.add(0, addedOrModifiedChatRoomInfo);
+
+                                        chattingViewModel.getChattingList().setValue(list);
+
                                         System.out.println("5. 수정 시 여기 들어와야 함");
 
                                         break;
@@ -154,19 +162,17 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                                     }
                                 }
 
-                                System.out.println("isModified: " + isModified);
+                                System.out.println("isModified: " + isModified);*/
 
                                 // 추가되었다면
-                                if(!isModified && !isNotModifiedAndAdded) {
+                                /*if(!isModified) {
                                     System.out.println("여기 드러옴");
                                     // 채팅방 새로 생성시에는 시간보정 할 필요 없음
                                     shouldCompensate = false;
 
                                     list.add(0, addedOrModifiedChatRoomInfo);
                                     linearLayoutManager.scrollToPosition(0);
-                                }
-
-                                chattingViewModel.getChattingList().setValue(list);
+                                }*/
                             }
                         }
                     }
@@ -264,7 +270,28 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
         }
 
         // 채팅방 리스트 가져와서 뷰모델에 세팅
-        chattingViewModel.getChattingList().setValue(this.getChatRoomList(userId));
+        ArrayList<ChatRoomInfoForListDto> chatRoomList = this.getChatRoomList(userId);
+
+        // 읽지않은 msg 세팅
+        SharedPreferences sp = getContext().getSharedPreferences("chat", Activity.MODE_PRIVATE);
+        Log.e("서버에서 채팅방 리스트 조회 시 안읽은 메시지 수 세팅 - 1.sp 생성", sp.toString());
+
+        for (int i = 0; i < chatRoomList.size(); i++){
+            ChatMsgInfo msg = new ChatMsgInfo(chatRoomList.get(i).getChattingRoomId(), chatRoomList.get(i).getMsgIdx());
+            Log.e("서버에서 채팅방 리스트 조회 시 안읽은 메시지 수 세팅 - 2.msg", "chatRoomId => " + msg.getChattingRoomId() + " , msgIdx => " + msg.getMsgIdx());
+
+            // 안읽은 메시지 값 세팅
+            int notReadMsgCount = new ChattingRoomManager().getNotReadMsgCount(msg, sp);
+            Log.e("서버에서 채팅방 리스트 조회 시 안읽은 메시지 수 세팅 - 3.notReadMsgCount", "" + notReadMsgCount);
+
+            // 안읽은 메시지가 0보다 크다면 채팅방정보에 넣어준다.
+            if(notReadMsgCount > 0) {
+                chatRoomList.get(i).setNotReadMsgCount(notReadMsgCount);
+                Log.e("서버에서 채팅방 리스트 조회 시 안읽은 메시지 수 세팅 - 4.안읽은 메시지 채팅방 정보에 넣어 줌", "true");
+            }
+        }
+
+        chattingViewModel.getChattingList().setValue(chatRoomList);
 
         // 채팅방 만들기 버튼 트레이너인 경우에만 나오도록
         if(TrainerHomeActivity.staticLoginUserInfo != null) { //트레이너 라면

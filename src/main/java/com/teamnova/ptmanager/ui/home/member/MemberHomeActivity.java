@@ -1,9 +1,11 @@
 package com.teamnova.ptmanager.ui.home.member;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,7 +26,9 @@ import com.teamnova.ptmanager.databinding.ActivityMemberHomeBinding;
 import com.teamnova.ptmanager.manager.ChattingRoomManager;
 import com.teamnova.ptmanager.model.chatting.ChatMsgInfo;
 import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
+import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
+import com.teamnova.ptmanager.model.userInfo.UserInfoDto;
 import com.teamnova.ptmanager.network.RetrofitInstance;
 import com.teamnova.ptmanager.network.chatting.ChattingService;
 import com.teamnova.ptmanager.service.chatting.ChattingMsgService;
@@ -105,8 +109,9 @@ public class MemberHomeActivity extends AppCompatActivity {
                     String[] msgArr = read.split(":");
 
                     // 내가보낸 메시지가 아니라면
-                    // 텍스트msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx:savePath;
-                    // 파일 포함msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx;
+                    // 다른사람이 보낸 메시지 갯수
+                    // 텍스트: 12개
+                    // 이미지: 13개
                     if(msgArr.length > 10){
                         String userName = msgArr[0];
                         String userId = msgArr[1];
@@ -118,23 +123,15 @@ public class MemberHomeActivity extends AppCompatActivity {
                         int savePathPos = 0;
                         String savePath = null;
 
-                        // 텍스트 메시지
+                        // 파일
                         if(msgArr.length == 13){
-                            userName = msgArr[1];
-                            userId = msgArr[2];
-                            roomId = msgArr[3];
-                            msg2 = msgArr[4];
-                            creDatetime = msgArr[msgArr.length - 5] + ":" + msgArr[msgArr.length - 4]  + ":" + msgArr[msgArr.length - 3];
-                            notReadUserCountPos = msgArr.length-2;
-                            msgIdxPos = msgArr.length-1;
-                        } else if(msgArr.length == 12){
-                            notReadUserCountPos = msgArr.length-2;
-                            msgIdxPos = msgArr.length-1;
-                        } else { // 파일포함 메시지
-                            creDatetime = msgArr[msgArr.length - 3] + ":" + msgArr[msgArr.length - 2]  + ":" + msgArr[msgArr.length - 1];
-                            notReadUserCountPos = msgArr.length-4;
+                            creDatetime = msgArr[msgArr.length - 4] + ":" + msgArr[msgArr.length - 3]  + ":" + msgArr[msgArr.length - 2];
+                            notReadUserCountPos = msgArr.length-5;
                             msgIdxPos = msgArr.length-6;
-                            savePathPos = msgArr.length-5;
+                            savePathPos = msgArr.length-1;
+                        } else if(msgArr.length == 12){ // 텍스트
+                            notReadUserCountPos = msgArr.length-2;
+                            msgIdxPos = msgArr.length-1;
                         }
 
                         // 뒤에서 두번째에 안읽은 사람수가 있음
@@ -180,10 +177,10 @@ public class MemberHomeActivity extends AppCompatActivity {
                         Log.e("채팅방리스트에서 정보 변경 - 0-2. chatMsgInfo", "" + chatMsgInfo.toString());
                     }
 
-
-
-                    // 뷰모델에 메시지 정보 업데이트
-                    ArrayList<ChatRoomInfoForListDto> chatRoomList = new ChattingRoomManager().getChatRoomList(memberInfo.getUserId());
+                    // (사용안함)사용자 아이디로 db에 있는 사용자가 포함된 채팅방 정보 가져오기
+                    //ArrayList<ChatRoomInfoForListDto> chatRoomList = new ChattingRoomManager().getChatRoomList(memberInfo.getUserId());
+                    // 현재 사용자의 채팅방리스트 가져오기
+                    ArrayList<ChatRoomInfoForListDto> chatRoomList = chattingViewModel.getChattingList().getValue();
 
                     // 이미 존재하는 채팅방일 경우 그것의 인덱스를 저장하는 변수
                     int chatRoomIdx = 0;
@@ -210,26 +207,60 @@ public class MemberHomeActivity extends AppCompatActivity {
                     String chattingRoomId = chatMsgInfo.getChattingRoomId();
                     Log.e("채팅방리스트에서 정보 변경 - 3. chattingRoomId", "" + chattingRoomId);
 
-                    // 채팅방 명
-                    String chattingRoomName = null;
-                    // 채팅촘방 유저 수
-                    int userCount = 0;
-
                     // 메시지 내용
                     String latestMsg = chatMsgInfo.getMsg();
                     Log.e("채팅방리스트에서 정보 변경 - 4. latestMsg", "" + latestMsg);
-
 
                     // 메시지 수신시간
                     String latestMsgTime = chatMsgInfo.getCreDatetime();
                     Log.e("채팅방리스트에서 정보 변경 - 5. latestMsgTime", "" + latestMsgTime);
 
-                    // 생성인 경우 가져오기
-                    if(!isExistRoomId){
-                        // 서버에서 채팅방 정보 가져오기
-                        // 3. 채팅방이 존재하지 않는다면 채팅방 생성 - 첫번쨰 위치에 채팅방 데이터 추가
-                        Log.e("채팅방리스트에서 정보 변경 - 6. 생성인 경우 잘들어오는가", "true");
+                    // 받아온 메시지에 해당하는 채팅방 정보
+                    ChatRoomInfoForListDto chatRoomInfo = null;
 
+                    // 채팅방 리스트에 존재하는 방에서 메시지를 전송한 것이라면
+                    if(isExistRoomId) {
+                        Log.e("채팅방리스트에서 정보 변경 - 6-1. 수정인 경우 잘들어오는가", "true");
+                        // 채팅방이 존재한다면 채팅방 데이터 수정 - 채팅방 위치 첫번째로 옮기기(기존 데이터 삭제, 0번째 인덱스에 추가)
+
+                        // 채팅방 정보
+                        chatRoomInfo = chatRoomList.get(chatRoomIdx);
+                        Log.e("채팅방리스트에서 정보 변경 - 7. chatRoomInfo", chatRoomInfo.toString());
+
+                        // 메시지 정보 세팅
+                        chatRoomInfo.setLatestMsg(latestMsg);
+                        Log.e("채팅방리스트에서 정보 변경 - 8. setLatestMsg", latestMsg);
+
+                        chatRoomInfo.setLatestMsgTime(latestMsgTime);
+                        Log.e("채팅방리스트에서 정보 변경 - 9-1. latestMsgTime", latestMsgTime);
+
+                        // 안읽은 메시지 값 세팅
+                        int notReadMsgCount = new ChattingRoomManager().getNotReadMsgCount(chatMsgInfo, getSharedPreferences("chat", Activity.MODE_PRIVATE));
+                        Log.e("채팅방리스트에서 정보 변경 - 9-2. notReadMsgCount", "" + notReadMsgCount);
+
+                        // 안읽은 메시지가 0보다 크다면 채팅방정보에 넣어준다.
+                        if(notReadMsgCount > 0) {
+                            chatRoomInfo.setNotReadMsgCount(notReadMsgCount);
+                            Log.e("채팅방리스트에서 정보 변경 - 9-3. 안읽은 메시지가 0보다 크다면 채팅방정보에 넣어준다.", "" + notReadMsgCount);
+                        }
+
+                        // 기존 채팅방정보 삭제
+                        Log.e("채팅방리스트에서 정보 변경 - 10. remove 전", "" + chatRoomList.size());
+
+                        // 현재 채팅방리스트에 존재하는 방의 메시지라면 현재 방 정보를 삭제한다.
+                        if(isExistRoomId) {
+                            chatRoomList.remove(chatRoomIdx);
+                        }
+
+                        Log.e("채팅방리스트에서 정보 변경 - 11 remove 후", "" + chatRoomList.size());
+
+                        // 생성 혹은 수정한 채팅방정보를 맨위로 올린다.
+                        chatRoomList.add(0, chatRoomInfo);
+
+                        // viewModel에 저장하기
+                        chattingViewModel.getChattingList().setValue(chatRoomList);
+                    } else {
+                        Log.e("채팅방리스트에서 정보 변경 - 6-2. 생성인 경우 잘들어오는가", "true");
                         // 레트로핏 객체
                         Retrofit retrofit = RetrofitInstance.getRetroClient();
                         Log.e("채팅방리스트에서 정보 변경 - 7. 레트로핏 객체 생성", retrofit.toString());
@@ -242,43 +273,10 @@ public class MemberHomeActivity extends AppCompatActivity {
                         Call<ChatRoomInfoForListDto> call = service.getChatRoomInfoWithUserId(chattingRoomId, memberInfo.getUserId());
                         Log.e("채팅방리스트에서 정보 변경 - 9. call 객체 생성", service.toString());
 
-                        new GetChatRoomInfo(chatRoomList, latestMsg, latestMsgTime).execute(call);
-                    } else { // 수정인 경우 그대로 사용하기
-                        Log.e("채팅방리스트에서 정보 변경 - 6. 수정인 경우 잘들어오는가", "true");
-
-                        // 2. 채팅방이 존재한다면 채팅방 데이터 수정 - 채팅방 위치 첫번째로 옮기기(기존 데이터 삭제, 0번째 인덱스에 추가)
-                        // 채팅방 정보
-                        ChatRoomInfoForListDto chatRoomInfo = chatRoomList.get(chatRoomIdx);
-                        Log.e("채팅방리스트에서 정보 변경 - 7. chatRoomInfo", chatRoomInfo.toString());
-
-                        // 메시지 정보 세팅
-                        chatRoomInfo.setLatestMsg(latestMsg);
-                        Log.e("채팅방리스트에서 정보 변경 - 8. setLatestMsg", latestMsg);
-
-                        chatRoomInfo.setLatestMsgTime(latestMsgTime);
-                        Log.e("채팅방리스트에서 정보 변경 - 9. latestMsgTime", latestMsgTime);
-
-                        // 기존 채팅방정보 삭제
-                        Log.e("채팅방리스트에서 정보 변경 - 10. remove 전", "" + chatRoomList.size());
-
-                        chatRoomList.remove(chatRoomIdx);
-
-                        Log.e("채팅방리스트에서 정보 변경 - 11 remove 후", "" + chatRoomList.size());
-
-                        // 수정한 채팅방정보 맨위로 올리기
-                        chatRoomList.add(0, chatRoomInfo);
-
+                        // 서버에서 해당 채팅방의 정보를 가져온다.
+                        new GetChatRoomInfo(chatRoomList, chatMsgInfo).execute(call);
                         Log.e("채팅방리스트에서 정보 변경 - 12. add", "" + chatRoomList.size());
-
-                        // viewModel에 저장하기
-                        chattingViewModel.getChattingList().setValue(chatRoomList);
                     }
-
-                    //
-                    // 계산해야 함 - sp에 마지막 인덱스가 존재하는 경우와 그렇지 않은 경우로 나눠서 계산해야 함
-                    // 없다면 1로하고 sp에 저장
-                    // 있다면 현재 "메시지인덱스 - sp에 저장된 메시지인덱스 값"이 읽지않은 메시지 값
-
                     break;
                 default:
                     super.handleMessage(msg);
@@ -449,12 +447,20 @@ public class MemberHomeActivity extends AppCompatActivity {
                     Log.e("MemberHomeAct에서 Socket 연결 6-1. 메시지를 처리할 메신저 객체 넣어주기 msg.replyTo = mActivityMessenger", "" + mActivityMessenger);
 
                     Bundle bundle = msg.getData();
-                    bundle.putString("userId", memberInfo.getUserId());
-                    Log.e("TrainerHomeAct에서 Socket 연결 6-2. 채팅방정보를 가져올 userId 넣어줌", "" + memberInfo.getUserId());
+                    bundle.putSerializable("userInfo", ChattingMemberDto.makeChatMemberInfo(memberInfo));
+                    Log.e("MemberHomeAct에서 Socket 연결 6-2. userInfo 생성해서 Bundle 객체에 넣어 줌", "" + memberInfo);
+
+                    // 사용자가 속해있는 채팅방 리스트를 가져온다.
+                    ChattingRoomManager chattingRoomManager = new ChattingRoomManager();
+                    ArrayList<ChatRoomInfoForListDto> userIncludedChatRoomList = chattingRoomManager.getChatRoomList(memberInfo.getUserId());
+                    Log.e("MemberHomeAct에서 Socket 연결 7-1-1. 사용자가 속해있는 채팅방 리스트를 가져온다.", "" + userIncludedChatRoomList.size());
+
+                    bundle.putSerializable("userIncludedChatRoomList", userIncludedChatRoomList);
+                    Log.e("MemberHomeAct에서 Socket 연결 7-1-2. Bundle 객체에 userIncludedChatRoomList 추가 ", "" + bundle.getSerializable("userIncludedChatRoomList"));
 
                     // 서비스에 연결됐다는 메시지를 전송한다.
                     mServiceMessenger.send(msg);
-                    Log.e("MemberHomeAct에서 Socket 연결 7. 서비스에 메시지 전송", "" + msg);
+                    Log.e("MemberHomeAct에서 Socket 연결 7-2. 서비스에 메시지 전송", "" + msg);
 
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -471,18 +477,16 @@ public class MemberHomeActivity extends AppCompatActivity {
         };
     }
 
-    /** 파일정보를 저장하는 AsyncTask*/
+    /** 채팅방정보를 가져오는 AsyncTask*/
     public class GetChatRoomInfo extends AsyncTask<Call, Void, String> {
         private retrofit2.Response<ChatRoomInfoForListDto> response;
         private ChatRoomInfoForListDto chatRoomInfo;
         private ArrayList<ChatRoomInfoForListDto> chatRoomList;
-        private String latestMsg;
-        private String latestMsgTime;
+        private ChatMsgInfo chatMsgInfo;
 
-        public GetChatRoomInfo(ArrayList<ChatRoomInfoForListDto> chatRoomList, String latestMsg, String latestMsgTime) {
+        public GetChatRoomInfo(ArrayList<ChatRoomInfoForListDto> chatRoomList, ChatMsgInfo chatMsgInfo) {
             this.chatRoomList = chatRoomList;
-            this.latestMsg = latestMsg;
-            this.latestMsgTime = latestMsgTime;
+            this.chatMsgInfo = chatMsgInfo;
         }
 
         @Override
@@ -512,22 +516,31 @@ public class MemberHomeActivity extends AppCompatActivity {
             Log.e("채팅방리스트에서 정보 변경 - 11. onPostExecute", "onPostExecute");
             Log.e("채팅방리스트에서 정보 변경 - 12. chatRoomInfo.getChattingRoomId()", "" + chatRoomInfo.getChattingRoomId());
 
-
             // 채팅방 아이디가 존재한다면 해당 유저가 포함된 채팅방이 있는 것임!
             if(chatRoomInfo.getChattingRoomId() != null){
                 // 3. 채팅방이 존재하지 않는다면 채팅방 생성 - 첫번쨰 위치에 채팅방 데이터 추가
 
                 // 메시지 정보 세팅
-                chatRoomInfo.setLatestMsg(latestMsg);
-                Log.e("채팅방리스트에서 정보 변경 - 13. setLatestMsg", latestMsg);
+                chatRoomInfo.setLatestMsg(chatMsgInfo.getMsg());
+                Log.e("채팅방리스트에서 정보 변경 - 13. setLatestMsg", chatMsgInfo.getMsg());
 
-                chatRoomInfo.setLatestMsgTime(latestMsgTime);
-                Log.e("채팅방리스트에서 정보 변경 - 14. latestMsgTime", latestMsgTime);
+                chatRoomInfo.setLatestMsgTime(chatMsgInfo.getCreDatetime());
+                Log.e("채팅방리스트에서 정보 변경 - 14. latestMsgTime", chatMsgInfo.getCreDatetime());
+
+                // 안읽은 메시지 값 세팅
+                int notReadMsgCount = new ChattingRoomManager().getNotReadMsgCount(chatMsgInfo, getSharedPreferences("chat", Activity.MODE_PRIVATE));
+                Log.e("채팅방리스트에서 정보 변경 - 9-2. notReadMsgCount", "" + notReadMsgCount);
+
+                // 안읽은 메시지가 0보다 크다면 채팅방정보에 넣어준다.
+                if(notReadMsgCount > 0) {
+                    chatRoomInfo.setNotReadMsgCount(notReadMsgCount);
+                    Log.e("채팅방리스트에서 정보 변경 - 9-3. 안읽은 메시지가 0보다 크다면 채팅방정보에 넣어준다.", "" + notReadMsgCount);
+                }
 
                 // 수정한 채팅방정보 맨위로 올리기
                 chatRoomList.add(0, chatRoomInfo);
 
-                Log.e("채팅방리스트에서 정보 변경 - 15. add", "" + chatRoomList.size());
+                Log.e("채팅방리스트에서 정보 변경 - 19. chatRoomList에 채팅방 추가", "" + chatRoomList.size());
 
                 // viewModel에 저장하기
                 chattingViewModel.getChattingList().setValue(chatRoomList);

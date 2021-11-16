@@ -206,8 +206,9 @@ public class ChattingActivity extends AppCompatActivity {
                     Log.e("수신한 메시지 리사이클러뷰에 뿌리기 2. msgArr: ",msgArr.toString());
 
                     // 내가보낸 메시지가 아니라면
-                    // 텍스트msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx:savePath;
-                    // 파일 포함msg: userNama:userId:roomId:msg:creDatetime:notReadUserCount:msgIdx;
+                    // 다른사람이 보낸 메시지 갯수
+                    // 텍스트: 12개
+                    // 이미지: 13개
                     if(msgArr.length > 10){
                         Log.e("수신한 메시지 리사이클러뷰에 뿌리기 3. 메시지: ", "true");
 
@@ -234,16 +235,16 @@ public class ChattingActivity extends AppCompatActivity {
                         } else { // 파일포함 메시지
                             Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-1. 이미지 메시지: ", "true");
 
-                            creDatetime = msgArr[msgArr.length - 3] + ":" + msgArr[msgArr.length - 2]  + ":" + msgArr[msgArr.length - 1];
+                            creDatetime = msgArr[msgArr.length - 4] + ":" + msgArr[msgArr.length - 3]  + ":" + msgArr[msgArr.length - 2];
                             Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-2. creDatetime: ", creDatetime);
 
-                            notReadUserCountPos = msgArr.length-4;
+                            notReadUserCountPos = msgArr.length-5;
                             Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-3. notReadUserCountPos: ", "" + notReadUserCountPos);
 
                             msgIdxPos = msgArr.length-6;
                             Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-4. msgIdxPos: ", "" + msgIdxPos);
 
-                            savePathPos = msgArr.length-5;
+                            savePathPos = msgArr.length-1;
                             Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-5. savePathPos: ", "" + savePathPos);
                         }
 
@@ -269,10 +270,18 @@ public class ChattingActivity extends AppCompatActivity {
                         Log.e("수신한 메시지 리사이클러뷰에 뿌리기 9. 마지막 메시지 저장: ", "" + lastMsg);
 
                         // 내가 트레이너 이고 나간 사용자가 있을 때 그 사용자를 리스트에서 제거
+                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-1. msg2: ", "" + msg2);
+                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-2. TrainerHomeActivity.staticLoginUserInfo: ", "" + TrainerHomeActivity.staticLoginUserInfo);
+
                         if(msg2.contains("나갔습니다") && TrainerHomeActivity.staticLoginUserInfo != null){
+                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-3. userId: ", "" + userId);
                             for(int i = 0; i < chatMemberList.size(); i++){
-                                if(userId.equals(chatMemberList.get(i))){
+                                Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-4. chatMemberList.get(i): ", "" + chatMemberList.get(i));
+
+                                if(userId.equals(chatMemberList.get(i).getUserId())){
+                                    Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-5. 나간 사용자 삭제 사용자 id: ", "" + chatMemberList.get(i));
                                     chatMemberList.remove(i);
+                                    break;
                                 }
                             }
                         }
@@ -295,17 +304,22 @@ public class ChattingActivity extends AppCompatActivity {
                         String creDateTime = msgArr[2] + ":" + msgArr[3] + ":" + msgArr[4];
                         Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 4. creDateTime: ", "" + creDateTime);
 
+                        String msg2 = null;
+
                         // 어댑터에서 가장 마지막에있는 메시지 업데이트!
                         // 리사이클러뷰의 업데이트는 main UI에서만 가능!!!!
                         //System.out.println("서버로부터 메시지222: " + read);
                         // 이미지라면
                         if(!isText) {
                             savePath = msgArr[5];
+                            msg2 =  msgArr[7];
                             Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 4-1. savePath: ", "" + savePath);
-
+                        } else {
+                            // 텍스트라면
+                            msg2 = msgArr[6];
                         }
 
-                        chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, null, creDateTime,notReadUserCount,msgIdx, savePath,null,"N");
+                        chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, msg2, creDateTime,notReadUserCount,msgIdx, savePath,null,"N");
                         Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 5. chatMsgInfo: ", chatMsgInfo.toString());
 
                         if(lastMsg != null){
@@ -323,7 +337,7 @@ public class ChattingActivity extends AppCompatActivity {
                     //mHandler.post(new MsgUpdater(chatMsgInfo));
 
                     // 상대방에게서 온 메시지
-                    if(chatMsgInfo.getMsg() != null){
+                    if(chatMsgInfo.getChattingMemberId() != null){
                         Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10. 리사에 뿌리기 ", "" + chatMsgInfo.getMsg());
 
                         // 사진파일이라면
@@ -344,10 +358,6 @@ public class ChattingActivity extends AppCompatActivity {
                         Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 8. updateCntAndIdx: ", "true");
 
                     }
-
-                    // SharedPreference에 가장 마지막 메시지 인덱스 저장
-                    saveMsgInfoToSharedPreference(chatMsgInfo);
-
                     break;
                 // 마지막 메시지 수신
                 case ChattingMsgService.SEND_LAST_MSG:
@@ -524,6 +534,7 @@ public class ChattingActivity extends AppCompatActivity {
             // 메시지를 작성하거나 수신할 때마다 sp에 해당 메시지의 인덱스를 저장해준다.
             // 따라서 새로 생성된 채팅방이 아닌 경우 채팅방id에 해당하는 마지막 메시지 인덱스가 존재하고 그것을 가져온다.
             lastMsgIdx = getLastMsgIdx(chatRoomId);
+            Log.e("채팅방 들어왔을 때 마지막 메시지 idx 저장 lastMsgIdx", "" + lastMsgIdx);
 
             // 맨처음 채팅방에 입장한 경우 이 값이 존재하지 않는다. 따라서 가져온 메시지의 첫번째 값을 넘겨준다.(임시용 임)
             // 메시지 받았을 때 채팅방 리스트에 채팅방을 생성하는 코드를 구현하면 그때 받은 (메시지 idx -1)값을 sp에 넣어 줄 것이기 때문에 이 코드는 사용 안 할 거임
@@ -733,7 +744,7 @@ public class ChattingActivity extends AppCompatActivity {
                         }
 
                         // 채팅방 정보
-                        ChatRoomInfoForListDto exitedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), null, null,chatMemberList.size());
+                        ChatRoomInfoForListDto exitedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), null, null,chatMemberList.size(),-1);
 
                         intent.putExtra("exitedChatRoomInfo", exitedChatRoomInfo);
 
@@ -942,14 +953,18 @@ public class ChattingActivity extends AppCompatActivity {
         // 채팅방 리스트 화면으로 넘겨줘서 리스트를 업데이트 한다.
         ChatRoomInfoForListDto addedOrModifiedChatRoomInfo = null;
 
+
         // 채팅방 정보
         if(lastMsg != null){
             // 채팅방이 수정된 경우
-            addedOrModifiedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), lastMsg.getMsg(), lastMsg.getCreDatetime(),chatMemberList.size());
+            addedOrModifiedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), lastMsg.getMsg(), lastMsg.getCreDatetime(),chatMemberList.size(),lastMsg.getMsgIdx());
         } else {
             // 채팅방이 새로 생성된 경우
-            addedOrModifiedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), null, null,chatMemberList.size());
+            addedOrModifiedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), null, null,chatMemberList.size(),-1);
         }
+
+        Log.e("뒤로가기 시 보내는 msg", "" + lastMsg);
+        Log.e("뒤로가기 시 보내는 msg", "" + lastMsg.getMsgIdx());
 
         // 새로 생성 혹은 수정된 채팅방 정보 전송
         intent.putExtra("addedOrModifiedChatRoomInfo", addedOrModifiedChatRoomInfo);
@@ -1598,11 +1613,13 @@ public class ChattingActivity extends AppCompatActivity {
         // 파라미터: 핸들러, msg.what에 들어갈 int값
         Message msg = Message.obtain(null, ChattingMsgService.DISCONNECTED_CHAT_ACT);
         Log.e("채팅방 나갈 때 서비스와의 연결 제거 1. 서비스로 보낼 메시지 생성", msg.toString());
+        Bundle bundle = msg.getData();        // 서비스에게 메시지를 전달한다.
+        bundle.putString("chatRoomId", chatRoomId);
+        Log.e("채팅방 나갈 때 서비스와의 연결 제거 3. 채팅방 아이디 전송", chatRoomId);
 
-        // 서비스에게 메시지를 전달한다.
         try {
             mServiceMessenger.send(msg);
-            Log.e("채팅방 나갈 때 서비스와의 연결 제거 2. 서비스로 메시지 전송", msg.toString());
+            Log.e("채팅방 나갈 때 서비스와의 연결 제거 4. 서비스로 메시지 전송", msg.toString());
 
         } catch (RemoteException e) {
             e.printStackTrace();
