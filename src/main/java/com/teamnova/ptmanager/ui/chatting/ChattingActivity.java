@@ -482,25 +482,32 @@ public class ChattingActivity extends AppCompatActivity {
         if(chatRoomId == null) {
             // 채팅멤버리스트의 첫번째값에 채팅방을 생성한 사용자의 값이 들어있다.
             userInfo = chatMemberList.get(0);
+            Log.e("채팅방 만들기 ", "16. 리스트에서 채팅방 생성자 정보를 가져온다. => 사이즈: " + userInfo);
 
             // 기존에 생성된 채팅방이 있는지 검색 후 존재 시 채팅방 아이디를 가져온다
             // 채팅방 검색 시 채팅방 참여자 리스트를 사용해서 검색한다.
+            Log.e("채팅방 만들기 ", "17. 멤버리스트로 채팅방 아이디 가져오기 시작");
             chatRoomId = chattingRoomManager.getExistedChatRoomId(chatMemberList);
+            Log.e("채팅방 만들기 ", "18. 멤버리스트로 채팅방 아이디 가져오기 종료");
 
             // 서버에서 가져온 채팅방 id의 경우 "(큰따옴표)가 포함되어있어 이를 제거해준다.
             chatRoomId = chatRoomId.replace("\"","");
 
             // 채팅방 아이디가 존재한다면
             if(chatRoomId != null && !chatRoomId.equals("null")){
-
+                Log.e("채팅방 만들기 ", "19. 멤버리스트가 전부 포함된 채팅방이 존재 => 채팅방 아이디:" + chatRoomId);
             } else {
                 // 기존에 생성된 채팅방 정보가 존재하지 않는다면
                 // 채팅방 정보를 저장하라
                 // (저장하고 채팅방 아이디를 가져올 때까지 mainThread는 멈춰 있어야 함)
+                Log.e("채팅방 만들기 ", "19-1. 멤버리스트가 전부 포함된 채팅방이 존재하지 않는다면 서버에 채팅방 정보를 저장한다.");
+                Log.e("채팅방 만들기 ", "19-2. 채팅방정보 저장 시작");
                 chatRoomId = chattingRoomManager.insertChatRoomInfo(chatMemberList,chatRoomId);
+                Log.e("채팅방 만들기 ", "19-3. 채팅방정보 저장 종료");
 
                 // 새로운 채팅방이 생성되어 채팅방리스트에 추가해야 한다.
                 isRoomAdded = true;
+                Log.e("채팅방 만들기 ", "20. 새로 채팅방 생성 시 isRoomAdded값은 true => isRoomAdded 값: " + isRoomAdded);
             }
         } else { // 채팅 참여자리스트가 없다면 채팅방 리스트에서 기존에 생성되어있는 채팅방에서 접근한 것이다.
             // 사용자 정보 가져오기
@@ -512,11 +519,11 @@ public class ChattingActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
+        // 빈 ArrayList 생성
+        chatMsgList = new ArrayList<>();
+
         // 방이 새로 생성된게 아니라면 서버에서 메시지리스트 가져오기
         if(!isRoomAdded){
-            // 빈 ArrayList 생성
-            chatMsgList = new ArrayList<>();
-
             // 빈 ArrayList 넘겨 줌 => 페이징해서 가져온 데이터를 하나하나 add해줄 것임!
             chattingMsgListAdapter = new ChattingMsgListAdapter(chatMsgList, this, null, userInfo.getUserId(), userProfileBitmapMap);
 
@@ -565,11 +572,17 @@ public class ChattingActivity extends AppCompatActivity {
             // 조회한 가장 마지막 메시지 저장
             lastMsg = chatMsgList.get(chatMsgList.size() - 1);
         } else{ // 방이 새로생성된 경우 아답터만 세팅해준다(가져올 메시지리스트가 없기 때문!)
+            // 해당 채팅방에 처음 입장!
+            firstOrOld = "first";
+
             // 아답터를 생성한다.
             chattingMsgListAdapter = new ChattingMsgListAdapter(chatMsgList, this, null, userInfo.getUserId(), userProfileBitmapMap);
+            Log.e("채팅방 만들기 ", "21. 새로 채팅방 생성 시 adapter 생성 => " + chattingMsgListAdapter);
 
             // 아답터를 세팅한다.
             recyclerView.setAdapter(chattingMsgListAdapter);
+            Log.e("채팅방 만들기 ", "22. 새로 채팅방 생성 시 adapter 세팅 완료");
+
         }
 
         // 채팅방 아이디(서버에서 가져온 문자열의 경우 "가 포함되어있어 제거해 줌)
@@ -577,9 +590,11 @@ public class ChattingActivity extends AppCompatActivity {
 
         // 채팅방 정보 가져오기
         chatRoomInfoDto = chattingRoomManager.getChatRoomInfo(chatRoomId);
+        Log.e("채팅방 만들기 ", "23. 채팅방 정보 가져오기 => " + chatRoomInfoDto);
 
         // 어댑터에 서버시간과의 차이 업데이트
         chattingMsgListAdapter.setTimeDiffer(this.timeDifference);
+        Log.e("채팅방 만들기 ", "24. 어댑터에 서버와의 시간차이 세팅 => " + this.timeDifference);
 
         // 리사이클러뷰 업데이트
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -963,8 +978,8 @@ public class ChattingActivity extends AppCompatActivity {
             addedOrModifiedChatRoomInfo = new ChatRoomInfoForListDto(chatRoomInfoDto.getChattingRoomId(), chatRoomInfoDto.getChattingRoomName(), null, null,chatMemberList.size(),-1);
         }
 
-        Log.e("뒤로가기 시 보내는 msg", "" + lastMsg);
-        Log.e("뒤로가기 시 보내는 msg", "" + lastMsg.getMsgIdx());
+        //Log.e("뒤로가기 시 보내는 msg", "" + lastMsg);
+        //Log.e("뒤로가기 시 보내는 msg", "" + lastMsg.getMsgIdx());
 
         // 새로 생성 혹은 수정된 채팅방 정보 전송
         intent.putExtra("addedOrModifiedChatRoomInfo", addedOrModifiedChatRoomInfo);

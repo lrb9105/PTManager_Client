@@ -21,6 +21,7 @@ public class SyncGetExistedChatRoomId extends Thread{
     public void run() {
         try {
             Response response = call.execute();
+            Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "3. 서버에서 멤버리스트 전부가 속해있는 채팅방 아이디 가져오기 => " + response);
 
             /** 채팅방 정보를 가져왔다면*/
             if(response.body() != null){
@@ -28,7 +29,7 @@ public class SyncGetExistedChatRoomId extends Thread{
                 chatRoomId = (String)response.body();
             }
 
-            Log.d("채팅방 아이디: ", (String)response.body());
+            Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "4. 서버에서 가져온 채팅방 아이디 멤버리스트 전부가 속해있는 채팅방이 없다면 null 반환 => " + response);
 
         } catch (IOException e) {
             e.printStackTrace();

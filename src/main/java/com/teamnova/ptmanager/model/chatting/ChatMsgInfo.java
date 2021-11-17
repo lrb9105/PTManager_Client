@@ -166,7 +166,7 @@ public class ChatMsgInfo implements Serializable {
      * 출력: 해당 메시지 객체의 인덱스 - 특정 채팅방의 마지막 인덱스
      * */
     public int calculateNotReadMsgCount(int lastMsgIdx){
-        Log.e("읽지 않은 메시지 갯수 계산 1. 해당 메시지 객체의 인덱스 - 특정 채팅방의 마지막 인덱스","" + (this.msgIdx - lastMsgIdx));
+        Log.e("안읽은 메시지 카운트 반환","5. 읽지 않은 메시지 갯수 계산 => " + "msgIdx: " + this. msgIdx + " SP에 저장된 idx: " + lastMsgIdx);
 
         return this.msgIdx - lastMsgIdx;
     }

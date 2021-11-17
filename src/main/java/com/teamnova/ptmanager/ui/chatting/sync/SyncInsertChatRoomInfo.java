@@ -26,9 +26,10 @@ public class SyncInsertChatRoomInfo extends Thread{
     public void run() {
         try {
             Response response = call.execute();
+            Log.e("채팅방정보 저장 ", "5. 채팅방 정보 서버에 저장! => " + " call.execute()");
 
             roomId = (String)response.body();
-            System.out.println("데이터 저장하고 가져온 룸아이디: " + roomId);
+            Log.e("채팅방정보 저장 ", "6. 저장 완료 시 새로 생성된 채팅방 아이디를 가져온다 => " + roomId);
 
         } catch (IOException e) {
             e.printStackTrace();

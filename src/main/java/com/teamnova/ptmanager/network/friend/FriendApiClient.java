@@ -67,35 +67,36 @@ public class FriendApiClient {
     public void getFriendsList(Handler handler, String ownerId){
         // 웹서비스 구현체 생성
         FriendService service = retrofit.create(FriendService.class);
+        Log.e("트레이너에게 수강중인 회원 리스트 가져오기 ", "1. FriendService 구현체 생성");
 
         // http request 객체 생성
         Call<ArrayList<FriendInfoDto>> call = service.getFriendsList(ownerId);
+        Log.e("트레이너에게 수강중인 회원 리스트 가져오기 ", "2. call 객체 생성");
+
 
         call.enqueue(new Callback<ArrayList<FriendInfoDto>>() {
             @Override
             public void onResponse(Call<ArrayList<FriendInfoDto>> call, Response<ArrayList<FriendInfoDto>> response) {
                 if (response.isSuccessful()){
                     ArrayList<FriendInfoDto> friendsList = response.body();
-
-                    Log.d("친구목록", friendsList.toString());
-
-                    if(friendsList.size() > 0){
-                        Log.d("회원목록 가져오기 결과 USER_ID:", friendsList.get(0).getUserId());
-                    }
+                    Log.e("트레이너에게 수강중인 회원 리스트 가져오기 ", "3. 서버에서 가져온 수강중인 회원 목록의 사이즈 => " + friendsList.size());
 
                     Message msg = handler.obtainMessage(0, friendsList);
+
+                    Log.e("트레이너에게 수강중인 회원 리스트 가져오기 ", "4. 핸들러에게 가져온 회원목록 넘겨줌");
                     handler.sendMessage(msg);
                 } else{
-                    Log.d("회원목록 가져오기 결과1:", "실패");
+                    Log.e("트레이너에게 수강중인 회원 리스트 가져오기 ", "3. 수강중인 회원 리스트 못 가져옴");
                 }
             }
 
             @Override
             public void onFailure(Call<ArrayList<FriendInfoDto>> call, Throwable t) {
-                Log.d("회원목록 가져오기 결과2:", "실패");
-                Log.d("회원목록 가져오기 결과2:", t.getMessage());
+                Log.e("트레이너에게 수강중인 회원 리스트 가져오기 ", "3. 수강중인 회원 리스트 가져오기 실패 => 이유: " + t.getMessage());
 
                 Message msg = handler.obtainMessage(0, null);
+                Log.e("트레이너에게 수강중인 회원 리스트 가져오기 ", "4. 수강중인 회원 리스트 가져오기 실패 후 핸들러에게 null 넘겨 줌!");
+
                 handler.sendMessage(msg);
             }
         });

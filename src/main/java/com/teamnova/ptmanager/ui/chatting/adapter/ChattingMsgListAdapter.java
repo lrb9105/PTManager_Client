@@ -732,6 +732,5 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     public void setTimeDiffer(long timeDiffer) {
         this.timeDiffer = timeDiffer;
-        System.out.println("timeDiffer111112222: " + timeDiffer);
     }
 }

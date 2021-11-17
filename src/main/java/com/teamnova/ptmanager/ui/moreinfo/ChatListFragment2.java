@@ -185,8 +185,11 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             // 새로 초대한 인원 정보를 가져온다!
                             ArrayList<ChattingMemberDto> chatMemberList = (ArrayList<ChattingMemberDto>)result.getData().getSerializableExtra("chatMemberList");
+
                             Intent intent = new Intent(requireActivity(), ChattingActivity.class);
                             intent.putExtra("chatMemberList",chatMemberList);
+
+                            Log.e("채팅방 만들기 ", "14. 채팅 참여자 정보와 함께 ChattingAct로 이동한다.");
 
                             startActivityResult.launch(intent);
                         }
@@ -217,14 +220,14 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
 
         // 가져온 채팅방리스트정보 observe
         chattingViewModel.getChattingList().observe(requireActivity(), chatRoomList -> {
-            Log.e("채팅방리스트에서 정보 변경 - 13. observe: chatRoomList", "" + chatRoomList);
 
             // 리사이클러뷰에 세팅
             chattingListAdapter = new ChattingListAdapter(chatRoomList, requireActivity(), startActivityResult, memberInfo, timeDifference,shouldCompensate);
-            Log.e("채팅방리스트에서 정보 변경 - 14.  new ChattingListAdapter", "" + true);
+            Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 19. 채팅방리스트를 저장할 adapter 생성 => " + chattingListAdapter);
 
+            Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 20. 채팅방 리스트 정보 리사이클러뷰에 세팅 시작");
             recyclerView.setAdapter(chattingListAdapter);
-            Log.e("채팅방리스트에서 정보 변경 - 15.  setAdapter", "" + true);
+            Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 21. 채팅방 리스트 정보 리사이클러뷰에 세팅 완료");
 
         });
 
@@ -269,37 +272,57 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
             userId = memberInfo.getUserId();
         }
 
-        // 채팅방 리스트 가져와서 뷰모델에 세팅
+        // 서버에서 채팅방리스트 가져와서 뷰모델에 세팅
+        Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 1.시작");
         ArrayList<ChatRoomInfoForListDto> chatRoomList = this.getChatRoomList(userId);
 
         // 읽지않은 msg 세팅
         SharedPreferences sp = getContext().getSharedPreferences("chat", Activity.MODE_PRIVATE);
-        Log.e("서버에서 채팅방 리스트 조회 시 안읽은 메시지 수 세팅 - 1.sp 생성", sp.toString());
+        Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 9. 읽지 않은 메시지 수 세팅하기 위한 SharedPreference 생성 => " + sp);
 
-        for (int i = 0; i < chatRoomList.size(); i++){
-            ChatMsgInfo msg = new ChatMsgInfo(chatRoomList.get(i).getChattingRoomId(), chatRoomList.get(i).getMsgIdx());
-            Log.e("서버에서 채팅방 리스트 조회 시 안읽은 메시지 수 세팅 - 2.msg", "chatRoomId => " + msg.getChattingRoomId() + " , msgIdx => " + msg.getMsgIdx());
+        if(chatRoomList != null) {
+            int chatRoomListSize = chatRoomList.size();
+            Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 10. 채팅방 리스트 존재 시 리스트 사이즈만큼 반복! 사이즈 => " + chatRoomListSize);
 
-            // 안읽은 메시지 값 세팅
-            int notReadMsgCount = new ChattingRoomManager().getNotReadMsgCount(msg, sp);
-            Log.e("서버에서 채팅방 리스트 조회 시 안읽은 메시지 수 세팅 - 3.notReadMsgCount", "" + notReadMsgCount);
+            for (int i = 0; i < chatRoomListSize; i++){
+                // 각 채팅방 정보
+                ChatRoomInfoForListDto chatRoom = chatRoomList.get(i);
+                Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", "" + i + "번째" + "11. 반복문 안에서 각 채팅방 객체 생성! => " + chatRoom);
 
-            // 안읽은 메시지가 0보다 크다면 채팅방정보에 넣어준다.
-            if(notReadMsgCount > 0) {
-                chatRoomList.get(i).setNotReadMsgCount(notReadMsgCount);
-                Log.e("서버에서 채팅방 리스트 조회 시 안읽은 메시지 수 세팅 - 4.안읽은 메시지 채팅방 정보에 넣어 줌", "true");
+                // 채팅방 아이디
+                String chatRoomId = chatRoom.getChattingRoomId();
+                Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", "" + i + "번째" + " 12. 각 채팅방의 아이디! => " + chatRoomId);
+
+                // 각 채팅방의 마지막 메시지 인덱스
+                int lastMsgIdx = chatRoom.getMsgIdx();
+                Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", "" + i + "번째" + " 13. 각 채팅방 마지막 메시지의 인덱스! => " + lastMsgIdx);
+
+                // 안읽은 메시지수를 계산하기 위한 각 채팅방의 마지막 메시지 객체 생성
+                ChatMsgInfo lastMsgInChatRoom = new ChatMsgInfo(chatRoomId, lastMsgIdx);
+                Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", "" + i + "번째" + " 14. 각 채팅방 마지막 메시지 객체 생성! 채팅방아이디, 메시지인덱스 가지고 있음 => " + lastMsgInChatRoom);
+
+                // 안읽은 메시지 값 세팅
+                Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", "" + i + "번째" + " 15. 안읽은 메시지 카운트 반환 시작");
+                int notReadMsgCount = new ChattingRoomManager().getNotReadMsgCount(lastMsgInChatRoom, sp);
+                Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", "" + i + "번째" + " 16. 안읽은 메시지 카운트 반환 종료");
+
+                // 안읽은 메시지가 0보다 크다면 채팅방정보에 넣어준다.
+                if(notReadMsgCount > 0) {
+                    chatRoom.setNotReadMsgCount(notReadMsgCount);
+                    Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", "" + i + "번째" + " 17. 안읽은 메시지 카운트가 0보다 크면 해당 채팅방정보에 저장해준다. => " + "notReadMsgCount: " + chatRoom.getNotReadMsgCount());
+                }
+            }
+
+            Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 18. 안읽은 메시지 갯수 세팅 완료 뷰모델에 채팅방리스트 넣어줌 ");
+            chattingViewModel.getChattingList().setValue(chatRoomList);
+
+            // 채팅방 만들기 버튼 트레이너인 경우에만 나오도록
+            if(TrainerHomeActivity.staticLoginUserInfo != null) { //트레이너 라면
+                binding.chatButtonInvite.setVisibility(View.VISIBLE);
+            } else{
+                binding.chatButtonInvite.setVisibility(View.GONE);
             }
         }
-
-        chattingViewModel.getChattingList().setValue(chatRoomList);
-
-        // 채팅방 만들기 버튼 트레이너인 경우에만 나오도록
-        if(TrainerHomeActivity.staticLoginUserInfo != null) { //트레이너 라면
-            binding.chatButtonInvite.setVisibility(View.VISIBLE);
-        } else{
-            binding.chatButtonInvite.setVisibility(View.GONE);
-        }
-
     }
 
     public void setOnclickListener(){
@@ -318,6 +341,7 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
         switch(v.getId()){
             case  R.id.chat_button_invite: // 채팅방 만들기
                 Intent intent = new Intent(requireActivity(), ChattingPossibleMemberListActivity.class);
+                Log.e("채팅방 만들기 ", "1. 시작");
 
                 intent.putExtra("chattingMemberDto",ChattingMemberDto.makeChatMemberInfo(TrainerHomeActivity.staticLoginUserInfo));
 

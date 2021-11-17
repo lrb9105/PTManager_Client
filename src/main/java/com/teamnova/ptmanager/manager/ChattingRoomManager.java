@@ -53,6 +53,8 @@ public class ChattingRoomManager {
             }
 
             chatMemberList = t.getChatMemberList();
+        } else {
+            Log.e("채팅방 만들기 ", "15. 인텐트에서 채팅 참여자 목록 정보를 가져온다. => 사이즈: " + chatMemberList.size());
         }
 
         return chatMemberList;
@@ -83,13 +85,16 @@ public class ChattingRoomManager {
     /** 채팅방 리스트를 가져와라 */
     public ArrayList<ChatRoomInfoForListDto> getChatRoomList(String userId){
         ChattingService service = retrofit.create(ChattingService.class);
+        Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 2. ChattingService 객체 생성 => " + service);
 
         // http request 객체 생성
         //Call<String> call = service.getChatRoomInfo(chattingRoomId);
         Call<ArrayList<ChatRoomInfoForListDto>> call = service.getChattingRoomList(userId);
+        Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 3. call 객체 생성 => " + call);
 
         // 서버에서 데이터를 가져오는 동기 함수의 쓰레드
         SyncGetChatRoomList t = new SyncGetChatRoomList(call);
+        Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 4. SyncGetChatRoomList 객체 생성 => " + t);
         t.start();
 
         try {
@@ -99,14 +104,22 @@ public class ChattingRoomManager {
             e.printStackTrace();
         }
 
-        return t.getChatRoomList();
+        // 서버에서 가져온 채팅방 리스트
+        ArrayList<ChatRoomInfoForListDto> list = t.getChatRoomList();
+        Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 8. 서버에서 가져온 채팅방리스트 반환=> " + list + " null이면 해당 유저가 속해있는 채팅방이 없는 것!");
+
+        return list;
     }
 
     /**참여자 리스트 인원들을 포함하고 있는 채팅방 id를 가져와라*/
     public String getExistedChatRoomId(ArrayList<ChattingMemberDto> chatMemberList){
         ChattingService service = retrofit.create(ChattingService.class);
+        Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "1. 채팅서비스 구현체 생성=> " + service);
+
         // http request 객체 생성
         Call<String> call = service.getExistedChatRoomId(chatMemberList);
+        Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "2. call 객체 생성=> " + call);
+
 
         // 서버에 데이터를 저장하는 동기 함수의 쓰레드
         SyncGetExistedChatRoomId t = new SyncGetExistedChatRoomId(call);
@@ -125,6 +138,7 @@ public class ChattingRoomManager {
     /** 채팅방 정보를 저장하라 */
     public String insertChatRoomInfo(ArrayList<ChattingMemberDto> chatMemberList, String chatRoomId){
         ChattingService service = retrofit.create(ChattingService.class);
+        Log.e("채팅방정보 저장 ", "1. 채팅서비스 객체 생성 => " + service);
 
         // 채팅방 정보객체
         String chatRoomName = "";
@@ -134,10 +148,14 @@ public class ChattingRoomManager {
         }
         chatRoomName = chatRoomName.substring(0, chatRoomName.length() - 1);
 
+        Log.e("채팅방정보 저장 ", "2. 채팅방 명 생성 => " + chatRoomName);
+
         ChatRoomInfoDto chatRoomInfoDto = new ChatRoomInfoDto(null, chatRoomName, chatMemberList);
+        Log.e("채팅방정보 저장 ", "3. 채팅방 정보 생성 => " + chatRoomInfoDto);
 
         // http request 객체 생성
         Call<String> call = service.insertChatRoomInfo(chatRoomInfoDto);
+        Log.e("채팅방정보 저장 ", "4. call 객체 생성 => " + call);
 
         // 서버에 데이터를 저장하는 동기 함수의 쓰레드
         SyncInsertChatRoomInfo t = new SyncInsertChatRoomInfo(chatRoomId , call);
@@ -156,8 +174,7 @@ public class ChattingRoomManager {
     /** 초대된 사용자 정보를 저장하라 */
     public void insertMemberList(ArrayList<ChattingMemberDto> chatMemberList, String chatRoomId){
         ChattingService service = retrofit.create(ChattingService.class);
-
-        Log.e("채팅방에서 사용자 초대 9. 초대된 사용자들 정보를 저장한다.", "" + chatMemberList.size() + ", 채팅방 아이디: " + chatRoomId);
+        Log.e("서버에 채팅 참여자 추가 ", "1. 채팅 서비스 객체 생성 => " + service);
 
         // http request 객체 생성
         // HashMap될까?
@@ -268,33 +285,39 @@ public class ChattingRoomManager {
         int notReadMsgCount = 0;
         // 채팅방 id
         String chatRoomId = msgInfo.getChattingRoomId();
-        Log.e("안읽은 메시지 카운트 반환 - getNotReadMsgCount 1. chatRoomId",chatRoomId);
+        Log.e("안읽은 메시지 카운트 반환","1-1. 수신한 메시지의 chatRoomId => " + chatRoomId);
+        
+        // 메시지 인덱스
+        int msgIdx = msgInfo.getMsgIdx();
+        Log.e("안읽은 메시지 카운트 반환","1-2. 수신한 메시지의 msgIdx => " + msgIdx);
+
 
         // SP에 저장된 마지막으로 읽은 메시지의 idx
-        int lastMsgIdx = 0;
+        int lastMsgIdxFromSp = 0;
 
         // 1. SharedPreference(SP)에서 chatRoomId에 해당하는 마지막으로 수신한 메시지 idx 가져오기
-        lastMsgIdx = sp.getInt(chatRoomId,999999);
-        Log.e("안읽은 메시지 카운트 반환 - getNotReadMsgCount 2. lastMsgIdx","" + lastMsgIdx);
-
-        // 2. lastMsgIdx가 존재하지 않는다면 현재 msgIdx - 1값을 SP에 넣어준다.
-        if(lastMsgIdx == 999999){
+        lastMsgIdxFromSp = sp.getInt(chatRoomId,999999);
+        Log.e("안읽은 메시지 카운트 반환","2. 해당 채팅방 아이디로 SP에 저장된 마지막 메시지 인덱스 가져오기 없으면 999999 => " + lastMsgIdxFromSp);
+        
+        // 2. lastMsgIdx가 존재하지 않는다면 새로 생성된 채팅방이다 
+        // 따라서 안읽은 메시지는 1이 되야 한다.
+        // 그러므로 SP에 현재 msgIdx - 1값을 저장하여 현재 msgIdx - SP에 저장된 인덱스 = 1이 출력되도록 한다.
+        if(lastMsgIdxFromSp == 999999){
             SharedPreferences.Editor editor = sp.edit();
-            Log.e("안읽은 메시지 카운트 반환 - 2-1. editor 가져오기", editor.toString());
-
+            Log.e("안읽은 메시지 카운트 반환","3. SP에 저장된 인덱스가 없다면 msgIdx-1을 SP에 저장해줘야 함. 따라서 Editor 생성 => " + editor);
+            
             // 해당 채팅방 id로 메시지 인덱스를 저장해준다
-            editor.putInt(msgInfo.getChattingRoomId(), msgInfo.getMsgIdx() - 1);
+            editor.putInt(msgInfo.getChattingRoomId(), msgIdx - 1);
             editor.commit();
 
-            Log.e("안읽은 메시지 카운트 반환 - 2-2. sp에 데이터 넣기", "" + sp.getInt(msgInfo.getChattingRoomId(),999999));
+            lastMsgIdxFromSp = sp.getInt(msgInfo.getChattingRoomId(),999999);
 
-            lastMsgIdx = msgInfo.getMsgIdx() - 1;
-            Log.e("안읽은 메시지 카운트 반환 - 2-3. lastMsgIdx에 현재 msgIdx - 1값 넣어주기", "" + lastMsgIdx);
+            Log.e("안읽은 메시지 카운트 반환","4. SP에 잘 저장되었나 확인 => " + " SP에 저장된 idx: " + lastMsgIdxFromSp);
         }
 
         // 3. 읽지않은 메시지 갯수 계산
-        notReadMsgCount = msgInfo.calculateNotReadMsgCount(lastMsgIdx);
-        Log.e("안읽은 메시지 카운트 반환 - getNotReadMsgCount 3. notReadMsgCount","" + notReadMsgCount);
+        notReadMsgCount = msgInfo.calculateNotReadMsgCount(lastMsgIdxFromSp);
+        Log.e("안읽은 메시지 카운트 반환","6. 안읽은 메시지 카운트 반환 => " + notReadMsgCount);
 
         // 3. 읽지않은 메시지 갯수 반환
         return notReadMsgCount;

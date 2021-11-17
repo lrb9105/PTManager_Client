@@ -86,8 +86,8 @@ public class ChattingMsgService extends Service {
     private Handler mHandler;
     // 메시지 송신 시(송신은 다른 쓰레드에서 진행) 메인 쓰레드의 ui를 변경하기 위해 데이터를 전달하는 핸들러
     private Handler sendHandler;
-    private String ip = "192.168.13.128";
-    private int port = 8888;
+    private final String ip = "192.168.25.128";
+    private final int port = 8888;
     // 채팅방 아이디
     private String chatRoomId;
     // 수신쓰레드
@@ -300,12 +300,16 @@ public class ChattingMsgService extends Service {
                         public void run() {
                             super.run();
                             try {
+                                // 해당 내용을 보내야 채팅방이 새로 생성된다.
                                 // 마지막으로 저장된 메시지가 있다면 메시지 인덱스 보내기
                                 if(lastMsgIdx != 999998){
                                     sendWriter.println("!@#$!@#lsatIdx:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + lastMsgIdx + ":" + firstOrOld);
-                                    Log.e("ChatAct와 소켓 연결 19. lastMsgIdx 전송","!@#$!@#lsatIdx:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + lastMsgIdx + ":" + firstOrOld);
-                                    sendWriter.flush();
+                                    Log.e("ChatAct와 소켓 연결 19-1. lastMsgIdx 전송","!@#$!@#lsatIdx:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + lastMsgIdx + ":" + firstOrOld);
+                                } else { // 채팅방 새로 생성 시
+                                    Log.e("ChatAct와 소켓 연결 19-2. 새로운 채팅방 생성","!@#$!@#newChatRoom:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + 9999998 + ":" + firstOrOld);
+                                    sendWriter.println("!@#$!@#newChatRoom:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + 9999998 + ":" + firstOrOld);
                                 }
+                                sendWriter.flush();
 
                             } catch (Exception e) {
                                 e.printStackTrace();
