@@ -77,6 +77,10 @@ public interface ChattingService {
     @POST("chattingroom/insertFileList.php")
     Call<ArrayList<String>> insertFileList(@Part("userId") RequestBody userId, @Part("chatRoomId") RequestBody chatRoomId, @Part ArrayList<MultipartBody.Part> msgFileList);
 
+    /** 메시지 저장*/
+    @FormUrlEncoded
+    @POST("chatting/insertMsg.php")
+    Call<String> insertMsg(@Field("chattingRoomId") String chattingRoomId, @Field("userId") String userId, @Field("msg") String msg);
 
 
     @FormUrlEncoded

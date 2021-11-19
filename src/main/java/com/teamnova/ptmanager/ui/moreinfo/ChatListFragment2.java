@@ -178,6 +178,7 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                     }
                 });
 
+        // 채팅방 만들기
         startActivityResult2 = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -223,11 +224,11 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
 
             // 리사이클러뷰에 세팅
             chattingListAdapter = new ChattingListAdapter(chatRoomList, requireActivity(), startActivityResult, memberInfo, timeDifference,shouldCompensate);
-            Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 19. 채팅방리스트를 저장할 adapter 생성 => " + chattingListAdapter);
+            Log.e("채팅방 리사이클러뷰에 뿌려주기", "1. 아답터 생성");
 
-            Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 20. 채팅방 리스트 정보 리사이클러뷰에 세팅 시작");
+            Log.e("채팅방 리사이클러뷰에 뿌려주기", " 2. 채팅방 리스트 정보 리사이클러뷰에 세팅 시작");
             recyclerView.setAdapter(chattingListAdapter);
-            Log.e("서버에서 채팅방리스트 가져와서 뷰모델에 세팅", " 21. 채팅방 리스트 정보 리사이클러뷰에 세팅 완료");
+            Log.e("채팅방 리사이클러뷰에 뿌려주기", " 3. 채팅방 리스트 정보 리사이클러뷰에 세팅 종료");
 
         });
 

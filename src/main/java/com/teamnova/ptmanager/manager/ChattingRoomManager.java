@@ -19,6 +19,7 @@ import com.teamnova.ptmanager.ui.chatting.sync.SyncGetCurrentServerTime;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncGetExistedChatRoomId;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncInsertChatRoomInfo;
 import com.teamnova.ptmanager.ui.chatting.sync.SyncInsertMemberList;
+import com.teamnova.ptmanager.ui.chatting.sync.SyncInsertMsg;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -321,5 +322,26 @@ public class ChattingRoomManager {
 
         // 3. 읽지않은 메시지 갯수 반환
         return notReadMsgCount;
+    }
+
+    /** 메시지를 저장하라 */
+    public void insertMsg(String chatRoomId, String userId, String msg){
+        ChattingService service = retrofit.create(ChattingService.class);
+        Log.e("메시지 저장 ", "1. 채팅서비스 객체 생성 => " + service);
+
+        // http request 객체 생성
+        Call<String> call = service.insertMsg(chatRoomId, userId, msg);
+        Log.e("메시지 저장 ", "4. call 객체 생성 => " + call);
+
+        // 서버에 데이터를 저장하는 동기 함수의 쓰레드
+        SyncInsertMsg t = new SyncInsertMsg(call);
+        t.start();
+
+        try {
+            // 쓰레드에서 데이터를 저장할 때 main쓰레드는 중지를 시켜야 하므로 join()사용
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -89,7 +89,6 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
         if(intent != null){
             // 채팅방 생성자 정보 - 채팅방리스트에서 새로운 대화방 생성 시
             chattingMemberDto = (ChattingMemberDto)intent.getSerializableExtra("chattingMemberDto");
-            Log.e("채팅방 만들기 ", "3. 채팅방 리스트에서 새로운 채팅방 생성 => 채팅방 생성자 userId => " +  chattingMemberDto.getUserId());
 
             // 생성된 대화방에서 새로운 사용자 초대 시
             if(chattingMemberDto == null) {
@@ -114,6 +113,8 @@ public class ChattingPossibleMemberListActivity extends AppCompatActivity implem
                 } else {
                     Log.e("사용자 초대 ", "3-2. 채팅 참여자 목록이 null! 채팅방에서 참여자 리스트 못받아옴!!! => " + "null");
                 }
+            } else {
+                Log.e("채팅방 만들기 ", "3. 채팅방 리스트에서 새로운 채팅방 생성 => 채팅방 생성자 userId => " +  chattingMemberDto.getUserId());
             }
         }
 

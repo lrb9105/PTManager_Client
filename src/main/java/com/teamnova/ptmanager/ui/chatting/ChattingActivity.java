@@ -196,168 +196,183 @@ public class ChattingActivity extends AppCompatActivity {
                     // 서비스로부터 받은 수신한 메시지 객체
                     bundle = msg.getData();
                     String read = bundle.getString("message");
-                    Log.e("수신한 메시지 리사이클러뷰에 뿌리기 1. 수신한 메시지: ",read);
+                    Log.e("ChattingActivity - 서버로부터 메시지 수신", "1-1. 수신한 메시지 => " + read);
 
                     // 수신한 메시지를 저장할 객체
                     ChatMsgInfo chatMsgInfo = null;
 
                     // 서버에서 메시지 전송 시 ":"를 구분자로 하여 데이터를 전송하므로 이것을 기준으로 split!
-                    String[] msgArr = read.split(":");
-                    Log.e("수신한 메시지 리사이클러뷰에 뿌리기 2. msgArr: ",msgArr.toString());
 
-                    // 내가보낸 메시지가 아니라면
-                    // 다른사람이 보낸 메시지 갯수
-                    // 텍스트: 12개
-                    // 이미지: 13개
-                    if(msgArr.length > 10){
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 3. 메시지: ", "true");
+                    String[] multiMsgArr = read.split("!@#multi");
+                    int multiMsgLength = multiMsgArr.length;
+                    Log.e("ChattingActivity - 서버로부터 메시지 수신", "1-2. 수신한 메시지 \"!@#multi\"로 split => 갯수: " + multiMsgLength);
 
-                        String userName = msgArr[0];
-                        String userId = msgArr[1];
-                        String roomId = msgArr[2];
-                        String msg2 = msgArr[3];
-                        String creDatetime = msgArr[msgArr.length - 5] + ":" + msgArr[msgArr.length - 4]  + ":" + msgArr[msgArr.length - 3];
-                        int notReadUserCountPos = 0;
-                        int msgIdxPos = 0;
-                        int savePathPos = 0;
-                        String savePath = null;
 
-                        // 텍스트 메시지
-                        if(msgArr.length == 12){
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 4-1. 텍스트 메시지: ", "true");
+                    for (int index = 0; index < multiMsgLength; index++){
+                        String msgFromServer = multiMsgArr[index];
+                        Log.e("ChattingActivity - 서버로부터 메시지 수신", "2-1. 파싱한 개별 메시지 => " + msgFromServer);
 
-                            notReadUserCountPos = msgArr.length-2;
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 4-2. notReadUserCountPos: ", "" + notReadUserCountPos);
+                        String[] msgArr = msgFromServer.split(":");
+                        Log.e("ChattingActivity - 서버로부터 메시지 수신", "2-2. 파싱한 개별 메시지 \":\"로 split => 갯수: " + msgArr.length);
 
-                            msgIdxPos = msgArr.length-1;
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 4-3. msgIdxPos: ", "" + msgIdxPos);
+                        // 내가보낸 메시지가 아니라면
+                        // 다른사람이 보낸 메시지 갯수
+                        // 텍스트: 12개
+                        // 이미지: 13개
+                        if(msgArr.length > 10){
+                            Log.e("ChattingActivity - 서버로부터 메시지 수신", "3. 다른 사람이 보낸 메시지 수신 시작");
 
-                        } else { // 파일포함 메시지
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-1. 이미지 메시지: ", "true");
+                            String userName = msgArr[0];
+                            String userId = msgArr[1];
+                            String roomId = msgArr[2];
+                            String msg2 = msgArr[3];
+                            String creDatetime = msgArr[msgArr.length - 5] + ":" + msgArr[msgArr.length - 4]  + ":" + msgArr[msgArr.length - 3];
+                            int notReadUserCountPos = 0;
+                            int msgIdxPos = 0;
+                            int savePathPos = 0;
+                            String savePath = null;
 
-                            creDatetime = msgArr[msgArr.length - 4] + ":" + msgArr[msgArr.length - 3]  + ":" + msgArr[msgArr.length - 2];
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-2. creDatetime: ", creDatetime);
+                            // 텍스트 메시지
+                            if(msgArr.length == 12){
 
-                            notReadUserCountPos = msgArr.length-5;
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-3. notReadUserCountPos: ", "" + notReadUserCountPos);
+                                notReadUserCountPos = msgArr.length-2;
 
-                            msgIdxPos = msgArr.length-6;
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-4. msgIdxPos: ", "" + msgIdxPos);
+                                msgIdxPos = msgArr.length-1;
+                                Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신(텍스트)", "2. 데이터 출력");
 
-                            savePathPos = msgArr.length-1;
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 5-5. savePathPos: ", "" + savePathPos);
-                        }
+                            } else { // 파일포함 메시지
+                                creDatetime = msgArr[msgArr.length - 4] + ":" + msgArr[msgArr.length - 3]  + ":" + msgArr[msgArr.length - 2];
 
-                        // 뒤에서 두번째에 안읽은 사람수가 있음
-                        int notReadUserCount = Integer.parseInt(msgArr[notReadUserCountPos]);
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 6. notReadUserCount: ", "" + notReadUserCount);
+                                notReadUserCountPos = msgArr.length-5;
 
-                        int msgIdx = Integer.parseInt(msgArr[msgIdxPos]);
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 7. msgIdx: ", "" + msgIdx);
+                                msgIdxPos = msgArr.length-6;
 
-                        // 파일이 존재한다면 저장경로 위치 != 0
-                        if(savePathPos != 0){
-                            savePath = msgArr[savePathPos];
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 7-1. 파일이 존재한다면 저장경로 위치: ", "" + savePath);
+                                savePathPos = msgArr.length-1;
 
-                        }
+                                Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신(이미지)", "2. 데이터 출력");
+                            }
 
-                        chatMsgInfo = new ChatMsgInfo(null, userId, userName, roomId, msg2, creDatetime,notReadUserCount,msgIdx,savePath,null,"N");
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 8. 출력할 메시지 객체: ", "" + chatMsgInfo);
+                            // 뒤에서 두번째에 안읽은 사람수가 있음
+                            int notReadUserCount = Integer.parseInt(msgArr[notReadUserCountPos]);
 
-                        // 마지막 메시지 저장
-                        lastMsg = chatMsgInfo;
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 9. 마지막 메시지 저장: ", "" + lastMsg);
+                            int msgIdx = Integer.parseInt(msgArr[msgIdxPos]);
 
-                        // 내가 트레이너 이고 나간 사용자가 있을 때 그 사용자를 리스트에서 제거
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-1. msg2: ", "" + msg2);
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-2. TrainerHomeActivity.staticLoginUserInfo: ", "" + TrainerHomeActivity.staticLoginUserInfo);
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "  2-1. userName => " + userName);
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "  2-2. userId => " + userId);
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "  2-3. roomId => " + roomId);
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "  2-4. msg2 => " + msg2);
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "  2-5. creDatetime => " + creDatetime);
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "  2-6. notReadUserCount => " + notReadUserCount);
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "  2-7. msgIdx => " + msgIdx);
 
-                        if(msg2.contains("나갔습니다") && TrainerHomeActivity.staticLoginUserInfo != null){
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-3. userId: ", "" + userId);
-                            for(int i = 0; i < chatMemberList.size(); i++){
-                                Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-4. chatMemberList.get(i): ", "" + chatMemberList.get(i));
+                            // 파일이 존재한다면 저장경로 위치 != 0
+                            if(savePathPos != 0){
+                                savePath = msgArr[savePathPos];
+                                Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "  2-8. savePath => " + savePath);
+                            }
 
-                                if(userId.equals(chatMemberList.get(i).getUserId())){
-                                    Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-5. 나간 사용자 삭제 사용자 id: ", "" + chatMemberList.get(i));
-                                    chatMemberList.remove(i);
-                                    break;
+
+                            chatMsgInfo = new ChatMsgInfo(null, userId, userName, roomId, msg2, creDatetime,notReadUserCount,msgIdx,savePath,null,"N");
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "3. chatMsgInfo => chatMsgInfo: " + chatMsgInfo);
+
+                            // 마지막 메시지 저장
+                            lastMsg = chatMsgInfo;
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "4. 마지막 메시지 저장 => lastMsg: " + lastMsg);
+
+                            // 내가 트레이너 이고 나간 사용자가 있을 때 그 사용자를 리스트에서 제거
+                            if(msg2.contains("나갔습니다") && TrainerHomeActivity.staticLoginUserInfo != null){
+                                Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "5. 사용자가 나갔을 때 => msg2: " + msg2);
+
+                                for(int i = 0; i < chatMemberList.size(); i++){
+                                    if(userId.equals(chatMemberList.get(i).getUserId())){
+                                        Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "6-1. 사용자 리스트에서 제거! => 제거 전 chatMemberList.size: " + chatMemberList.size());
+                                        chatMemberList.remove(i);
+                                        Log.e("ChattingActivity - 다른 사람이 보낸 메시지 메시지 수신", "6-2. 사용자 리스트에서 제거! => 제거 후 chatMemberList.size: " + chatMemberList.size());
+
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                    } else {
-                        // 내가보낸 메시지
-                        // 텍스트: 읽지않은사용자수, 메시지 인덱스, 서버 수신시간, 채팅방아이디
-                        // 파일: 읽지않은사용자수, 메시지 인덱스, 서버 수신시간, 저장경로, 채팅방아이디
-                        boolean isText = (msgArr.length == 7);
 
-                        Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 1. 메시지 텍스트 여부: ", "" + isText);
+                            Log.e("ChattingActivity - 서버로부터 메시지 수신", "4. 다른 사람이 보낸 메시지 수신 종료");
 
-                        int notReadUserCount = Integer.parseInt(msgArr[0]);
-                        Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 2. notReadUserCount: ", "" + notReadUserCount);
-
-                        int msgIdx = Integer.parseInt(msgArr[1]);
-                        Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 3. msgIdx: ", "" + msgIdx);
-
-                        String savePath = null;
-
-                        String creDateTime = msgArr[2] + ":" + msgArr[3] + ":" + msgArr[4];
-                        Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 4. creDateTime: ", "" + creDateTime);
-
-                        String msg2 = null;
-
-                        // 어댑터에서 가장 마지막에있는 메시지 업데이트!
-                        // 리사이클러뷰의 업데이트는 main UI에서만 가능!!!!
-                        //System.out.println("서버로부터 메시지222: " + read);
-                        // 이미지라면
-                        if(!isText) {
-                            savePath = msgArr[5];
-                            msg2 =  msgArr[7];
-                            Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 4-1. savePath: ", "" + savePath);
                         } else {
-                            // 텍스트라면
-                            msg2 = msgArr[6];
+                            Log.e("ChattingActivity - 서버로부터 메시지 수신", "3. 내가 보낸 메시지 수신 시작");
+
+                            // 내가보낸 메시지
+                            // 텍스트: 읽지않은사용자수, 메시지 인덱스, 서버 수신시간, 채팅방아이디
+                            // 파일: 읽지않은사용자수, 메시지 인덱스, 서버 수신시간, 저장경로, 채팅방아이디
+                            boolean isText = (msgArr.length == 7);
+
+                            Log.e("ChattingActivity - 내가 보낸 메시지 수신", "1. 텍스트 메시지 여부 => " + isText);
+
+                            int notReadUserCount = Integer.parseInt(msgArr[0]);
+
+                            int msgIdx = Integer.parseInt(msgArr[1]);
+
+                            String savePath = null;
+
+                            String creDateTime = msgArr[2] + ":" + msgArr[3] + ":" + msgArr[4];
+
+                            String msg2 = null;
+
+                            // 어댑터에서 가장 마지막에있는 메시지 업데이트!
+                            // 리사이클러뷰의 업데이트는 main UI에서만 가능!!!!
+                            //System.out.println("서버로부터 메시지222: " + read);
+                            // 이미지라면
+                            if(!isText) {
+                                Log.e("ChattingActivity - 내가 보낸 메시지 수신", "2. 데이터 출력(이미지)");
+                                savePath = msgArr[5];
+                                msg2 =  msgArr[7];
+                            } else {
+                                // 텍스트라면
+                                Log.e("ChattingActivity - 내가 보낸 메시지 수신", "2. 데이터 출력(텍스트)");
+                                msg2 = msgArr[6];
+                            }
+                            Log.e("ChattingActivity - 내가 보낸 메시지 수신", "  2-1. notReadUserCount =>" + notReadUserCount);
+                            Log.e("ChattingActivity - 내가 보낸 메시지 수신", "  2-1. msgIdx =>" + msgIdx);
+                            Log.e("ChattingActivity - 내가 보낸 메시지 수신", "  2-1. creDateTime =>" + creDateTime);
+                            Log.e("ChattingActivity - 내가 보낸 메시지 수신", "  2-4. msg2 => " + msg2);
+                            Log.e("ChattingActivity - 내가 보낸 메시지 수신", "  2-5. savePath => " + (savePath != null ? savePath : "null"));
+
+                            chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, msg2, creDateTime,notReadUserCount,msgIdx, savePath,null,"N");
+                            Log.e("ChattingActivity - 내가 보낸 메시지 수신", "  3. chatMsgInfo =>" + chatMsgInfo);
+
+                            // 마지막으로 저장한 메시지가 존재한다면
+                            if(lastMsg != null){
+                                lastMsg.setNotReadUserCount(notReadUserCount);
+                                Log.e("ChattingActivity - 내가 보낸 메시지 수신", "  3. lastMsg의 안읽은 유저수 =>" + lastMsg.getNotReadUserCount());
+
+                                lastMsg.setMsgIdx(msgIdx);
+                                Log.e("ChattingActivity - 내가 보낸 메시지 수신", "  4. lastMsg의 msgIdx =>" + lastMsg.getMsgIdx());
+
+                            }
+                            Log.e("ChattingActivity - 서버로부터 메시지 수신", "4. 내가 보낸 메시지 수신 종료");
                         }
 
-                        chatMsgInfo = new ChatMsgInfo(null, null, null, chatRoomId, msg2, creDateTime,notReadUserCount,msgIdx, savePath,null,"N");
-                        Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 5. chatMsgInfo: ", chatMsgInfo.toString());
 
-                        if(lastMsg != null){
-                            lastMsg.setNotReadUserCount(notReadUserCount);
-                            Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 6. lastMsg.setNotReadUserCount: ", "" + notReadUserCount);
+                        // 상대방에게서 온 메시지
+                        if(chatMsgInfo.getChattingMemberId() != null){
+                            Log.e("ChattingActivity - 서버로부터 메시지 수신", "5. 다른 사람이 보낸 메시지 수신 리사에 뿌려주기 시작");
 
-                            lastMsg.setMsgIdx(msgIdx);
-                            Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 7. lastMsg.setMsgIdx: ", "" + msgIdx);
+                            // 어댑터에 추가
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 수신 리사에 뿌려주기", "1. 수신한 메시지 리사이클러뷰에 추가(addChatMsgInfo) 시작");
+                            chattingMsgListAdapter.addChatMsgInfo(chatMsgInfo);
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 수신 리사에 뿌려주기", "2. 수신한 메시지 리사이클러뷰에 추가(addChatMsgInfo) 종료");
 
+                            // 마지막 아이템으로 이동
+                            layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
+                            Log.e("ChattingActivity - 다른 사람이 보낸 메시지 수신 리사에 뿌려주기", "3. 마지막 위치로 이동");
+
+                            Log.e("ChattingActivity - 서버로부터 메시지 수신", "6. 다른 사람이 보낸 메시지 수신 리사에 뿌려주기 종료");
+
+                        } else { // 내가 작성한 메시지
+                            Log.e("ChattingActivity - 서버로부터 메시지 수신", "5. 내가 보낸 메시지 수신 리사에 업데이트(updateCntAndIdx) 시작");
+                            chattingMsgListAdapter.updateCntAndIdx(chatMsgInfo.getNotReadUserCount(), chatMsgInfo.getMsgIdx(), chatMsgInfo.getCreDatetime(), chatMsgInfo.getSavePath());
+                            Log.e("ChattingActivity - 서버로부터 메시지 수신", "6. 내가 보낸 메시지 수신 리사에 업데이트(updateCntAndIdx) 종료");
                         }
-
                     }
 
-                    // 액티비티로 데이터 전송
-                    //mHandler.post(new MsgUpdater(chatMsgInfo));
-
-                    // 상대방에게서 온 메시지
-                    if(chatMsgInfo.getChattingMemberId() != null){
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10. 리사에 뿌리기 ", "" + chatMsgInfo.getMsg());
-
-                        // 사진파일이라면
-                        if(chatMsgInfo.getMsg().equals("사진")){
-                            Log.e("수신한 메시지 리사이클러뷰에 뿌리기 10-1. 사진이라면 ", "" + chatMsgInfo.getSavePath());
-                        }
-
-                        // 어댑터에 추가
-                        chattingMsgListAdapter.addChatMsgInfo(chatMsgInfo);
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 15. 리사에 추가 완료! ", "true");
-
-                        // 마지막 아이템으로 이동
-                        layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
-                        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 16. 마지막으로 위치 이동! ", "" + (chattingMsgListAdapter.getItemCount() - 1));
-
-                    } else { // 내가 작성한 메시지
-                        chattingMsgListAdapter.updateCntAndIdx(chatMsgInfo.getNotReadUserCount(), chatMsgInfo.getMsgIdx(), chatMsgInfo.getCreDatetime(), chatMsgInfo.getSavePath());
-                        Log.e("내가보낸 메시지 리사이클러뷰에 뿌리기 8. updateCntAndIdx: ", "true");
-
-                    }
                     break;
                 // 마지막 메시지 수신
                 case ChattingMsgService.SEND_LAST_MSG:
@@ -386,16 +401,24 @@ public class ChattingActivity extends AppCompatActivity {
                             ArrayList<ChattingMemberDto> addedChatMemberList= (ArrayList<ChattingMemberDto>)result.getData().getSerializableExtra("chatMemberList");
                             Log.e("채팅방에서 사용자 초대 8.addedChatMemberList.size", "" + addedChatMemberList.size());
 
-                            // 서버에 해당 사용자들을 추가한다.
-                            chattingRoomManager.insertMemberList(addedChatMemberList,chatRoomId);
-                            Log.e("채팅방에서 사용자 초대 14. insertMemberList 완료! & 기존 채팅방에 있는 회원들 사이즈!", "" + chatMemberList.size());
+                            // 입장 메시지를 저장할 채팅룸 매니져 객체를 생성한다.
+                            ChattingRoomManager chattingRoomManager = new ChattingRoomManager();
+                            Log.e("채팅방에서 사용자 초대 8.입장 메시지를 저장할 채팅룸 매니져 객체를 생성한다.", "" + chattingRoomManager);
 
                             // 기존 채팅참여자 리스트에 새로 초대된 사용자들을 추가하고 서버에 새로 추가된 사용자를 알려주는 메시지를 보낸다.
                             for(ChattingMemberDto c : addedChatMemberList){
                                 // 기존에 존재하는 채팅참여자리스트에 새로 추가된 사용자의 정보를 추가해준다.
                                 chatMemberList.add(c);
+                                Log.e("채팅방에서 사용자 초대 15-1. 기존 리스트에 초대된 인원 추가", "" + chatMemberList.size());
 
-                                Log.e("채팅방에서 사용자 초대 15. 기존 리스트에 초대된 인원 추가", "" + chatMemberList.size());
+                                // 입장 메시지를 저장한다.
+                                // 입장 메시지 생성
+                                String enterMsg = c.getUserName() + "님이 입장했습니다.";
+                                Log.e("채팅방에서 사용자 초대 15-2. 입장 메시지 생성 => ", enterMsg);
+
+                                // 메시지 저장
+                                chattingRoomManager.insertMsg(chatRoomId, c.getUserId(), enterMsg);
+                                Log.e("채팅방에서 사용자 초대 15-3. 서버에 메시지 저장 => ", enterMsg);
 
                                 // 서비스에게 보낼 메시지를 생성한다.
                                 // 파라미터: 핸들러, msg.what에 들어갈 int값
@@ -419,6 +442,10 @@ public class ChattingActivity extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                             }
+
+                            // http 서버에서 해당 사용자들을 추가한다.
+                            chattingRoomManager.insertMemberList(addedChatMemberList,chatRoomId);
+                            Log.e("채팅방에서 사용자 초대 14. insertMemberList 완료! & 기존 채팅방에 있는 회원들 사이즈!", "" + chatMemberList.size());
                         }
                     }
                 });
@@ -453,6 +480,7 @@ public class ChattingActivity extends AppCompatActivity {
 
         // 채팅방 id 가져오기
         chatRoomId = (String)getIntent().getSerializableExtra("chatRoomId");
+        Log.e("채팅방 정보 세팅", "1. 채팅방 아이디: " + chatRoomId);
 
         // 채팅참여자 리스트
         chatMemberList = chattingRoomManager.getChatMemberList(getIntent(), chatRoomId);
@@ -477,6 +505,42 @@ public class ChattingActivity extends AppCompatActivity {
 
         // 채팅방 및 메시지를 관리할 뷰모델
         chattingMsgViewModel = new ViewModelProvider(this).get(ChattingMsgViewModel.class);
+
+        // noti를 통해 접근했다면!
+        /*if(isEnteredAtNotification != null && isEnteredAtNotification.equals("true")){
+            ArrayList<ChatRoomInfoForListDto> chatRoomList = chattingMsgViewModel.getChattingList().getValue();
+            Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "1. 기존 채팅방 리스트 => 사이즈: " + chatRoomList.size());
+
+            // 채팅방리스트에 있는 채팅방 갯수만큼 반복한다.
+            for (int i = 0; i < chatRoomList.size(); i++){
+                ChatRoomInfoForListDto chatRoom = chatRoomList.get(i);
+
+                // noti를 클릭해서 들어온 채팅방과 동일한 아이디의 채팅방을 리스트에서 발견했다면
+                if(chatRoom.getChattingRoomId().equals(chatRoomId)){
+                    // 해당 채팅방 정보로 새로운 채팅방 객체를 만들어준다!
+                    ChatRoomInfoForListDto newChatRoom = new ChatRoomInfoForListDto(chatRoom.getChattingRoomId(),
+                            chatRoom.getChattingRoomName(),
+                            chatRoom.getLatestMsg(),
+                            chatRoom.getLatestMsgTime(),
+                            chatRoom.getUserCount(),
+                            chatRoom.getMsgIdx());
+
+                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "2-1. noti를 클릭해서 들어온 채팅방과 동일한 데이터를 갖는 객체 생성 => 기존객체: " + chatRoom);
+                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "2-2. noti를 클릭해서 들어온 채팅방과 동일한 데이터를 갖는 객체 생성 => 새로운객체: " + newChatRoom);
+
+                    newChatRoom.setNotReadMsgCount(-1);
+                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "3. 안읽은 메시지 수 -1로 변경! => 안읽은 메시지수: " + newChatRoom.getNotReadMsgCount());
+
+                    // 안읽은 메시지수를 업데이트한 채팅방 객체를 리스트에 넣어준다.
+                    chatRoomList.set(i, newChatRoom);
+                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "4. 채팅리스트에 새로운 객체 넣어줌 => 객체 2-2와 동일해야 함!: " + chatRoomList.get(i));
+
+                    // 뷰모델에 변경한 리스트를 넣어준다.
+                    chattingMsgViewModel.getChattingList().setValue(chatRoomList);
+                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "5. 뷰모델에 리스트 업데이트!!");
+                }
+            }
+        }*/
 
         // 채팅방 아이디가 없다면 친구목록에서 접근한 것이다 => 서버에서 채팅방을 생성해야 한다.
         if(chatRoomId == null) {
@@ -687,6 +751,33 @@ public class ChattingActivity extends AppCompatActivity {
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
+
+                // notification을 클릭해서 접근한 것인지 확인
+                String isEnteredAtNotification = getIntent().getStringExtra("notification");
+                Log.e("채팅방 정보 세팅", "2. noti를 클릭해서 접근했는지 여부: " + isEnteredAtNotification);
+
+                // noti를 통해 접근했다면!
+                if(isEnteredAtNotification != null && isEnteredAtNotification.equals("true")){
+                    // 서비스에게 메시지 전송
+                    // 서비스는
+                    Message msg = Message.obtain(null, ChattingMsgService.NOTIFICATION);
+                    Log.e("채팅방 정보 세팅", "3.메시지 객체 생성 => " + msg);
+
+                    Bundle bundle = msg.getData();
+
+                    // 서비스에 전달할 텍스트를 넣는다.
+                    bundle.putString("chatRoomId", chatRoomId);
+                    Log.e("채팅방 정보 세팅", "4. 메시지에 채팅방 아이디 넣기 => 채팅방아이디: " + bundle.getString("chatRoomId"));
+
+                    // 서비스에 노티를 통해 접근했다는 메시지 전송
+                    try{
+                        mServiceMessenger.send(msg);
+                        Log.e("채팅방 정보 세팅", "5. 서비스에 메시지 전송");
+
+                    }catch (RemoteException e){
+                        e.printStackTrace();
+                    }
+                }
             }
 
             // 예상치 못하게 연결이 종료되는 경우 호출되는 콜백 함수
@@ -871,6 +962,7 @@ public class ChattingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String sendMsg = binding.message.getText().toString();
+                Log.e("텍스트 메시지 송신", "1. 작성한 메시지 sendMsg에 저장 => sendMsg: " + sendMsg);
 
                 // 서비스에게 보낼 메시지를 생성한다.
                 // 파라미터: 핸들러, msg.what에 들어갈 int값
@@ -881,21 +973,31 @@ public class ChattingActivity extends AppCompatActivity {
 
                 // 서비스에 전달할 텍스트를 넣는다.
                 bundle.putSerializable("sendMsg", sendMsg);
+                Log.e("텍스트 메시지 송신", "2. 서비스에 보낼 msg객체 생성 및 sendMsg 저장 => bundle.get(\"sendMsg\"): " + bundle.get("sendMsg"));
 
                 // 서버에 전송할 텍스트 메시지를 서비스로 전송한다.
                 try{
                     mServiceMessenger.send(msg);
+                    Log.e("텍스트 메시지 송신", "3. 서비스로 메시지 전송");
+
                 }catch (RemoteException e){
                     e.printStackTrace();
                 }
 
                 // 메시지의 마지막 인덱스 저장하기 - 뒤로가기 시 sp에 저장
                 lastMsg = new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(), 0, 0, "",null,"N");
+                Log.e("텍스트 메시지 송신", "4. 전송할 메시지 SP에 저장하기 위해 lastMsg 객체에 저장 => lastMsg: " + lastMsg);
 
                 // 리사이클러뷰에 뿌려주기
+                Log.e("텍스트 메시지 송신", "5. addChatMsgInfo 시작 ");
                 chattingMsgListAdapter.addChatMsgInfo(new ChatMsgInfo(null, userInfo.getUserId(), userInfo.getUserName(), chatRoomId, sendMsg, GetDate.getTodayDateWithTime(),0,0, "",null,"N"));
+                Log.e("텍스트 메시지 송신", "6. addChatMsgInfo 종료 ");
+
                 layoutManager.scrollToPosition(chattingMsgListAdapter.getItemCount() - 1);
+                Log.e("텍스트 메시지 송신", "7. 리사이클러뷰의 마지막 위치로 이동");
+
                 binding.message.setText("");
+                Log.e("텍스트 메시지 송신", "8. 텍스트박스 비워주기");
             }
         });
     }
@@ -1630,7 +1732,8 @@ public class ChattingActivity extends AppCompatActivity {
         Log.e("채팅방 나갈 때 서비스와의 연결 제거 1. 서비스로 보낼 메시지 생성", msg.toString());
         Bundle bundle = msg.getData();        // 서비스에게 메시지를 전달한다.
         bundle.putString("chatRoomId", chatRoomId);
-        Log.e("채팅방 나갈 때 서비스와의 연결 제거 3. 채팅방 아이디 전송", chatRoomId);
+        Log.e("채팅방 나갈 때 서비스와의 연결 제거 3-1. 채팅방 아이디 전송", chatRoomId);
+        Log.e("채팅방 나갈 때 서비스와의 연결 제거 3-2. userInfo.getUserName()", userInfo.getUserName());
 
         try {
             mServiceMessenger.send(msg);

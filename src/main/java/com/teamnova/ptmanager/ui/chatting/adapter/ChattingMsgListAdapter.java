@@ -599,18 +599,14 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 채팅 메시지 추가
     public void addChatMsgInfo(ChatMsgInfo chatMsgInfo){
-        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 11. 리사에 추가 ", "" + chatMsgInfo.getMsg());
-
-        //System.out.println("addChatMsgInfo 실행");
-        // 3. 리사에 잘 넘어와서 이 메소드가 호출 되는가?
         int size = getItemCount();
-        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 12.리사 사이즈: ", "" + size);
+        Log.e("addChatMsgInfo", "1. 리스트에 해당 msg 추가 => 기존리스트 사이즈: " + size);
 
         chattingMsgList.add(size,chatMsgInfo);
-        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 13.리사에 추가 후 사이즈: ", "" + size);
+        Log.e("addChatMsgInfo", "2. 리스트에 해당 msg 추가 => 추가 후 사이즈: " + chattingMsgList.size());
 
         notifyItemInserted(size);
-        Log.e("수신한 메시지 리사이클러뷰에 뿌리기 14.리사에 추가 및 notify 후 사이즈:  ", "" + size);
+        Log.e("addChatMsgInfo", "3. notifyItemInserted 호출 완료!");
     }
 
     // 채팅메시지 리스트 반환
@@ -683,19 +679,34 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     // 내가 작성한 메시지 업데이트
     public void updateCntAndIdx(int notReadUserCount, int msgIdx, String creDatetime, String savePath){
-        System.out.println("updateCntAndIdx 실행");
-
-        System.out.println("수신시간: " + creDatetime);
+        Log.e("updateCntAndIdx", "1. 데이터 출력");
+        Log.e("updateCntAndIdx", "  1-1. notReadUserCount => " + notReadUserCount);
+        Log.e("updateCntAndIdx", "  1-2. msgIdx => " + msgIdx);
+        Log.e("updateCntAndIdx", "  1-3. creDatetime => " + creDatetime);
+        Log.e("updateCntAndIdx", "  1-4. savePath => " + (savePath != null ? savePath : "null"));
 
         // 가장 마지막에 등록된 메시지 - 내가 작성한 메시지 업데이트
         int position = chattingMsgList.size() - 1;
+        Log.e("updateCntAndIdx", "2. 가장 마지막에 추가된 메시지 업데이트");
 
-        chattingMsgList.get(position).setNotReadUserCount(notReadUserCount);
-        chattingMsgList.get(position).setMsgIdx(msgIdx);
-        chattingMsgList.get(position).setCreDatetime(creDatetime);
-        chattingMsgList.get(position).setSavePath(savePath);
+        // 업데이트 할 메시지 객체
+        ChatMsgInfo updatedMsg = chattingMsgList.get(position);
+
+        // 데이터 업데이트
+        updatedMsg.setNotReadUserCount(notReadUserCount);
+        updatedMsg.setMsgIdx(msgIdx);
+        updatedMsg.setCreDatetime(creDatetime);
+        updatedMsg.setSavePath(savePath);
+
+        Log.e("updateCntAndIdx", "3. 메시지 객체에 데이터 수정");
+        Log.e("updateCntAndIdx", "  3-1. setNotReadUserCount(notReadUserCount) => " + updatedMsg.getNotReadUserCount());
+        Log.e("updateCntAndIdx", "  3-2. setMsgIdx(msgIdx) => " + updatedMsg.getMsgIdx());
+        Log.e("updateCntAndIdx", "  3-3. setCreDatetime(creDatetime) => " + updatedMsg.getCreDatetime());
+        Log.e("updateCntAndIdx", "  3-4. setSavePath(savePath) => " + (updatedMsg.getSavePath()  != null ? updatedMsg.getSavePath() : "null"));
 
         notifyItemChanged(position);
+        Log.e("updateCntAndIdx", "4. 마지막 위치의 데이터 업데이트");
+
     }
 
     // String(datetime형태) to date
@@ -722,10 +733,6 @@ public class ChattingMsgListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         Calendar cal = Calendar.getInstance();
         cal.setTime(currentTimeOfDate);
         cal.add(Calendar.SECOND, timeDifferSec);
-
-        //System.out.println("보정시간; "+ sdFormat.format(cal.getTime()));
-
-        //System.out.println("userID: " + userID);
 
         return sdFormat.format(cal.getTime());
     }
