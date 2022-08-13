@@ -19,6 +19,7 @@ import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
 import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
+import com.teamnova.ptmanager.util.GetDate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -117,11 +118,11 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if(chatRoomInfo.getLatestMsgTime() != null) {
             if(shouldCompensate){ //처음 조회시에만 보정
                 Log.e("채팅방 리스트 정보 리사이클러뷰에 세팅", " 6. 서버에서 처음 조회한 경우 시간보정 시작");
-                ((ChattingListViewHolder) holder).latest_msg_time.setText(computeTimeDifferToServer(chatRoomInfo.getLatestMsgTime(), timeDiffer));
+                ((ChattingListViewHolder) holder).latest_msg_time.setText(chatRoomInfo.getLatestMsgTime().split(" ")[0] + " " + getTime(computeTimeDifferToServer(chatRoomInfo.getLatestMsgTime(), timeDiffer)));
                 Log.e("채팅방 리스트 정보 리사이클러뷰에 세팅", " 7. 서버에서 처음 조회한 경우 시간보정 종료");
             } else{ //수정하는 경우는 보정하지 않음!
                 Log.e("채팅방 리스트 정보 리사이클러뷰에 세팅", " 6. 수정인 경우 makeTimeYYYYMMDDhhmm 시작");
-                ((ChattingListViewHolder) holder).latest_msg_time.setText(makeTimeYYYYMMDDhhmm(latestMsgTime));
+                ((ChattingListViewHolder) holder).latest_msg_time.setText(chatRoomInfo.getLatestMsgTime().split(" ")[0] + " " + getTime(makeTimeYYYYMMDDhhmm(latestMsgTime)));
                 Log.e("채팅방 리스트 정보 리사이클러뷰에 세팅", " 7. 수정인 경우 makeTimeYYYYMMDDhhmm 종료");
             }
         }
@@ -291,5 +292,17 @@ public class ChattingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Log.e("makeTimeYYYYMMDDhhmm", " 5. YYYY-MM-DD hh:mm형태의 시간 => " + date);
 
         return date;
+    }
+
+    public String getTime(String creDatetime){
+        //System.out.println("22");
+
+        //System.out.println("creDatetime: "  + creDatetime);
+
+        String[] dateArr = creDatetime.split(" ")[1].split(":");
+
+        String time = dateArr[0] + ":" + dateArr[1];
+
+        return GetDate.getAmPmTime(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]));
     }
 }

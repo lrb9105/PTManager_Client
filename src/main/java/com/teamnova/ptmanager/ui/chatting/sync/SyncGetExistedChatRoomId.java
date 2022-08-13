@@ -27,9 +27,12 @@ public class SyncGetExistedChatRoomId extends Thread{
             if(response.body() != null){
                 // 해당하는 id가 없으면 "null"이 들어있음!
                 chatRoomId = (String)response.body();
+                chatRoomId = chatRoomId.replace("\"","");
+                Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "4-1. 서버에서 가져온 채팅방 아이디 => " + chatRoomId);
+
             }
 
-            Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "4. 서버에서 가져온 채팅방 아이디 멤버리스트 전부가 속해있는 채팅방이 없다면 null 반환 => " + response);
+            Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "4-2. 서버에서 가져온 채팅방 아이디 멤버리스트 전부가 속해있는 채팅방이 없다면 null 반환 => " + response.body());
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -52,7 +52,7 @@
                     android:layout_marginTop="5dp">
                     <TextView
                         android:id="@+id/chat_room_name"
-                        android:layout_width="wrap_content"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:text="채팅방 이름"
                         android:maxLines="1"

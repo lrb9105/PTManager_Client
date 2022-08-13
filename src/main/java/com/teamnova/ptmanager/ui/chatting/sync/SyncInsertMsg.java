@@ -19,7 +19,7 @@ public class SyncInsertMsg extends Thread{
     public void run() {
         try {
             Response response = call.execute();
-            Log.e("채팅방정보 저장 ", "5. 채팅방 정보 서버에 저장! => " + " call.execute()");
+            Log.e("채팅방정보 저장 ", "5. 채팅방 정보 서버에 저장! => 결과" + response.body());
 
 
         } catch (IOException e) {

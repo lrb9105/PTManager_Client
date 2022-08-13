@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +30,7 @@ import com.teamnova.ptmanager.model.chatting.ChatRoomInfoForListDto;
 import com.teamnova.ptmanager.model.chatting.ChattingMemberDto;
 import com.teamnova.ptmanager.model.lesson.LessonSchInfo;
 import com.teamnova.ptmanager.model.userInfo.FriendInfoDto;
+import com.teamnova.ptmanager.service.chatting.ChattingMsgService;
 import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.chatting.ChattingPossibleMemberListActivity;
 import com.teamnova.ptmanager.ui.chatting.adapter.ChattingListAdapter;
@@ -187,10 +190,63 @@ public class ChatListFragment2 extends Fragment implements View.OnClickListener 
                             // 새로 초대한 인원 정보를 가져온다!
                             ArrayList<ChattingMemberDto> chatMemberList = (ArrayList<ChattingMemberDto>)result.getData().getSerializableExtra("chatMemberList");
 
-                            Intent intent = new Intent(requireActivity(), ChattingActivity.class);
-                            intent.putExtra("chatMemberList",chatMemberList);
+                            // 방정보 생성
+                            ChattingMemberDto userInfo = chatMemberList.get(0);
+                            Log.e("채팅방 만들기 ", "1. 리스트에서 채팅방 생성자 정보를 가져온다. => 사이즈: " + userInfo);
 
-                            Log.e("채팅방 만들기 ", "14. 채팅 참여자 정보와 함께 ChattingAct로 이동한다.");
+                            // 기존에 생성된 채팅방이 있는지 검색 후 존재 시 채팅방 아이디를 가져온다
+                            // 채팅방 검색 시 채팅방 참여자 리스트를 사용해서 검색한다.
+                            Log.e("채팅방 만들기 ", "2. 멤버리스트로 채팅방 아이디 가져오기 시작");
+                            String chatRoomId = chattingRoomManager.getExistedChatRoomId(chatMemberList);
+                            Log.e("채팅방 만들기 ", "3. 멤버리스트로 채팅방 아이디 가져오기 종료");
+
+                            // 서버에서 가져온 채팅방 id의 경우 "(큰따옴표)가 포함되어있어 이를 제거해준다.
+                            chatRoomId = chatRoomId.replace("\"","");
+
+                            Intent intent = new Intent(requireActivity(), ChattingActivity.class);
+
+                            // 채팅방 아이디가 존재한다면
+                            if(chatRoomId != null && !chatRoomId.equals("null")){
+                                Log.e("채팅방 만들기 ", "4. 멤버리스트가 전부 포함된 채팅방이 존재 => 채팅방 아이디:" + chatRoomId);
+                            } else {
+                                // 기존에 생성된 채팅방 정보가 존재하지 않는다면
+                                // 채팅방 정보를 저장하라
+                                // (저장하고 채팅방 아이디를 가져올 때까지 mainThread는 멈춰 있어야 함)
+                                Log.e("채팅방 만들기 ", "5. 멤버리스트가 전부 포함된 채팅방이 존재하지 않는다면 서버에 채팅방 정보를 저장한다.");
+                                Log.e("채팅방 만들기 ", "6. 채팅방정보 저장 시작");
+                                chatRoomId = chattingRoomManager.insertChatRoomInfo(chatMemberList,chatRoomId);
+                                Log.e("채팅방 만들기 ", "7. 채팅방정보 저장 종료");
+                                chatRoomId = chatRoomId.replace("\"","");
+
+                                // 입장 msg 저장
+                                // 기존 채팅참여자 리스트에 새로 초대된 사용자들을 추가하고 서버에 새로 추가된 사용자를 알려주는 메시지를 보낸다.
+                                for(ChattingMemberDto c : chatMemberList){
+                                    // 입장 메시지를 저장한다.
+                                    // 입장 메시지 생성
+                                    String enterMsg = c.getUserName() + "님이 입장했습니다.";
+                                    Log.e("채팅방 만들기 ", "8. 입장 메시지 생성 => " + enterMsg);
+
+                                    // 메시지 저장
+                                    Log.e("채팅방 만들기 ", "9. 서버에 메시지 저장 시작");
+                                    chattingRoomManager.insertMsg(chatRoomId, c.getUserId(), enterMsg);
+                                    Log.e("채팅방 만들기 ", "10. 서버에 메시지 저장 종료");
+                                }
+
+                                // 사용자 저장
+                                Log.e("채팅방 만들기 ", "11. 사용자 저장 시작");
+                                chattingRoomManager.insertMemberList(chatMemberList,chatRoomId);
+                                Log.e("채팅방 만들기 ", "12. 사용자 저장 종료");
+
+                                intent.putExtra("newChatRoom","true");
+                                Log.e("채팅방 만들기 ", "13. 인텐트에 newChatRoom param 넣기! => intent.getStringExtra(\"newChatRoom\"): " + intent.getStringExtra("newChatRoom"));
+
+                            }
+
+                            // 채팅액트에 사용자 전달
+                            intent.putExtra("chatRoomId",chatRoomId);
+                            intent.putExtra("userInfo",chatMemberList.get(0));
+
+                            Log.e("채팅방 만들기 ", "13. 채팅 참여자 정보와 함께 ChattingAct로 이동한다.");
 
                             startActivityResult.launch(intent);
                         }

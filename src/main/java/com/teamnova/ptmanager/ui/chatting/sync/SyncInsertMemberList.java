@@ -13,7 +13,6 @@ public class SyncInsertMemberList extends Thread{
 
     public SyncInsertMemberList(Call<String> call){
         this.call = call;
-        Log.e("채팅방에서 사용자 초대 12.  SyncInsertMemberList 생성", "true");
 
     }
 
@@ -21,7 +20,7 @@ public class SyncInsertMemberList extends Thread{
     public void run() {
         try {
             Response response = call.execute();
-            Log.e("채팅방에서 사용자 초대 13. 새로운 사용자 초대 후 저장 완료!", (String) response.body());
+            Log.e("서버에 채팅 참여자 추가 ", "5. 서버에 채팅참여자 추가 결과 => " + response.body());
         } catch (IOException e) {
             e.printStackTrace();
         }

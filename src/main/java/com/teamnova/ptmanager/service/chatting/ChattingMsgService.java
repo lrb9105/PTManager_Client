@@ -88,7 +88,7 @@ public class ChattingMsgService extends Service {
     private Handler mHandler;
     // 메시지 송신 시(송신은 다른 쓰레드에서 진행) 메인 쓰레드의 ui를 변경하기 위해 데이터를 전달하는 핸들러
     private Handler sendHandler;
-    private final String ip = "192.168.88.128";
+    private final String ip = "192.168.219.176";
     private final int port = 8888;
     // 채팅방 아이디
     private String chatRoomId;
@@ -102,6 +102,8 @@ public class ChattingMsgService extends Service {
     private int lastMsgIdx;
     // 채팅방에 들어왔던적이 있는지 없는지를 나타내는 문자열
     private String firstOrOld;
+    // 새로 생성된 채팅방 여부
+    private String isNewChatRoom;
 
     // 서비스에서 액티비티로 보내는 메신저 인것 같다.
     // 클라이언트가 IncomingHandler에 메시지를 보내기 위해 게시하는 대상
@@ -128,7 +130,6 @@ public class ChattingMsgService extends Service {
     // handleMessage 함수에서 switch에 맞는 코드가 동작하는 식으로 CallBack을 구현하는 것 같다.
     class IncomingHandler extends Handler {
         private String send;
-
 
         @Override
         // 이 메소드는 뭐하는 녀석일까? 오버라이드 받은 녀석이긴 한데 말이지
@@ -287,6 +288,10 @@ public class ChattingMsgService extends Service {
                     isChatActivityActive = true;
                     Log.e("ChatAct와 소켓 연결 17. isChatActivityActive ","" + isChatActivityActive);
 
+                    // 새로생성된 방 여부
+                    isNewChatRoom = msg.getData().getString("newChatRoom");;
+                    Log.e("ChatAct와 소켓 연결 17-2. isNewChatRoom ","" + isNewChatRoom);
+
 
                     /*recvThread = new RecvThread();
                     recvThread.start();*/
@@ -312,8 +317,8 @@ public class ChattingMsgService extends Service {
                             super.run();
                             try {
                                 // 해당 내용을 보내야 채팅방이 새로 생성된다.
-                                // 마지막으로 저장된 메시지가 있다면 메시지 인덱스 보내기
-                                if(lastMsgIdx != 999998){
+                                // 마지막으로 저장된 메시지가 있고 새로 생성된 채팅방이 아니라면
+                                if(lastMsgIdx != 999998 && isNewChatRoom == null){
                                     sendWriter.println("!@#$!@#lsatIdx:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + lastMsgIdx + ":" + firstOrOld);
                                     Log.e("ChatAct와 소켓 연결 19-1. lastMsgIdx 전송","!@#$!@#lsatIdx:"+ userInfo.getUserId() + ":" + chatRoomId + ":" + lastMsgIdx + ":" + firstOrOld);
                                 } else { // 채팅방 새로 생성 시

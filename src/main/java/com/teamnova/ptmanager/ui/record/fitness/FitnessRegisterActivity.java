@@ -243,8 +243,8 @@ public class FitnessRegisterActivity extends AppCompatActivity implements View.O
             // 성공 시 SUCCESS 문자열 반환
             if(!result.equals("")){
                 if(result.contains("SUCCESS")){
-                    Toast.makeText(FitnessRegisterActivity.this, "운동기록 저장에 성공했습니다. " + result, Toast.LENGTH_SHORT).show();
-                    Log.d("객체:", result);
+                    /*Toast.makeText(FitnessRegisterActivity.this, "운동기록 저장에 성공했습니다. " + result, Toast.LENGTH_SHORT).show();
+                    Log.d("객체:", result);*/
 
                      // 완료 시 이전 화면으로 이동하기
                     Intent intent = new Intent(FitnessRegisterActivity.this, FitnessKindListActivity.class);

@@ -294,13 +294,18 @@ public class DayViewActivity extends AppCompatActivity {
 
         // 시작시간
         Calendar timeStart = Calendar.getInstance();
-        timeStart.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lesson.getLessonSrtTime().split(":")[0]));
-        timeStart.set(Calendar.MINUTE, Integer.parseInt(lesson.getLessonSrtTime().split(":")[1]));
 
         // 종료시간
         Calendar timeEnd = (Calendar) timeStart.clone();
-        timeEnd.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lesson.getLessonEndTime().split(":")[0]));
-        timeEnd.set(Calendar.MINUTE, Integer.parseInt(lesson.getLessonEndTime().split(":")[1]));
+
+        if(lesson.getLessonSrtTime() != null) {
+            timeStart.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lesson.getLessonSrtTime().split(":")[0]));
+            timeStart.set(Calendar.MINUTE, Integer.parseInt(lesson.getLessonSrtTime().split(":")[1]));
+
+            timeEnd.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lesson.getLessonEndTime().split(":")[0]));
+            timeEnd.set(Calendar.MINUTE, Integer.parseInt(lesson.getLessonEndTime().split(":")[1]));
+        }
+
 
         Event event = null;
 

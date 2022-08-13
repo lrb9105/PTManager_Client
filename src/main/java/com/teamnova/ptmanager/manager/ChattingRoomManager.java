@@ -119,7 +119,10 @@ public class ChattingRoomManager {
 
         // http request 객체 생성
         Call<String> call = service.getExistedChatRoomId(chatMemberList);
-        Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "2. call 객체 생성=> " + call);
+        Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "2-1. chatMemberList 사이즈 => " + chatMemberList.size());
+        for (int i = 0; i < chatMemberList.size(); i++){
+            Log.e("멤버리스트로 채팅방 아이디 가져오기 ", "2-2. chatMember의 userId => " + chatMemberList.get(i).getUserId());
+        }
 
 
         // 서버에 데이터를 저장하는 동기 함수의 쓰레드
@@ -151,7 +154,8 @@ public class ChattingRoomManager {
 
         Log.e("채팅방정보 저장 ", "2. 채팅방 명 생성 => " + chatRoomName);
 
-        ChatRoomInfoDto chatRoomInfoDto = new ChatRoomInfoDto(null, chatRoomName, chatMemberList);
+        // 기존과 로직이 변경되어 채팅방 멤버정보는 따로 저장해준다!
+        ChatRoomInfoDto chatRoomInfoDto = new ChatRoomInfoDto(null, chatRoomName, null);
         Log.e("채팅방정보 저장 ", "3. 채팅방 정보 생성 => " + chatRoomInfoDto);
 
         // http request 객체 생성
@@ -184,11 +188,12 @@ public class ChattingRoomManager {
         hashMap.put("roomId", chatRoomId);
         hashMap.put("chatMemberList", chatMemberList);
 
-        Log.e("채팅방에서 사용자 초대 10. HashMap애 초대한 인원 정보를 넣는다..", "채팅방아이디: " + hashMap.get("roomId"));
+        Log.e("서버에 채팅 참여자 추가 ", "2. HashMap애 초대한 인원 정보를 넣는다 => 채팅방아이디: " + hashMap.get("roomId"));
+        Log.e("서버에 채팅 참여자 추가 ", "3. HashMap애 초대한 인원 정보를 넣는다 => 채팅방멤버 사이즈: " + chatMemberList.size());
 
         Call<String> call = service.insertMemberList(hashMap);
 
-        Log.e("채팅방에서 사용자 초대 11. call 생성", "채팅방아이디: " + call);
+        Log.e("서버에 채팅 참여자 추가 ", "4. call객체 생성");
 
 
         // 서버에 데이터를 저장하는 동기 함수의 쓰레드
@@ -271,7 +276,9 @@ public class ChattingRoomManager {
             Log.e("채팅방아이디 리스트에서 채팅방아이디만 추출하여 \"로\"구분된 문자열 생성 3. chatRoomId 문자열에 추가: ","" + chatRoomIdListStr);
         }
 
-        chatRoomIdListStr = chatRoomIdListStr.substring(1);
+        if(!chatRoomIdListStr.equals("")) {
+            chatRoomIdListStr = chatRoomIdListStr.substring(1);
+        }
 
         return chatRoomIdListStr;
     }
@@ -331,7 +338,10 @@ public class ChattingRoomManager {
 
         // http request 객체 생성
         Call<String> call = service.insertMsg(chatRoomId, userId, msg);
-        Log.e("메시지 저장 ", "4. call 객체 생성 => " + call);
+        Log.e("메시지 저장 ", "2. chatRoomId => " + chatRoomId);
+        Log.e("메시지 저장 ", "3. userId => " + userId);
+        Log.e("메시지 저장 ", "4. msg => " + msg);
+        Log.e("메시지 저장 ", "5. call 객체 생성 => " + call);
 
         // 서버에 데이터를 저장하는 동기 함수의 쓰레드
         SyncInsertMsg t = new SyncInsertMsg(call);

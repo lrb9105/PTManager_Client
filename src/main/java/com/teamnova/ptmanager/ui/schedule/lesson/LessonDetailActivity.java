@@ -235,13 +235,13 @@ public class LessonDetailActivity extends AppCompatActivity implements View.OnCl
                 confirmYnName = "(예약대기)";
             }
             attendanceYnOrConfirmYn = confirmYnName;
-        } else if(!lessonSchInfo.getCancelYn().equals("N")){
+        } else if(lessonSchInfo.getCancelYn() != null && !lessonSchInfo.getCancelYn().equals("N")){
             if(lessonSchInfo.getCancelYn().equals("M")){
                 attendanceYnOrConfirmYn = "(취소대기)";
             } else if(lessonSchInfo.getCancelYn().equals("Y")){
                 attendanceYnOrConfirmYn = "(예약취소)";
             }
-        } else if(lessonSchInfo.getReservationConfirmYn().equals("N")){
+        } else if(lessonSchInfo.getReservationConfirmYn() != null && lessonSchInfo.getReservationConfirmYn().equals("N")){
             attendanceYnOrConfirmYn = "(예약취소)";
         } else{
             attendanceYnName = lessonSchInfo.getAttendanceYnName();

@@ -44,7 +44,7 @@ public class FitnessRecordDetailListAdapter extends RecyclerView.Adapter<Recycle
             super(itemView);
             set_num = itemView.findViewById(R.id.set_num);
             running_time = itemView.findViewById(R.id.running_time);
-            possibleWhenMember(running_time, null);
+            //possibleWhenMember(running_time, null);
         }
 
         @Override
@@ -68,7 +68,7 @@ public class FitnessRecordDetailListAdapter extends RecyclerView.Adapter<Recycle
             set_num = itemView.findViewById(R.id.set_num);
             fitness_kg = itemView.findViewById(R.id.fitness_kg);
             fitness_num = itemView.findViewById(R.id.fitness_num);
-            possibleWhenMember(fitness_kg, fitness_num);
+            //possibleWhenMember(fitness_kg, fitness_num);
         }
 
         @Override
@@ -90,7 +90,7 @@ public class FitnessRecordDetailListAdapter extends RecyclerView.Adapter<Recycle
             super(itemView);
             set_num = itemView.findViewById(R.id.set_num);
             fitness_num = itemView.findViewById(R.id.fitness_num);
-            possibleWhenMember(fitness_num, null);
+            //possibleWhenMember(fitness_num, null);
         }
 
         @Override

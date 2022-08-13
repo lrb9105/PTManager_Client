@@ -38,6 +38,7 @@ import com.teamnova.ptmanager.ui.chatting.ChattingActivity;
 import com.teamnova.ptmanager.ui.home.member.fragment.MemberHomeFragment;
 import com.teamnova.ptmanager.ui.home.trainer.TrainerHomeActivity;
 import com.teamnova.ptmanager.ui.moreinfo.ChatListFragment2;
+import com.teamnova.ptmanager.ui.moreinfo.MoreInfoFragment;
 import com.teamnova.ptmanager.ui.record.RecordFragment;
 import com.teamnova.ptmanager.viewmodel.chatting.ChattingViewModel;
 import com.teamnova.ptmanager.viewmodel.friend.FriendViewModel;
@@ -65,6 +66,9 @@ public class MemberHomeActivity extends AppCompatActivity {
 
     // 채팅 프래그먼트
     private ChatListFragment2 chatListFragment;
+
+    // 더보기 프래그먼트
+    private MoreInfoFragment moreInfoFragment;
 
     // 뷰모델
     private FriendViewModel friendViewModel;
@@ -441,6 +445,7 @@ public class MemberHomeActivity extends AppCompatActivity {
 
                     if(recordFragment != null) fragmentManager.beginTransaction().hide(recordFragment).commit();
                     if(changeHistoryFragment != null) fragmentManager.beginTransaction().hide(changeHistoryFragment).commit();
+                    if(moreInfoFragment != null) fragmentManager.beginTransaction().hide(moreInfoFragment).commit();
                     if(memberHomeFragment != null) transaction2.show(memberHomeFragment).commit();
                     if(chatListFragment != null) fragmentManager.beginTransaction().hide(chatListFragment).commit();
 
@@ -470,6 +475,7 @@ public class MemberHomeActivity extends AppCompatActivity {
 
                     if(memberHomeFragment != null) transaction2.hide(memberHomeFragment).commit();
                     if(recordFragment != null) fragmentManager.beginTransaction().hide(recordFragment).commit();
+                    if(moreInfoFragment != null) fragmentManager.beginTransaction().hide(moreInfoFragment).commit();
                     if(changeHistoryFragment != null) fragmentManager.beginTransaction().show(changeHistoryFragment).commit();
                     if(chatListFragment != null) fragmentManager.beginTransaction().hide(chatListFragment).commit();
 
@@ -483,6 +489,7 @@ public class MemberHomeActivity extends AppCompatActivity {
 
                     if(memberHomeFragment != null) transaction2.hide(memberHomeFragment).commit();
                     if(changeHistoryFragment != null) fragmentManager.beginTransaction().hide(changeHistoryFragment).commit();
+                    if(moreInfoFragment != null) fragmentManager.beginTransaction().hide(moreInfoFragment).commit();
                     if(recordFragment != null) fragmentManager.beginTransaction().show(recordFragment).commit();
                     if(chatListFragment != null) fragmentManager.beginTransaction().hide(chatListFragment).commit();
 
@@ -496,13 +503,24 @@ public class MemberHomeActivity extends AppCompatActivity {
 
                     if(memberHomeFragment != null) transaction2.hide(memberHomeFragment).commit();
                     if(changeHistoryFragment != null) fragmentManager.beginTransaction().hide(changeHistoryFragment).commit();
+                    if(moreInfoFragment != null) fragmentManager.beginTransaction().hide(moreInfoFragment).commit();
                     if(recordFragment != null) fragmentManager.beginTransaction().hide(recordFragment).commit();
                     if(chatListFragment != null) fragmentManager.beginTransaction().show(chatListFragment).commit();
 
                     //transaction2.replace(binding.trainerFrame.getId(), changeHistoryFragment,"frag2").commit();
                     break;
                 case R.id.item_more2: // 더보기2
-                    //transaction2.replace(binding.trainerFrame.getId(), changeHistoryFragment,"frag2").commit();
+                    if(moreInfoFragment == null) {
+                        moreInfoFragment = new MoreInfoFragment();
+                        transaction2.add(binding.trainerFrame.getId(), moreInfoFragment,"frag5");
+                    }
+
+                    if(memberHomeFragment != null) transaction2.hide(memberHomeFragment).commit();
+                    if(recordFragment != null) fragmentManager.beginTransaction().hide(recordFragment).commit();
+                    if(moreInfoFragment != null) fragmentManager.beginTransaction().show(moreInfoFragment).commit();
+                    if(changeHistoryFragment != null) fragmentManager.beginTransaction().hide(changeHistoryFragment).commit();
+                    if(chatListFragment != null) fragmentManager.beginTransaction().hide(chatListFragment).commit();
+
                     break;
             }
             return true;

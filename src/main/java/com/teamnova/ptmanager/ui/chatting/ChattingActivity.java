@@ -506,42 +506,6 @@ public class ChattingActivity extends AppCompatActivity {
         // 채팅방 및 메시지를 관리할 뷰모델
         chattingMsgViewModel = new ViewModelProvider(this).get(ChattingMsgViewModel.class);
 
-        // noti를 통해 접근했다면!
-        /*if(isEnteredAtNotification != null && isEnteredAtNotification.equals("true")){
-            ArrayList<ChatRoomInfoForListDto> chatRoomList = chattingMsgViewModel.getChattingList().getValue();
-            Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "1. 기존 채팅방 리스트 => 사이즈: " + chatRoomList.size());
-
-            // 채팅방리스트에 있는 채팅방 갯수만큼 반복한다.
-            for (int i = 0; i < chatRoomList.size(); i++){
-                ChatRoomInfoForListDto chatRoom = chatRoomList.get(i);
-
-                // noti를 클릭해서 들어온 채팅방과 동일한 아이디의 채팅방을 리스트에서 발견했다면
-                if(chatRoom.getChattingRoomId().equals(chatRoomId)){
-                    // 해당 채팅방 정보로 새로운 채팅방 객체를 만들어준다!
-                    ChatRoomInfoForListDto newChatRoom = new ChatRoomInfoForListDto(chatRoom.getChattingRoomId(),
-                            chatRoom.getChattingRoomName(),
-                            chatRoom.getLatestMsg(),
-                            chatRoom.getLatestMsgTime(),
-                            chatRoom.getUserCount(),
-                            chatRoom.getMsgIdx());
-
-                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "2-1. noti를 클릭해서 들어온 채팅방과 동일한 데이터를 갖는 객체 생성 => 기존객체: " + chatRoom);
-                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "2-2. noti를 클릭해서 들어온 채팅방과 동일한 데이터를 갖는 객체 생성 => 새로운객체: " + newChatRoom);
-
-                    newChatRoom.setNotReadMsgCount(-1);
-                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "3. 안읽은 메시지 수 -1로 변경! => 안읽은 메시지수: " + newChatRoom.getNotReadMsgCount());
-
-                    // 안읽은 메시지수를 업데이트한 채팅방 객체를 리스트에 넣어준다.
-                    chatRoomList.set(i, newChatRoom);
-                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "4. 채팅리스트에 새로운 객체 넣어줌 => 객체 2-2와 동일해야 함!: " + chatRoomList.get(i));
-
-                    // 뷰모델에 변경한 리스트를 넣어준다.
-                    chattingMsgViewModel.getChattingList().setValue(chatRoomList);
-                    Log.e("notification으로 접근한 경우 안읽은 메시지 없애줌", "5. 뷰모델에 리스트 업데이트!!");
-                }
-            }
-        }*/
-
         // 채팅방 아이디가 없다면 친구목록에서 접근한 것이다 => 서버에서 채팅방을 생성해야 한다.
         if(chatRoomId == null) {
             // 채팅멤버리스트의 첫번째값에 채팅방을 생성한 사용자의 값이 들어있다.
@@ -738,6 +702,13 @@ public class ChattingActivity extends AppCompatActivity {
                     // 4. firstOrOld
                     bundle.putString("firstOrOld", firstOrOld);
                     Log.e("ChatAct와 소켓 연결 9. firstOrOld: ", firstOrOld);
+
+                    // 4. newChatRoom
+                    // 만약 새로 생성 했다면 그 정보를 서비스로 보낸다.
+                    if(getIntent().getStringExtra("newChatRoom") != null && !getIntent().getStringExtra("newChatRoom").equals("")){
+                        bundle.putString("newChatRoom", "true");
+                        Log.e("ChatAct와 소켓 연결 9-2. newChatRoom: ", bundle.getString("newChatRoom"));
+                    }
 
 
                     // 메시지의 송신자를 넣어준다.
@@ -1684,6 +1655,8 @@ public class ChattingActivity extends AppCompatActivity {
     // 페이징 된 데이터 가져 옴
     public void getDataList(){
         // pageNo에 해당하는 데이터 리스트 가져 옴
+        Log.e("메시지 가져오기","1. chatRoomId => " + chatRoomId);
+        Log.e("메시지 가져오기","2. userInfo.getUserId() => " + userInfo.getUserId());
         ArrayList<ChatMsgInfo> tempChatMsgList = chattingMsgViewModel.getMsgListInfo(chatRoomId, userInfo.getUserId(), limit, pageNo);
 
         // 서버에서 가져온 메시지 리스트의 크기
